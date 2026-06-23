@@ -42,8 +42,8 @@
         </template>
         <template v-else>
           <RouterLink to="/login" class="nav-link">프로필</RouterLink>
-          <RouterLink to="/login" class="btn btn-outline">로그인</RouterLink>
-          <RouterLink to="/signup" class="btn btn-primary">회원가입</RouterLink>
+          <RouterLink :to="{ name: 'Login' }" class="btn btn-outline">로그인</RouterLink>
+          <RouterLink :to="{ name: 'Register' }" class="btn btn-primary">회원가입</RouterLink>
         </template>
       </div>
     </nav>
