@@ -184,6 +184,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'accounts.User'
 
 AUTHENTICATION_BACKENDS = [
+    # Django 기본: username 기반 인증 (Django admin 로그인용)
+    'django.contrib.auth.backends.ModelBackend',
+    # allauth: email 기반 로그인 (dj-rest-auth API용)
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
@@ -203,3 +206,15 @@ RAWG_API_URL = os.getenv('RAWG_API_URL')
 STEAM_APP_DETAIL_URL = os.getenv('STEAM_APP_DETAIL_URL')
 
 YOUTUBE_DATA_API_KEY = os.getenv('YOUTUBE_DATA_API_KEY')
+
+
+# ── AI 추천 (GMS 게이트웨이, OpenAI 호환 가정) ──────────────────────
+# GMS_MODEL 만 바꾸면 gpt / gemini / claude 모델을 교체할 수 있다.
+GMS_BASE_URL = os.getenv('GMS_BASE_URL', '')   # 예: https://.../v1 (끝에 /chat/completions 자동 부착)
+# 기존 .env 의 SSAFY_GMS_KEY 를 우선 사용, 없으면 GMS_API_KEY
+GMS_API_KEY = os.getenv('SSAFY_GMS_KEY') or os.getenv('GMS_API_KEY', '')
+GMS_MODEL = os.getenv('GMS_MODEL', 'gpt-4o-mini')
+
+# ⚠️ True 로 바꾸기 전까지 LLM 을 호출하지 않는다 (토큰 0).
+#    False 이면 추천은 기존 랜덤 placeholder 로 동작한다.
+RECOMMEND_USE_LLM = os.getenv('RECOMMEND_USE_LLM', 'False').lower() == 'true'
