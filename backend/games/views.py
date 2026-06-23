@@ -1,4 +1,3 @@
-# games/views.py
 from django.db.models import F
 from rest_framework import generics
 from rest_framework.views import APIView
@@ -67,17 +66,19 @@ class GameDetailView(generics.RetrieveAPIView):
     )
 
 
-class GamePostsView(APIView):
-    """
-    GET /games/{game_id}/posts/  이 게임 관련 글
-    ※ community.Post 완성 후 실제 조회로 교체 (지금은 빈 결과).
-    """
+class GamePostsView(generics.ListAPIView):
+    """GET /games/{game_id}/posts/  이 게임 관련 글 (Post.game_id 연동)"""
     permission_classes = [AllowAny]
 
-    def get(self, request, game_id):
-        return Response({
-            'count': 0, 'next': None, 'previous': None, 'results': [],
-        })
+    def get_serializer_class(self):
+        from community.serializers import PostListSerializer
+        return PostListSerializer
+
+    def get_queryset(self):
+        from community.models import Post
+        return Post.objects.filter(game_id=self.kwargs['game_id'])\
+                           .select_related('user', 'game')\
+                           .prefetch_related('comments')
 
 
 class RecommendedGamesView(APIView):

@@ -90,21 +90,35 @@ class MyPageView(APIView):
     def get(self, request):
         user = request.user
 
-        def safe_count(related_name):
-            mgr = getattr(user, related_name, None)
-            return mgr.count() if mgr is not None else 0
+        # community 글/댓글 (이제 연결됨)
+        from community.models import Post
+        from community.serializers import PostListSerializer
+        recent_posts = Post.objects.filter(user=user)\
+                                   .select_related('user', 'game')\
+                                   .prefetch_related('comments')[:5]
+
+        # wishlists 찜 (이제 연결됨)
+        from wishlists.models import Wishlist
+        from wishlists.serializers import WishlistItemSerializer
+        recent_wishlist = Wishlist.objects.filter(user=user)\
+                                          .select_related('game')\
+                                          .prefetch_related('game__genres')[:5]
 
         data = {
             'nickname': user.nickname,
             'profile_img': user.profile_img or None,
             'counts': {
-                'wishlist': safe_count('wishlists'),     # TODO: wishlists 앱
-                'posts': safe_count('posts'),            # TODO: community 앱
-                'comments': safe_count('comments'),      # TODO: community 앱
+                'wishlist': user.wishlists.count(),
+                'posts': user.posts.count(),
+                'comments': user.comments.count(),
                 'medals': user.medals.count(),
             },
-            'recent_wishlist': [],   # TODO: WishlistSerializer 연결
-            'recent_posts': [],      # TODO: PostSerializer 연결
+            'recent_wishlist': WishlistItemSerializer(
+                recent_wishlist, many=True, context={'request': request}
+            ).data,
+            'recent_posts': PostListSerializer(
+                recent_posts, many=True, context={'request': request}
+            ).data,
             'medals': MedalSerializer(user.medals.all(), many=True).data,
         }
         return Response(data)

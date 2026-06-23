@@ -11,9 +11,12 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / '.env')
 
 
 # Quick-start development settings - unsuitable for production
@@ -185,3 +188,14 @@ ACCOUNT_LOGIN_METHODS = {'email'}
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
 
 ACCOUNT_EMAIL_VERIFICATION = 'none'   
+
+
+# 외부 키 모음 (RAWG, STEAM, YOUTUBE)
+
+RAWG_API_KEY = os.getenv('RAWG_API_KEY')
+
+RAWG_API_URL = os.getenv('RAWG_API_URL')
+
+STEAM_APP_DETAIL_URL = os.getenv('STEAM_APP_DETAIL_URL')
+
+YOUTUBE_DATA_API_KEY = os.getenv('YOUTUBE_DATA_API_KEY')
