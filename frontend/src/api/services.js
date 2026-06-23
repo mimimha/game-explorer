@@ -5,7 +5,7 @@
 //   import { gameAPI } from '@/api/services'
 //   const { data } = await gameAPI.list({ genre: 3, q: 'pixel' })
 // ──────────────────────────────────────────────────────────────
-import api from './index'
+import api from './client'
 import E from './endpoints'
 
 // ── 인증 ──

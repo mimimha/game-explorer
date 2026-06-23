@@ -5,21 +5,19 @@ export const useAuthStore = defineStore('auth', () => {
   const user = ref(null)
   const isLoggedIn = computed(() => !!user.value)
 
-  // 앱 시작 시 토큰 있으면 로그인 상태로
-  const token = localStorage.getItem('access_token')
+  const token = localStorage.getItem('token')
   if (token) {
-    // 간단히 토큰 존재 여부로만 처리 (추후 /api/users/me/ 연동)
     user.value = { token }
   }
 
-  function login(userData) {
+  function login(userData, token) {
+    localStorage.setItem('token', token)
     user.value = userData
   }
 
   function logout() {
     user.value = null
-    localStorage.removeItem('access_token')
-    localStorage.removeItem('refresh_token')
+    localStorage.removeItem('token')
   }
 
   return { user, isLoggedIn, login, logout }

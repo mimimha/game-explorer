@@ -21,12 +21,13 @@ api.interceptors.request.use((config) => {
   return config
 })
 
-// 401(인증 만료) 공통 처리 — 필요 시 라우터/스토어 연결
+// 401(인증 만료) 공통 처리
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // 예: localStorage.removeItem('token'); router.push('/login')
+      localStorage.removeItem('token')
+      window.location.href = '/login'
     }
     return Promise.reject(error)
   },

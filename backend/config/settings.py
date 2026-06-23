@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-we@2)nd4r55zxc4rw*27mqj3)irw7_7-@h!n%d)4yx&(z=rj3v
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -183,11 +183,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'accounts.User'
 
+AUTHENTICATION_BACKENDS = [
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
 ACCOUNT_LOGIN_METHODS = {'email'}
 
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
 
-ACCOUNT_EMAIL_VERIFICATION = 'none'   
+ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 
 # 외부 키 모음 (RAWG, STEAM, YOUTUBE)

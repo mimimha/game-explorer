@@ -39,8 +39,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import { gameAPI, recommendAPI } from '@/api/services'
 import AiRecommendPanel from '@/components/explore/AiRecommendPanel.vue'
 import SearchPanel from '@/components/explore/SearchPanel.vue'
 import RecentHistory from '@/components/explore/RecentHistory.vue'
@@ -57,20 +58,28 @@ const aiLoading = ref(false)
 const searchLoading = ref(false)
 const restoreLoading = ref(false)
 const resultGames = ref([])
+const recentHistory = ref([])
 
-const DUMMY_GAMES = Array.from({ length: 6 }, (_, i) => ({
-  id: i + 1,
-  title: '게임 제목',
-  tags: ['장르', '플랫폼'],
-  rating: 4.5,
-}))
+function toGames(data) {
+  return Array.isArray(data) ? data : (data.results ?? [])
+}
 
-const recentHistory = ref([
-  { id: 1, query: '스토리가 좋은 픽셀 RPG',      date: '2024.05.20', count: 6 },
-  { id: 2, query: '멀티플레이 가능한 생존 게임',  date: '2024.05.18', count: 8 },
-  { id: 3, query: '짧게 즐길 수 있는 퍼즐 게임', date: '2024.05.15', count: 5 },
-  { id: 4, query: '감성적인 인디 게임 추천',      date: '2024.05.10', count: 7 },
-])
+onMounted(async () => {
+  if (authStore.isLoggedIn) {
+    try {
+      const { data } = await recommendAPI.logs()
+      const logs = Array.isArray(data) ? data : (data.results ?? [])
+      recentHistory.value = logs.map(l => ({
+        id: l.id,
+        query: l.prompt_input,
+        date: new Date(l.created_at).toLocaleDateString('ko-KR').replace(/\. /g, '.').slice(0, -1),
+        count: l.result_count ?? 0,
+      }))
+    } catch {
+      recentHistory.value = []
+    }
+  }
+})
 
 async function onAiSubmit({ prompt }) {
   if (!authStore.isLoggedIn) {
@@ -83,17 +92,20 @@ async function onAiSubmit({ prompt }) {
   aiLoading.value = true
   resultGames.value = []
 
-  // TODO: POST /api/ai/recommend/ { prompt, filters }
-  await new Promise(r => setTimeout(r, 1200))
-  resultGames.value = DUMMY_GAMES
-  aiLoading.value = false
-
-  recentHistory.value.unshift({
-    id: Date.now(),
-    query: prompt,
-    date: new Date().toLocaleDateString('ko-KR').replace(/\. /g, '.').slice(0, -1),
-    count: DUMMY_GAMES.length,
-  })
+  try {
+    const { data } = await recommendAPI.create({ prompt_input: prompt })
+    resultGames.value = toGames(data.games ?? data)
+    recentHistory.value.unshift({
+      id: data.id ?? Date.now(),
+      query: prompt,
+      date: new Date().toLocaleDateString('ko-KR').replace(/\. /g, '.').slice(0, -1),
+      count: resultGames.value.length,
+    })
+  } catch {
+    toastRef.value?.show('추천 요청 중 오류가 발생했어요.', 'error')
+  } finally {
+    aiLoading.value = false
+  }
 }
 
 async function onSearchSubmit({ keyword }) {
@@ -102,10 +114,16 @@ async function onSearchSubmit({ keyword }) {
   searchLoading.value = true
   resultGames.value = []
 
-  // TODO: GET /api/games/search/?q=keyword
-  await new Promise(r => setTimeout(r, 500))
-  resultGames.value = keyword.trim() ? DUMMY_GAMES : []
-  searchLoading.value = false
+  try {
+    if (keyword.trim()) {
+      const { data } = await gameAPI.list({ q: keyword.trim() })
+      resultGames.value = toGames(data)
+    }
+  } catch {
+    toastRef.value?.show('검색 중 오류가 발생했어요.', 'error')
+  } finally {
+    searchLoading.value = false
+  }
 }
 
 function onSearchReset() {
@@ -119,10 +137,14 @@ async function onRestoreHistory(h) {
   restoreLoading.value = true
   resultGames.value = []
 
-  // TODO: POST /api/ai/recommend/ { prompt: h.query }
-  await new Promise(r => setTimeout(r, 900))
-  resultGames.value = DUMMY_GAMES
-  restoreLoading.value = false
+  try {
+    const { data } = await recommendAPI.logDetail(h.id)
+    resultGames.value = toGames(data.games ?? data)
+  } catch {
+    toastRef.value?.show('기록 불러오기 중 오류가 발생했어요.', 'error')
+  } finally {
+    restoreLoading.value = false
+  }
 }
 </script>
 

@@ -1,7 +1,7 @@
 <template>
   <RouterLink :to="`/games/${game.id}`" class="card">
     <div class="thumbnail">
-      <img v-if="game.thumbnail" :src="game.thumbnail" :alt="game.title" />
+      <img v-if="game.capsule_url" :src="game.capsule_url" :alt="game.title" />
       <div v-else class="thumbnail-placeholder">
         <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
           <rect width="80" height="80" fill="#e8e2d5"/>
@@ -11,7 +11,7 @@
       </div>
 
       <!-- 할인 배지 -->
-      <span v-if="game.discount_rate" class="badge-discount">-{{ game.discount_rate }}%</span>
+      <span v-if="discountRate" class="badge-discount">-{{ discountRate }}%</span>
 
       <!-- 위시리스트 버튼 (취향 분석 섹션에서만) -->
       <button v-if="showWishlist" class="wishlist-btn" @click.prevent="toggleWishlist">
@@ -29,19 +29,19 @@
       <h3 class="card-title">{{ game.title || '게임 제목' }}</h3>
 
       <div v-if="showPrice" class="price-row">
-        <span v-if="game.discount_rate" class="price-original">
-          ₩{{ formatPrice(game.original_price) }}
+        <span v-if="discountRate" class="price-original">
+          {{ formatPrice(game.initial_price) }}
         </span>
         <span class="price-final">
-          ₩{{ formatPrice(game.price) }}
+          {{ formatPrice(game.final_price) }}
         </span>
       </div>
 
       <div class="tags">
-        <span v-for="tag in (game.tags || []).slice(0, 2)" :key="tag" class="tag">
-          {{ tag }}
+        <span v-for="name in genreNames.slice(0, 2)" :key="name" class="tag">
+          {{ name }}
         </span>
-        <span v-if="!game.tags || game.tags.length === 0">
+        <span v-if="genreNames.length === 0">
           <span class="tag">태그</span>
         </span>
       </div>
@@ -50,7 +50,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { RouterLink } from 'vue-router'
 
 const props = defineProps({
@@ -70,14 +70,24 @@ const props = defineProps({
 
 const isWishlisted = ref(props.game.is_wishlisted || false)
 
+const discountRate = computed(() => {
+  const init = props.game.initial_price
+  const final = props.game.final_price
+  if (init && final && Number(init) > Number(final)) {
+    return Math.round((1 - Number(final) / Number(init)) * 100)
+  }
+  return null
+})
+
+const genreNames = computed(() => (props.game.genres || []).map(g => g.name))
+
 function toggleWishlist() {
   isWishlisted.value = !isWishlisted.value
-  // TODO: API 호출 - POST /api/wishlist/{game.id}/
 }
 
 function formatPrice(price) {
-  if (!price) return '0'
-  return Number(price).toLocaleString('ko-KR')
+  if (price === null || price === undefined) return '무료'
+  return '₩' + Number(price).toLocaleString('ko-KR')
 }
 </script>
 

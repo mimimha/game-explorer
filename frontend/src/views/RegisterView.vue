@@ -121,6 +121,7 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { authAPI } from '@/api/services'
 
 const router = useRouter()
 
@@ -231,12 +232,19 @@ const handleRegister = async () => {
 
   isLoading.value = true
   try {
-    // TODO: API 연동
-    // await authApi.register({ ...form })
-    await new Promise(r => setTimeout(r, 1000)) // 임시 딜레이
+    await authAPI.register({
+      username: form.nickname,
+      nickname: form.nickname,
+      email: form.email,
+      password1: form.password,
+      password2: form.passwordConfirm,
+      ...(form.birth_date ? { birth_date: form.birth_date } : {}),
+    })
     router.push('/login?registered=1')
   } catch (err) {
-    apiError.value = err?.response?.data?.message ?? '회원가입 중 오류가 발생했어요. 다시 시도해주세요.'
+    const data = err?.response?.data
+    const first = data && Object.values(data)[0]
+    apiError.value = Array.isArray(first) ? first[0] : (first ?? '회원가입 중 오류가 발생했어요. 다시 시도해주세요.')
   } finally {
     isLoading.value = false
   }

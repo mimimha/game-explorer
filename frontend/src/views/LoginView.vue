@@ -29,7 +29,7 @@
         <div class="form-group" :class="{ error: errors.password }">
           <div class="label-row">
             <label for="password">비밀번호</label>
-            <router-link to="/forgot-password" class="forgot-link">비밀번호를 잊으셨나요?</router-link>
+            <!-- <router-link to="/forgot-password" class="forgot-link">비밀번호를 잊으셨나요?</router-link> -->
           </div>
           <div class="input-with-toggle">
             <input
@@ -80,9 +80,12 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { authAPI, accountAPI } from '@/api/services'
+import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
 const route = useRoute()
+const authStore = useAuthStore()
 const emailRef = ref(null)
 
 const justRegistered = computed(() => route.query.registered === '1')
@@ -136,15 +139,20 @@ const handleLogin = async () => {
 
   isLoading.value = true
   try {
-    // TODO: API 연동
-    // const { token } = await authApi.login({ email: form.email, password: form.password })
-    // if (form.remember) localStorage.setItem('token', token)
-    // else sessionStorage.setItem('token', token)
-    await new Promise(r => setTimeout(r, 900))
+    const { data } = await authAPI.login({ email: form.email, password: form.password })
+    const token = data.key
+    if (form.remember) {
+      localStorage.setItem('token', token)
+    } else {
+      sessionStorage.setItem('token', token)
+      localStorage.setItem('token', token)
+    }
+    const meRes = await accountAPI.getMe()
+    authStore.login(meRes.data, token)
     router.push('/')
   } catch (err) {
     const status = err?.response?.status
-    if (status === 401) {
+    if (status === 400 || status === 401) {
       apiError.value = '이메일 또는 비밀번호가 올바르지 않아요'
     } else {
       apiError.value = '로그인 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.'
