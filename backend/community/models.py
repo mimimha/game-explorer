@@ -1,9 +1,15 @@
+# community/models.py
 from django.conf import settings
 from django.db import models
 
 
 class Post(models.Model):
     """ERD Post(post_id, user_id, game_id, title, content, category, ...)."""
+    class Category(models.TextChoices):
+        FREE = '자유', '자유'
+        GUIDE = '공략', '공략'
+        PARTY = '파티원모집', '파티원모집'
+
     post_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
@@ -17,7 +23,9 @@ class Post(models.Model):
     )
     title = models.CharField(max_length=200)
     content = models.TextField()
-    category = models.CharField(max_length=50)   # free/guide/review/question
+    category = models.CharField(
+        max_length=20, choices=Category.choices, default=Category.FREE
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

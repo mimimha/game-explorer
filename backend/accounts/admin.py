@@ -1,7 +1,6 @@
-# accounts/admin.py
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User, Follow, Medal
+from .models import User, Follow, Medal, UserMedal
 
 
 @admin.register(User)
@@ -17,7 +16,18 @@ class FollowAdmin(admin.ModelAdmin):
     list_display = ['follow_id', 'follower', 'following']
 
 
+class UserMedalInline(admin.TabularInline):
+    model = UserMedal
+    extra = 1
+
+
 @admin.register(Medal)
 class MedalAdmin(admin.ModelAdmin):
-    list_display = ['medal_id', 'user', 'medal_name']
+    list_display = ['medal_id', 'medal_name', 'description']
     search_fields = ['medal_name']
+    inlines = [UserMedalInline]
+
+
+@admin.register(UserMedal)
+class UserMedalAdmin(admin.ModelAdmin):
+    list_display = ['user', 'medal', 'earned_at']

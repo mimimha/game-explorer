@@ -13,7 +13,7 @@ from .serializers import (
 
 class GameListView(generics.ListAPIView):
     """
-    GET /games/  목록 + 필터·정렬·검색 (페이지네이션)
+    GET /games/  목록 + 필터·정렬·검색
     필터: genre, platform, price_lte, is_korean, offline
     정렬: ordering=-metacritic_score / release_date / final_price
     검색: q (제목)
@@ -25,16 +25,21 @@ class GameListView(generics.ListAPIView):
     ordering = ['-game_id']
 
     def get_queryset(self):
-        qs = Game.objects.prefetch_related('genres').all()
+        qs = Game.objects.prefetch_related('genres', 'platforms').all()
         p = self.request.query_params
 
         genres = p.getlist('genre')          # tag_id 기준
         if genres:
             qs = qs.filter(genres__tag_id__in=genres).distinct()
 
-        platform = p.get('platform')
+        platform = p.get('platform')         # platform_id 또는 이름
         if platform:
-            qs = qs.filter(platform__icontains=platform)
+            if platform.isdigit():
+                qs = qs.filter(platforms__platform_id=platform).distinct()
+            else:
+                qs = qs.filter(
+                    platforms__platform_name__icontains=platform
+                ).distinct()
 
         price_lte = p.get('price_lte')
         if price_lte:
@@ -56,18 +61,18 @@ class GameListView(generics.ListAPIView):
 
 
 class GameDetailView(generics.RetrieveAPIView):
-    """GET /games/{game_id}/  상세 (genre·screenshot·video nested)"""
+    """GET /games/{game_id}/"""
     permission_classes = [AllowAny]
     serializer_class = GameDetailSerializer
     lookup_field = 'game_id'
     lookup_url_kwarg = 'game_id'
     queryset = Game.objects.prefetch_related(
-        'genres', 'screenshots', 'videos'
+        'genres', 'platforms', 'screenshots', 'videos'
     )
 
 
 class GamePostsView(generics.ListAPIView):
-    """GET /games/{game_id}/posts/  이 게임 관련 글 (Post.game_id 연동)"""
+    """GET /games/{game_id}/posts/  이 게임 관련 글"""
     permission_classes = [AllowAny]
 
     def get_serializer_class(self):
@@ -82,19 +87,17 @@ class GamePostsView(generics.ListAPIView):
 
 
 class RecommendedGamesView(APIView):
-    """GET /games/recommended/  오늘의 추천 (홈 01). 비로그인: 랜덤 5개"""
+    """GET /games/recommended/  오늘의 추천 (홈 01)"""
     permission_classes = [AllowAny]
 
     def get(self, request):
         games = Game.objects.order_by('?')[:5]
-        serializer = GameCardSerializer(
-            games, many=True, context={'request': request}
-        )
-        return Response(serializer.data)
+        return Response(GameCardSerializer(
+            games, many=True, context={'request': request}).data)
 
 
 class OnSaleGamesView(APIView):
-    """GET /games/on-sale/  할인 중 (홈 02). initial > final 인 게임"""
+    """GET /games/on-sale/  할인 중 (홈 02)"""
     permission_classes = [AllowAny]
 
     def get(self, request):
@@ -102,10 +105,8 @@ class OnSaleGamesView(APIView):
             final_price__isnull=False,
             initial_price__gt=F('final_price'),
         ).order_by('-initial_price')[:20]
-        serializer = GameCardSerializer(
-            games, many=True, context={'request': request}
-        )
-        return Response(serializer.data)
+        return Response(GameCardSerializer(
+            games, many=True, context={'request': request}).data)
 
 
 class NewReleaseGamesView(APIView):
@@ -115,14 +116,12 @@ class NewReleaseGamesView(APIView):
     def get(self, request):
         games = Game.objects.exclude(release_date__isnull=True)\
                             .order_by('-release_date')[:20]
-        serializer = GameCardSerializer(
-            games, many=True, context={'request': request}
-        )
-        return Response(serializer.data)
+        return Response(GameCardSerializer(
+            games, many=True, context={'request': request}).data)
 
 
 class GenreListView(generics.ListAPIView):
-    """GET /genres/  분류 목록 — 필터 UI 구성용"""
+    """GET /genres/  분류 목록"""
     permission_classes = [AllowAny]
     serializer_class = GenreSerializer
     queryset = Genre.objects.all()

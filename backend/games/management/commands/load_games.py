@@ -10,7 +10,9 @@ import time
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
-from games.models import Game, Genre, GameTag, Screenshot, GameVideo
+from games.models import (
+    Game, Genre, GameTag, Platform, GamePlatform, Screenshot, GameVideo,
+)
 from games.services import rawg, steam_price, youtube
 
 
@@ -82,6 +84,11 @@ class Command(BaseCommand):
         for name in rawg.extract_genre_names(detail):
             genre, _ = Genre.objects.get_or_create(genre_name=name)
             GameTag.objects.get_or_create(game=game, tag=genre)
+
+        # 4-2) 플랫폼 (Platform upsert → GamePlatform 연결)
+        for name in rawg.extract_platform_names(detail):
+            platform, _ = Platform.objects.get_or_create(platform_name=name)
+            GamePlatform.objects.get_or_create(game=game, platform=platform)
 
         # 5) 스크린샷 (기존 것 비우고 새로)
         shots = rawg.fetch_screenshots(rawg_id)

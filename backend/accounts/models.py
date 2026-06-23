@@ -5,14 +5,11 @@ from django.db import models
 
 
 class User(AbstractUser):
-    """
-    AbstractUser 상속 (PK는 기본 id 유지 — 인증 라이브러리 호환).
-    ERD User 의 추가 필드만 얹는다.
-    """
+    """AbstractUser 상속 (PK 기본 id 유지 — 인증 라이브러리 호환)."""
     email = models.EmailField(unique=True)
     nickname = models.CharField(max_length=50, unique=True)
     birth_date = models.DateField(null=True, blank=True)
-    profile_img = models.CharField(max_length=255, blank=True)  # ERD: VARCHAR(255)
+    profile_img = models.CharField(max_length=255, blank=True)
 
     class Meta:
         db_table = 'user'
@@ -22,17 +19,15 @@ class User(AbstractUser):
 
     @property
     def follower_count(self):
-        # 나를 팔로우하는 관계 수
         return self.follower_relations.count()
 
     @property
     def following_count(self):
-        # 내가 팔로우하는 관계 수
         return self.following_relations.count()
 
 
 class Follow(models.Model):
-    """ERD Follow(follow_id, follower_id, following_id). 방향 있는 관계."""
+    """ERD Follow(follow_id, follower_id, following_id)."""
     follow_id = models.AutoField(primary_key=True)
     follower = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
@@ -61,18 +56,45 @@ class Follow(models.Model):
 
 class Medal(models.Model):
     """
-    ERD Medal(medal_id, user_id, medal_name) — 단일 테이블.
-    유저가 메달을 획득하면 이 테이블에 행이 하나 생긴다.
+    ERD Medal(medal_id, medal_name, description, icon_url) — 메달 카탈로그(종류).
+    User_Medal 조인을 통해 User 와 M:N.
     """
     medal_id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
-        related_name='medals', db_column='user_id',
-    )
     medal_name = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
+    icon_url = models.CharField(max_length=255, blank=True)
+
+    holders = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, through='UserMedal',
+        related_name='medals', blank=True,
+    )
 
     class Meta:
         db_table = 'medal'
 
     def __str__(self):
-        return f'{self.user} - {self.medal_name}'
+        return self.medal_name
+
+
+class UserMedal(models.Model):
+    """ERD User_Medal(user_id, medal_id, earned_at) — 획득 기록 조인."""
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+        db_column='user_id', related_name='user_medals',
+    )
+    medal = models.ForeignKey(
+        Medal, on_delete=models.CASCADE,
+        db_column='medal_id', related_name='user_medals',
+    )
+    earned_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'user_medal'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'medal'], name='unique_user_medal'
+            ),
+        ]
+
+    def __str__(self):
+        return f'{self.user} - {self.medal}'

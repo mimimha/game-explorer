@@ -2,20 +2,27 @@
 from rest_framework import serializers
 from dj_rest_auth.registration.serializers import RegisterSerializer
 
-from .models import User, Medal
+from .models import User, UserMedal
 
 
 class MedalSerializer(serializers.ModelSerializer):
-    """me/medals · 프로필의 메달 표시용."""
-    id = serializers.IntegerField(source='medal_id', read_only=True)
+    """
+    me/medals · 프로필의 메달 표시용.
+    UserMedal(획득 기록) 기준으로 카탈로그 정보(medal_name 등)를 평탄화.
+    """
+    id = serializers.IntegerField(source='medal.medal_id', read_only=True)
+    medal_name = serializers.CharField(source='medal.medal_name', read_only=True)
+    description = serializers.CharField(
+        source='medal.description', read_only=True
+    )
+    icon_url = serializers.CharField(source='medal.icon_url', read_only=True)
 
     class Meta:
-        model = Medal
-        fields = ['id', 'medal_name']
+        model = UserMedal
+        fields = ['id', 'medal_name', 'description', 'icon_url', 'earned_at']
 
 
 class UserSerializer(serializers.ModelSerializer):
-    """내 프로필 조회(GET /accounts/me/) 응답."""
     follower_count = serializers.IntegerField(read_only=True)
     following_count = serializers.IntegerField(read_only=True)
 
@@ -29,18 +36,16 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
-    """내 프로필 수정(PATCH /accounts/me/)."""
     class Meta:
         model = User
         fields = ['nickname', 'birth_date', 'profile_img']
 
 
 class PublicProfileSerializer(serializers.ModelSerializer):
-    """특정 유저 공개 프로필(GET /accounts/users/{id}/)."""
     follower_count = serializers.IntegerField(read_only=True)
     following_count = serializers.IntegerField(read_only=True)
     is_following = serializers.SerializerMethodField()
-    medals = MedalSerializer(many=True, read_only=True)
+    medals = MedalSerializer(source='user_medals', many=True, read_only=True)
 
     class Meta:
         model = User
@@ -57,7 +62,6 @@ class PublicProfileSerializer(serializers.ModelSerializer):
 
 
 class CustomRegisterSerializer(RegisterSerializer):
-    """dj-rest-auth 회원가입에 nickname/birth_date 추가."""
     nickname = serializers.CharField(max_length=50)
     birth_date = serializers.DateField(required=False, allow_null=True)
 

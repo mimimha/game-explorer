@@ -1,3 +1,4 @@
+# games/services/rawg.py
 """RAWG API 호출·파싱. (메타데이터 본체 소스)"""
 import time
 import requests
@@ -72,7 +73,7 @@ def fetch_movies(rawg_id):
 def parse_game_fields(detail):
     """
     RAWG 상세 응답 → Game 모델 필드 dict.
-    (genres 는 별도로 처리하므로 여기선 제외)
+    (genres·platforms 는 별도 처리하므로 여기선 제외)
     """
     released = detail.get('released')   # 'YYYY-MM-DD' or None
     return {
@@ -82,10 +83,20 @@ def parse_game_fields(detail):
         'metacritic_score': detail.get('metacritic'),
         'release_date': released or None,
         'required_age': 0,
-        'platform': 'pc',
     }
 
 
 def extract_genre_names(detail):
     """상세 응답에서 장르 이름 리스트."""
     return [g['name'] for g in detail.get('genres', []) if g.get('name')]
+
+
+def extract_platform_names(detail):
+    """상세 응답에서 플랫폼 이름 리스트. (detail['platforms'][i]['platform']['name'])"""
+    names = []
+    for p in detail.get('platforms', []) or []:
+        plat = p.get('platform') or {}
+        name = plat.get('name')
+        if name:
+            names.append(name)
+    return names
