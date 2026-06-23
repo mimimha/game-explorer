@@ -121,9 +121,11 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { authAPI } from '@/api/services'
+import { authAPI, accountAPI } from '@/api/services'
+import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
+const authStore = useAuthStore()
 
 const form = reactive({
   nickname: '',
@@ -232,7 +234,7 @@ const handleRegister = async () => {
 
   isLoading.value = true
   try {
-    await authAPI.register({
+    const { data } = await authAPI.register({
       username: form.nickname,
       nickname: form.nickname,
       email: form.email,
@@ -240,7 +242,11 @@ const handleRegister = async () => {
       password2: form.passwordConfirm,
       ...(form.birth_date ? { birth_date: form.birth_date } : {}),
     })
-    router.push('/login?registered=1')
+    const token = data.key
+    localStorage.setItem('token', token)
+    const meRes = await accountAPI.getMe()
+    authStore.login(meRes.data, token)
+    router.push({ name: 'home' })
   } catch (err) {
     const data = err?.response?.data
     const first = data && Object.values(data)[0]

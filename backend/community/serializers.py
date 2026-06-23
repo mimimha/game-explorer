@@ -34,10 +34,13 @@ class PostListSerializer(serializers.ModelSerializer):
         ]
 
     def get_author(self, obj):
+        request = self.context.get('request')
+        profile_img = obj.user.profile_img
         return {
             'id': obj.user.id,
             'nickname': obj.user.nickname,
-            'profile_img': obj.user.profile_img or None,
+            'profile_img': request.build_absolute_uri(profile_img.url)
+                           if (request and profile_img) else None,
         }
 
     def get_game(self, obj):
@@ -67,10 +70,13 @@ class PostDetailSerializer(serializers.ModelSerializer):
         ]
 
     def get_author(self, obj):
+        request = self.context.get('request')
+        profile_img = obj.user.profile_img
         return {
             'id': obj.user.id,
             'nickname': obj.user.nickname,
-            'profile_img': obj.user.profile_img or None,
+            'profile_img': request.build_absolute_uri(profile_img.url)
+                           if (request and profile_img) else None,
         }
 
     def get_game(self, obj):
@@ -112,10 +118,13 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ['id', 'content', 'author', 'created_at', 'is_author']
 
     def get_author(self, obj):
+        request = self.context.get('request')
+        profile_img = obj.user.profile_img
         return {
             'id': obj.user.id,
             'nickname': obj.user.nickname,
-            'profile_img': obj.user.profile_img or None,
+            'profile_img': request.build_absolute_uri(profile_img.url)
+                           if (request and profile_img) else None,
         }
 
     def get_is_author(self, obj):

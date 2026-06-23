@@ -9,7 +9,7 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     nickname = models.CharField(max_length=50, unique=True)
     birth_date = models.DateField(null=True, blank=True)
-    profile_img = models.CharField(max_length=255, blank=True)
+    profile_img = models.ImageField(upload_to='profiles/', blank=True, null=True)
 
     class Meta:
         db_table = 'user'

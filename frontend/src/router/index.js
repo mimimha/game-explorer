@@ -4,6 +4,9 @@ import ExploreView from '@/views/ExploreView.vue'
 import GameDetailView from '@/views/GamedetailView.vue'
 import LoginView from '@/views/LoginView.vue'
 import RegisterView from '@/views/RegisterView.vue'
+import ProfileView from '@/views/ProfileView.vue'
+import CommunityView from '@/views/CommunityView.vue'
+import PostDetailView from '@/views/PostDetailView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -21,19 +24,38 @@ const router = createRouter({
     {
     path: '/games/:id',
     name: 'game-detail',
-    component: GameDetailView, 
+    component: GameDetailView,
   },
   {
     path: '/login',
     name: 'Login',
     component: LoginView,
-    meta: { title: '로그인 · IndieGate' },
   },
   {
     path: '/register',
     name: 'Register',
     component: RegisterView,
-    meta: { title: '회원가입 · IndieGate' },
+  },
+  {
+    path: '/profile',
+    name: 'profile',
+    component: ProfileView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/users/:userId',
+    name: 'user-profile',
+    component: ProfileView,
+  },
+  {
+    path: '/community',
+    name: 'community',
+    component: CommunityView,
+  },
+  {
+    path: '/community/:postId',
+    name: 'post-detail',
+    component: PostDetailView,
   },
   ],
 })

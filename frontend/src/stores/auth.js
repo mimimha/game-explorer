@@ -15,10 +15,16 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = userData
   }
 
+  function setProfile(userData) {
+    if (user.value) {
+      user.value = { ...user.value, ...userData }
+    }
+  }
+
   function logout() {
     user.value = null
     localStorage.removeItem('token')
   }
 
-  return { user, isLoggedIn, login, logout }
+  return { user, isLoggedIn, login, setProfile, logout }
 })
