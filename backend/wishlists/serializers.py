@@ -1,4 +1,3 @@
-# wishlists/serializers.py
 from rest_framework import serializers
 from games.serializers import GenreSerializer
 from .models import Wishlist
