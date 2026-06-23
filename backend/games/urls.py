@@ -11,6 +11,8 @@ urlpatterns = [
          views.OnSaleGamesView.as_view(), name='game-on-sale'),
     path('games/new-releases/',
          views.NewReleaseGamesView.as_view(), name='game-new-releases'),
+    path('games/filter-options/',
+         views.FilterOptionsView.as_view(), name='game-filter-options'),
     path('games/<int:game_id>/',
          views.GameDetailView.as_view(), name='game-detail'),
     path('games/<int:game_id>/posts/',
