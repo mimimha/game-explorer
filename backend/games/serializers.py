@@ -33,7 +33,7 @@ class GameVideoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GameVideo
-        fields = ['id', 'title', 'video_url', 'thumbnail']
+        fields = ['id', 'title', 'video_url', 'thumbnail', 'channel', 'published_at']
 
 
 class GameCardSerializer(serializers.ModelSerializer):
@@ -64,7 +64,7 @@ class GameDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Game
         fields = [
-            'id', 'title', 'capsule_url',
+            'id', 'title', 'capsule_url', 'description',
             'initial_price', 'final_price', 'is_price_synced',
             'metacritic_score', 'release_date',
             'is_korean', 'required_age', 'offline',

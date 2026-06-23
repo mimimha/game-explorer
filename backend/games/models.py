@@ -37,6 +37,7 @@ class Game(models.Model):
         max_digits=10, decimal_places=2, null=True, blank=True
     )
     capsule_url = models.CharField(max_length=255, blank=True)
+    description = models.TextField(blank=True, default='')  # RAWG description_raw
     metacritic_score = models.IntegerField(null=True, blank=True)
     release_date = models.DateField(null=True, blank=True)
     is_korean = models.BooleanField(default=False)
@@ -127,6 +128,8 @@ class GameVideo(models.Model):
     title = models.CharField(max_length=200, blank=True)
     video_url = models.CharField(max_length=255)
     thumbnail = models.CharField(max_length=255, blank=True)
+    channel = models.CharField(max_length=100, blank=True, default='')      # 업로드 채널명
+    published_at = models.CharField(max_length=10, blank=True, default='')  # YYYY-MM-DD
 
     class Meta:
         db_table = 'game_video'

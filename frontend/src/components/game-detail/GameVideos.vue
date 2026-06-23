@@ -41,7 +41,7 @@
           <!-- 메타 -->
           <div class="video-meta">
             <p class="video-title">{{ v.title }}</p>
-            <p class="video-info">{{ v.channel }} · {{ v.views }} 조회수 · {{ v.uploaded_at }}</p>
+            <p class="video-info">{{ videoInfo(v) }}</p>
           </div>
         </a>
 
@@ -73,6 +73,12 @@ defineProps({
   gameId: { type: [String, Number], default: null },
   videos: { type: Array, default: () => [] },
 })
+
+// 채널 · 조회수 · 날짜 중 있는 것만 표시 (YouTube 검색엔 조회수 없음)
+function videoInfo(v) {
+  return [v.channel, v.views ? `${v.views} 조회수` : '', v.uploaded_at]
+    .filter(Boolean).join(' · ')
+}
 
 const trackEl = ref(null)
 const canRight = ref(false)

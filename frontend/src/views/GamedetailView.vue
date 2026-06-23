@@ -44,6 +44,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
+import { gameAPI } from '@/api/services'
 import GameMediaGallery from '@/components/game-detail/GameMediaGallery.vue'
 import GameInfoPanel from '@/components/game-detail/GameInfoPanel.vue'
 import GameDescription from '@/components/game-detail/GameDescription.vue'
@@ -54,61 +55,43 @@ const route = useRoute()
 const loading = ref(true)
 const game = ref({})
 
-// ── 더미 데이터 (백엔드 연결 전) ──────────────────────────
-const DUMMY_GAME = {
-  id: 1,
-  title: '엔더릴리즈: 기사의 고요',
-  platform: 'PC · Steam',
-  release_status: '출시됨',
-  initial_price: 19800,
-  final_price: 13860,
-  discount_rate: 30,
-  metacritic_score: 85,
-  supports_korean: true,
-  required_age: 12,
-  is_online: false,
-  capsule_url: '',   // 실제 이미지 URL로 교체
-  screenshots: [
-    { id: 1, url: '', label: '대표' },
-    { id: 2, url: '', label: '스크린샷 1' },
-    { id: 3, url: '', label: '스크린샷 2' },
-    { id: 4, url: '', label: '스크린샷 3' },
-    { id: 5, url: '', label: '영상 썸네일' },
-  ],
-  genres: [
-    { id: 1, name: '액션' },
-    { id: 2, name: '메트로바니아' },
-    { id: 3, name: '소울라이크' },
-    { id: 4, name: '인디' },
-  ],
-  description: `엔더릴리즈는 아름답고 황폐한 세계를 배경으로 한 2D 액션 RPG입니다.
-기사 라스트의 조력을 받아 저주받은 왕국을 탐험하세요. 강력한 보스들을 쓰러뜨리고, 숨겨진 비밀을 밝혀내세요.
-
-섬세하게 그려진 손 그림 애니메이션과 잔잔한 피아노 선율이 어우러져 깊은 감동을 선사합니다.`,
-  is_wishlisted: false,
-  videos: [
-    { id: 1, title: '엔더릴리즈 공략 1화', video_url: 'https://youtube.com', thumbnail_url: '', channel: '인디게임TV', views: '12.4만', uploaded_at: '2024.03.10' },
-    { id: 2, title: '보스 공략 완전정복',   video_url: 'https://youtube.com', thumbnail_url: '', channel: '게임왕',    views: '8.2만',  uploaded_at: '2024.03.08' },
-    { id: 3, title: '스트리머 첫 플레이',   video_url: 'https://youtube.com', thumbnail_url: '', channel: '탐험단TV',  views: '5.7만',  uploaded_at: '2024.03.05' },
-  ],
-  posts: [
-    { id: 1, title: '엔더릴리즈 숨겨진 보스 공략 총정리', author: '탐험가123', comments: 12, likes: 24, created_at: '3일 전' },
-    { id: 2, title: '처음 하는 분들을 위한 입문 가이드',  author: '인디고수',   comments: 8,  likes: 31, created_at: '3일 전' },
-    { id: 3, title: '이 게임 진짜 갓겜임 후기',          author: '방구석탐험대', comments: 20, likes: 47, created_at: '3일 전' },
-  ],
+// 백엔드 상세 응답 → 화면 컴포넌트가 기대하는 형태로 변환
+function mapGame(d) {
+  const init = Number(d.initial_price)
+  const final = Number(d.final_price)
+  const discount = (init && final && init > final)
+    ? Math.round((1 - final / init) * 100)
+    : 0
+  return {
+    ...d,
+    // 정보 패널용 파생 필드
+    platform: (d.platforms || []).map(p => p.name).slice(0, 2).join(' · ') || '플랫폼 미상',
+    discount_rate: discount,
+    supports_korean: d.is_korean,
+    is_online: !d.offline,
+    release_status: d.release_date ? '출시됨' : '미정',
+    description: d.description || '',          // 백엔드 미제공 시 빈 값
+    // 갤러리용: image_url → url, 라벨 부여
+    screenshots: (d.screenshots || []).map((s, i) => ({
+      id: s.id,
+      url: s.image_url,
+      label: `스크린샷 ${i + 1}`,
+    })),
+    // 영상: thumbnail → thumbnail_url, published_at → uploaded_at (channel 은 그대로)
+    videos: (d.videos || []).map(v => ({
+      ...v,
+      thumbnail_url: v.thumbnail || '',
+      uploaded_at: v.published_at || '',
+    })),
+    posts: [],
+  }
 }
-// ────────────────────────────────────────────────────────
 
 onMounted(async () => {
   const gameId = route.params.id
   try {
-    // TODO: 백엔드 연결 시 아래 주석 해제
-    // const res = await fetch(`/api/games/${gameId}/`)
-    // game.value = await res.json()
-
-    // 더미 데이터 사용 (딜레이로 로딩 시뮬레이션)
-    await new Promise(r => setTimeout(r, 600))
-    game.value = { ...DUMMY_GAME, id: gameId }
+    const { data } = await gameAPI.detail(gameId)
+    game.value = mapGame(data)
   } catch (e) {
     console.error('게임 상세 로드 실패:', e)
   } finally {
