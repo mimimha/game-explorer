@@ -50,7 +50,7 @@
         </h3>
         
         <RouterLink
-          :to="type === 'discount' ? '/games?filter=sale' : '/games?filter=new'"
+          :to="type === 'discount' ? '/explore?filter=sale' : '/explore?filter=new'"
           class="banner-more-btn"
         >
           더 보기

@@ -1,7 +1,7 @@
 <template>
-  <RouterLink :to="`/games/${game.id || '#'}`" class="row-card">
+  <RouterLink :to="game.id ? `/games/${game.id}` : '#'" class="row-card">
     <div class="row-thumb">
-      <img v-if="game.thumbnail" :src="game.thumbnail" :alt="game.title" />
+      <img v-if="game.capsule_url" :src="game.capsule_url" :alt="game.title" />
       <div v-else class="row-thumb-placeholder">
         <svg viewBox="0 0 60 60"><rect width="60" height="60" fill="#e8e2d5"/>
           <line x1="0" y1="0" x2="60" y2="60" stroke="#c8c2b4" stroke-width="1"/>
@@ -12,25 +12,41 @@
     <div class="row-info">
       <p class="row-title">{{ game.title || '게임 제목' }}</p>
       <div v-if="showPrice" class="row-price">
-        <span class="row-badge">-{{ game.discount_rate || 20 }}%</span>
-        <span class="row-original">₩{{ formatPrice(game.original_price || 15000) }}</span>
-        <span class="row-final">₩{{ formatPrice(game.price || 12000) }}</span>
+        <span v-if="discountRate" class="row-badge">-{{ discountRate }}%</span>
+        <span v-if="discountRate" class="row-original">{{ formatPrice(game.initial_price) }}</span>
+        <span class="row-final">{{ formatPrice(game.final_price) }}</span>
       </div>
       <div v-else class="row-tags">
-        <span v-for="tag in (game.tags || ['태그'])" :key="tag" class="tag">{{ tag }}</span>
+        <span v-for="name in genreNames.slice(0, 2)" :key="name" class="tag">{{ name }}</span>
+        <span v-if="genreNames.length === 0" class="tag">태그</span>
       </div>
     </div>
   </RouterLink>
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
-defineProps({
+
+const props = defineProps({
   game: { type: Object, default: () => ({}) },
   showPrice: { type: Boolean, default: false }
 })
-function formatPrice(p) {
-  return Number(p).toLocaleString('ko-KR')
+
+const discountRate = computed(() => {
+  const init = props.game.initial_price
+  const final = props.game.final_price
+  if (init && final && Number(init) > Number(final)) {
+    return Math.round((1 - Number(final) / Number(init)) * 100)
+  }
+  return null
+})
+
+const genreNames = computed(() => (props.game.genres || []).map(g => g.name))
+
+function formatPrice(price) {
+  if (price === null || price === undefined) return '무료'
+  return '₩' + Number(price).toLocaleString('ko-KR')
 }
 </script>
 

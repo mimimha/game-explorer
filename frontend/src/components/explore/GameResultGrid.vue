@@ -8,7 +8,8 @@
       </div>
       <div class="right">
         <template v-if="type === 'search'">
-          <select v-model="sortBy" class="sort-select">
+          <select :value="sort" @change="$emit('update:sort', $event.target.value)" class="sort-select">
+            <option value="discount">정렬: 할인순</option>
             <option value="recent">정렬: 최신순</option>
             <option value="rating">정렬: 평점순</option>
             <option value="price">정렬: 가격순</option>
@@ -20,7 +21,7 @@
             <svg viewBox="0 0 16 16" fill="currentColor" width="14"><path d="M1 3h14v2H1zm0 4h14v2H1zm0 4h14v2H1z"/></svg>
           </button>
         </template>
-        <RouterLink v-else to="/games" class="more-link">전체 보기 ›</RouterLink>
+        <RouterLink v-else to="/explore" class="more-link">전체 보기 ›</RouterLink>
       </div>
     </div>
 
@@ -95,10 +96,10 @@ const props = defineProps({
   loading:        { type: Boolean, default: false },
   restoreLoading: { type: Boolean, default: false },  // 히스토리 복원 전용
   submitted:      { type: Boolean, default: false },
+  sort:           { type: String,  default: 'recent' },
 })
-defineEmits(['reset'])
+defineEmits(['reset', 'update:sort'])
 
-const sortBy = ref('recent')
 const viewMode = ref('grid')
 const carouselEl = ref(null)
 
