@@ -30,27 +30,33 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+# 설치 중 에러 방지를 위한 순서 조정
 INSTALLED_APPS = [
-    'accounts',
-    'community',
-    'games',
-    'recommendations',
-    'wishlists',
-    'rest_framework',
-    'rest_framework.authtoken',
-    'dj_rest_auth',
-    'corsheaders',
-    'django.contrib.sites',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'dj_rest_auth.registration',
+    # Django core
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+
+    # third-party
+    'rest_framework',
+    'rest_framework.authtoken',
+    'corsheaders',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
+
+    # local
+    'accounts',
+    'community',
+    'games',
+    'recommendations',
+    'wishlists',
 ]
 
 SITE_ID = 1
@@ -163,4 +169,4 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'accounts.User'
+# AUTH_USER_MODEL = 'accounts.User'
