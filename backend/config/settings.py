@@ -61,6 +61,12 @@ INSTALLED_APPS = [
 
 SITE_ID = 1
 
+REST_AUTH = {
+    'REGISTER_SERIALIZER': 'accounts.serializers.CustomRegisterSerializer',
+    'USE_JWT': False,
+    'SESSION_LOGIN': False,
+}
+
 REST_FRAMEWORK = {
     # Authentication
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -70,6 +76,9 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
     ],
+    'DEFAULT_PAGINATION_CLASS':
+        'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20,
 }
 
 MIDDLEWARE = [
@@ -169,4 +178,10 @@ MEDIA_URL = 'media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# AUTH_USER_MODEL = 'accounts.User'
+AUTH_USER_MODEL = 'accounts.User'
+
+ACCOUNT_LOGIN_METHODS = {'email'}
+
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
+
+ACCOUNT_EMAIL_VERIFICATION = 'none'   

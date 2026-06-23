@@ -30,9 +30,9 @@ api_v1 = [
 
     path('', include('accounts.urls')),        
     path('', include('games.urls')),           
-    path('', include('wishlists.urls')),       
-    path('', include('community.urls')),       
-    path('', include('recommendations.urls')), 
+#     path('', include('wishlists.urls')),       
+#     path('', include('community.urls')),       
+#     path('', include('recommendations.urls')), 
 ]
 
 urlpatterns = [
