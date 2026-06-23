@@ -36,6 +36,7 @@ export const gameAPI = {
   recommended: () => api.get(E.games.recommended),
   onSale: () => api.get(E.games.onSale),
   newReleases: () => api.get(E.games.newReleases),
+  filterOptions: () => api.get(E.games.filterOptions),
   genres: () => api.get(E.games.genres),
 }
 

@@ -7,7 +7,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
         </svg>
       </h2>
-      <p class="desc">키워드와 필터를 사용해 원하는 게임을 찾아보세요.</p>
+      <p class="desc">키워드와 필터로 원하는 게임을 찾아보세요. (실제 보유 데이터 기준)</p>
     </div>
 
     <div class="search-wrap">
@@ -36,79 +36,210 @@
       <button class="reset-btn" @click.stop="reset">초기화 ↺</button>
     </div>
 
-    <FilterChipGroup :filter-defs="filterDefs" v-model="filters" />
+    <div v-if="loading" class="opt-loading">필터 불러오는 중…</div>
 
-    <button class="detail-toggle" @click.stop="showDetail = !showDetail">
-      상세 필터 {{ showDetail ? '닫기' : '열기' }}
-      <svg viewBox="0 0 16 16" fill="currentColor" width="11">
-        <path :d="showDetail ? 'M8 6l5 5H3l5-5z' : 'M8 10L3 5h10l-5 5z'"/>
-      </svg>
-    </button>
+    <template v-else>
+      <!-- 장르 (다중) -->
+      <div v-if="genreOptions.length" class="frow">
+        <span class="flabel">장르</span>
+        <div class="chips">
+          <button
+            v-for="g in genreOptions"
+            :key="g.id"
+            class="chip"
+            :class="{ on: filters.genres.includes(g.id) }"
+            @click.stop="toggleGenre(g.id)"
+          >{{ g.label }} <span class="cnt">{{ g.count }}</span></button>
+        </div>
+      </div>
 
-    <div v-if="showDetail" class="detail-filter">
-      <div class="detail-row">
-        <span class="detail-label">가격대</span>
-        <label v-for="o in priceOptions" :key="o.value">
-          <input type="radio" v-model="filters.priceRange" :value="o.value" /> {{ o.label }}
-        </label>
+      <!-- 플랫폼 (다중, 그룹) -->
+      <div v-if="platformBuckets.length" class="frow">
+        <span class="flabel">플랫폼</span>
+        <div class="chips">
+          <button
+            v-for="b in platformBuckets"
+            :key="b.key"
+            class="chip"
+            :class="{ on: filters.platforms.includes(b.key) }"
+            @click.stop="togglePlatform(b.key)"
+          >{{ b.label }}</button>
+        </div>
       </div>
-      <div class="detail-row">
-        <span class="detail-label">출시 연도</span>
-        <label v-for="o in yearOptions" :key="o.value">
-          <input type="radio" v-model="filters.year" :value="o.value" /> {{ o.label }}
-        </label>
+
+      <!-- 가격 (단일) -->
+      <div v-if="priceOptions.length" class="frow">
+        <span class="flabel">가격</span>
+        <div class="chips">
+          <button
+            v-for="o in priceOptions"
+            :key="o.value"
+            class="chip"
+            :class="{ on: filters.price === o.value }"
+            @click.stop="filters.price = o.value"
+          >{{ o.label }}</button>
+        </div>
       </div>
-    </div>
+
+      <!-- 평점 (단일) -->
+      <div v-if="ratingOptions.length" class="frow">
+        <span class="flabel">평점</span>
+        <div class="chips">
+          <button
+            v-for="o in ratingOptions"
+            :key="o.value"
+            class="chip"
+            :class="{ on: filters.rating === o.value }"
+            @click.stop="filters.rating = o.value"
+          >{{ o.label }}</button>
+        </div>
+      </div>
+
+      <!-- 할인 중 (토글) -->
+      <div v-if="onSaleCount > 0" class="frow">
+        <span class="flabel">기타</span>
+        <div class="chips">
+          <button
+            class="chip"
+            :class="{ on: filters.onSale }"
+            @click.stop="filters.onSale = !filters.onSale"
+          >할인 중 <span class="cnt">{{ onSaleCount }}</span></button>
+        </div>
+      </div>
+    </template>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import FilterChipGroup from './FilterChipGroup.vue'
+import { ref, computed, onMounted } from 'vue'
+import { gameAPI } from '@/api/services'
 
 defineProps({
   isActive: { type: Boolean, default: false },
 })
 const emit = defineEmits(['activate', 'submit', 'reset'])
 
+// ── 표시용 매핑(데이터에 새 값이 생기면 영문 그대로 노출) ──
+const GENRE_KO = {
+  Action: '액션', Shooter: '슈팅', RPG: 'RPG', Indie: '인디',
+  Adventure: '어드벤처', Puzzle: '퍼즐', Platformer: '플랫포머',
+  'Massively Multiplayer': '대규모 멀티', Simulation: '시뮬레이션',
+  Sports: '스포츠', Racing: '레이싱', Arcade: '아케이드',
+}
+// 플랫폼 버킷 → 실제 적재된 platform_name 들
+const PLATFORM_BUCKETS_DEF = [
+  { key: 'Windows', label: 'Windows', names: ['PC'] },
+  { key: 'Mac', label: 'Mac', names: ['macOS'] },
+  { key: 'Linux', label: 'Linux', names: ['Linux'] },
+  { key: 'Mobile', label: '모바일', names: ['Android', 'iOS'] },
+]
+const NON_CONSOLE = new Set(['PC', 'macOS', 'Linux', 'Android', 'iOS', 'Web'])
+
 const keyword = ref('')
-const showDetail = ref(false)
+const loading = ref(true)
+const options = ref({ genres: [], platforms: [], price: {}, metacritic: {}, on_sale_count: 0 })
+
 const filters = ref({
-  genre: [], platform: [], price: [], language: [], difficulty: [],
-  priceRange: 'all', year: '',
+  genres: [],        // genre tag_id 배열
+  platforms: [],     // 버킷 key 배열
+  price: 'all',      // all | free | 5000 | 10000 | 20000 | 20000+
+  rating: 'all',     // all | 90 | 80 | 70
+  onSale: false,
 })
 
-const filterDefs = [
-  { key: 'genre',      label: '장르',   options: ['RPG', '어드벤처', '퍼즐', '액션', '시뮬레이션'] },
-  { key: 'platform',   label: '플랫폼', options: ['PC', 'Mac', '모바일'] },
-  { key: 'price',      label: '가격',   options: ['무료', '1만원 이하', '2만원 이하', '전체'] },
-  { key: 'language',   label: '언어',   options: ['한국어', '영어', '일본어'] },
-  { key: 'difficulty', label: '난이도', options: ['쉬움', '보통', '어려움'] },
-]
+const genreOptions = computed(() =>
+  (options.value.genres || []).map(g => ({
+    id: g.id, count: g.count, label: GENRE_KO[g.name] ?? g.name,
+  })),
+)
 
-const priceOptions = [
-  { value: 'free', label: '무료' },
-  { value: 'under10k', label: '1만원 이하' },
-  { value: 'under20k', label: '2만원 이하' },
-  { value: 'all', label: '전체' },
-]
-const yearOptions = [
-  { value: '2024', label: '2024' },
-  { value: '2023', label: '2023' },
-  { value: 'older', label: '그 이전' },
-]
+// 적재된 플랫폼 이름 집합 기준으로 버킷 구성(없는 버킷은 숨김, 콘솔은 동적 산출)
+const platformBuckets = computed(() => {
+  const present = new Set((options.value.platforms || []).map(p => p.name))
+  const buckets = PLATFORM_BUCKETS_DEF
+    .map(b => ({ ...b, names: b.names.filter(n => present.has(n)) }))
+    .filter(b => b.names.length)
+  const consoleNames = [...present].filter(n => !NON_CONSOLE.has(n))
+  if (consoleNames.length) {
+    buckets.push({ key: 'Console', label: '콘솔', names: consoleNames })
+  }
+  return buckets
+})
+
+const priceOptions = computed(() => {
+  const p = options.value.price || {}
+  if (p.max == null) return []
+  const free = p.free_count ? ` (${p.free_count})` : ''
+  return [
+    { value: 'all', label: '전체' },
+    { value: 'free', label: `무료${free}` },
+    { value: '5000', label: '5천원 이하' },
+    { value: '10000', label: '1만원 이하' },
+    { value: '20000', label: '2만원 이하' },
+    { value: '20000+', label: '2만원 이상' },
+  ]
+})
+
+const ratingOptions = computed(() => {
+  const m = options.value.metacritic || {}
+  if (m.max == null) return []
+  const opts = [{ value: 'all', label: '전체' }]
+  for (const t of [90, 80, 70]) {
+    if (m.max >= t) opts.push({ value: String(t), label: `${t}점 이상` })
+  }
+  return opts
+})
+
+const onSaleCount = computed(() => options.value.on_sale_count || 0)
+
+function toggleGenre(id) {
+  const i = filters.value.genres.indexOf(id)
+  if (i === -1) filters.value.genres.push(id)
+  else filters.value.genres.splice(i, 1)
+}
+function togglePlatform(key) {
+  const i = filters.value.platforms.indexOf(key)
+  if (i === -1) filters.value.platforms.push(key)
+  else filters.value.platforms.splice(i, 1)
+}
+
+// 선택된 버킷 key → 실제 platform_name 배열로 변환
+function resolvePlatformNames() {
+  const map = Object.fromEntries(platformBuckets.value.map(b => [b.key, b.names]))
+  return filters.value.platforms.flatMap(k => map[k] || [])
+}
 
 function handleSubmit() {
-  emit('submit', { keyword: keyword.value, filters: filters.value })
+  emit('submit', {
+    keyword: keyword.value,
+    filters: {
+      genres: [...filters.value.genres],
+      platforms: resolvePlatformNames(),
+      price: filters.value.price,
+      rating: filters.value.rating,
+      onSale: filters.value.onSale,
+    },
+  })
 }
 
 function reset() {
   keyword.value = ''
-  filters.value = { genre: [], platform: [], price: [], language: [], difficulty: [], priceRange: 'all', year: '' }
+  filters.value = { genres: [], platforms: [], price: 'all', rating: 'all', onSale: false }
   emit('reset')
 }
 
 defineExpose({ reset })
+
+onMounted(async () => {
+  try {
+    const { data } = await gameAPI.filterOptions()
+    options.value = data
+  } catch (e) {
+    console.error('필터 옵션 로드 실패:', e)
+  } finally {
+    loading.value = false
+  }
+})
 </script>
 
 <style scoped>
@@ -140,11 +271,7 @@ defineExpose({ reset })
 .icon { width: 16px; color: #1e3a5f; }
 .desc { font-size: 13px; color: #9e9585; }
 
-.search-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
+.search-wrap { position: relative; display: flex; align-items: center; }
 .search-input {
   width: 100%;
   padding: 12px 44px 12px 16px;
@@ -192,37 +319,48 @@ defineExpose({ reset })
 }
 .reset-btn:hover { color: #1e3a5f; }
 
-.detail-toggle {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: none;
-  border: none;
-  font-size: 13px;
-  color: #6b6256;
-  cursor: pointer;
-  padding: 0;
-  font-family: inherit;
-}
-.detail-toggle:hover { color: #1e3a5f; }
+.opt-loading { font-size: 13px; color: #9e9585; padding: 8px 0; }
 
-.detail-filter {
-  background: #f7f5f0;
-  border-radius: 10px;
-  padding: 14px 16px;
+.frow {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  align-items: flex-start;
+  gap: 12px;
 }
-.detail-row {
+.flabel {
+  flex-shrink: 0;
+  width: 52px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b6256;
+  padding-top: 7px;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.chip {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 5px;
+  padding: 7px 12px;
+  border: 1px solid #ddd8cc;
+  border-radius: 999px;
+  background: #fff;
   font-size: 13px;
   color: #3d3529;
-  flex-wrap: wrap;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
 }
-.detail-label { font-weight: 600; min-width: 60px; color: #6b6256; }
-.detail-row label { display: flex; align-items: center; gap: 4px; cursor: pointer; }
-.detail-row input { accent-color: #1e3a5f; }
+.chip:hover { border-color: #1e3a5f; color: #1e3a5f; }
+.chip.on {
+  border-color: #1e3a5f;
+  color: #fff;
+  background: #1e3a5f;
+}
+.cnt {
+  font-size: 11px;
+  opacity: 0.7;
+}
 </style>

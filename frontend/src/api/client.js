@@ -10,6 +10,8 @@ import axios from 'axios'
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   headers: { 'Content-Type': 'application/json' },
+  // 배열 파라미터를 genre=1&genre=2 형태로 (Django getlist 호환)
+  paramsSerializer: { indexes: null },
 })
 
 // 요청마다 토큰 자동 첨부 (localStorage 또는 Pinia store 에서 가져옴)

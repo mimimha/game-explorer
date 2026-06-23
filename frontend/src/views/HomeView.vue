@@ -8,21 +8,20 @@
         title="취향 분석 · 오늘의 게임"
         subtitle="로그인 시 취향 기반 · 미로그인 시 랜덤 5개"
         type="recommendation"
-        more-to="/games?type=recommendation"
       />
 
       <GameCardList
         :num="2"
         title="할인 중인 게임"
         type="discount"
-        more-to="/games?filter=sale"
+        more-to="/explore?filter=sale"
       />
 
       <GameCardList
         :num="3"
         title="최근 출시 게임"
         type="new"
-        more-to="/games?filter=new"
+        more-to="/explore?filter=new"
       />
     </div>
 

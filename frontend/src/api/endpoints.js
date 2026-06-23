@@ -32,6 +32,7 @@ const ENDPOINTS = {
     recommended: '/games/recommended/',    // GET            오늘의 추천(홈01)
     onSale: '/games/on-sale/',             // GET            할인 중(홈02)
     newReleases: '/games/new-releases/',   // GET            최근 출시(홈03)
+    filterOptions: '/games/filter-options/', // GET          실데이터 기반 필터 옵션
     genres: '/genres/',                    // GET            분류 목록
   },
 

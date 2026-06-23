@@ -28,6 +28,8 @@
         :loading="aiLoading || searchLoading"
         :restore-loading="restoreLoading"
         :submitted="submitted"
+        :sort="searchSort"
+        @update:sort="onSortChange"
         @reset="onSearchReset"
       />
 
@@ -39,7 +41,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { gameAPI, recommendAPI } from '@/api/services'
 import AiRecommendPanel from '@/components/explore/AiRecommendPanel.vue'
@@ -49,6 +52,7 @@ import GameResultGrid from '@/components/explore/GameResultGrid.vue'
 import ToastAlert from '@/components/common/ToastAlert.vue'
 
 const authStore = useAuthStore()
+const route = useRoute()
 const toastRef = ref(null)
 
 const activePanel = ref('ai')
@@ -59,6 +63,18 @@ const searchLoading = ref(false)
 const restoreLoading = ref(false)
 const resultGames = ref([])
 const recentHistory = ref([])
+
+// 검색 모드 상태 (키워드 + 정렬 + 필터)
+const searchKeyword = ref('')
+const searchSort = ref('recent')   // recent | rating | price | discount
+const searchFilters = ref(null)    // SearchPanel 에서 받은 구조화 필터
+
+// 정렬값 → 백엔드 ordering 파라미터
+const ORDERING = {
+  recent: '-release_date',
+  rating: '-metacritic_score',
+  price: 'final_price',
+}
 
 function toGames(data) {
   return Array.isArray(data) ? data : (data.results ?? [])
@@ -79,7 +95,72 @@ onMounted(async () => {
       recentHistory.value = []
     }
   }
+  applyQueryFilter()
 })
+
+// 홈에서 ?filter=sale / ?filter=new 로 진입 → 자동 검색
+watch(() => route.query.filter, applyQueryFilter)
+
+function applyQueryFilter() {
+  const f = route.query.filter
+  if (f === 'sale') {
+    activePanel.value = 'search'
+    searchSort.value = 'discount'
+    runSearch()
+  } else if (f === 'new') {
+    activePanel.value = 'search'
+    searchSort.value = 'recent'
+    runSearch()
+  }
+}
+
+// 키워드 + 정렬 + 필터를 백엔드 list 파라미터로 합쳐 호출
+function buildParams() {
+  const params = {}
+  if (searchKeyword.value.trim()) params.q = searchKeyword.value.trim()
+
+  // 정렬 (할인순은 on_sale 필터 + 정가 내림차순)
+  if (searchSort.value === 'discount') {
+    params.on_sale = true
+    params.ordering = '-initial_price'
+  } else {
+    params.ordering = ORDERING[searchSort.value] ?? '-release_date'
+  }
+
+  // 구조화 필터
+  const f = searchFilters.value
+  if (f) {
+    if (f.genres?.length) params.genre = f.genres
+    if (f.platforms?.length) params.platform = f.platforms
+    if (f.onSale) params.on_sale = true
+    if (f.rating && f.rating !== 'all') params.metacritic_gte = f.rating
+    if (f.price === 'free') params.free = true
+    else if (f.price === '20000+') params.price_gte = 20000
+    else if (f.price && f.price !== 'all') params.price_lte = f.price
+  }
+  return params
+}
+
+async function runSearch() {
+  resultMode.value = 'search'
+  submitted.value = true
+  searchLoading.value = true
+  resultGames.value = []
+  try {
+    const res = await gameAPI.list(buildParams())
+    resultGames.value = toGames(res.data)
+  } catch {
+    toastRef.value?.show('검색 중 오류가 발생했어요.', 'error')
+  } finally {
+    searchLoading.value = false
+  }
+}
+
+// 정렬 셀렉트 변경 시 재조회
+function onSortChange(value) {
+  searchSort.value = value
+  runSearch()
+}
 
 async function onAiSubmit({ prompt }) {
   if (!authStore.isLoggedIn) {
@@ -108,27 +189,18 @@ async function onAiSubmit({ prompt }) {
   }
 }
 
-async function onSearchSubmit({ keyword }) {
-  resultMode.value = 'search'
-  submitted.value = true
-  searchLoading.value = true
-  resultGames.value = []
-
-  try {
-    if (keyword.trim()) {
-      const { data } = await gameAPI.list({ q: keyword.trim() })
-      resultGames.value = toGames(data)
-    }
-  } catch {
-    toastRef.value?.show('검색 중 오류가 발생했어요.', 'error')
-  } finally {
-    searchLoading.value = false
-  }
+function onSearchSubmit({ keyword, filters }) {
+  searchKeyword.value = keyword
+  searchFilters.value = filters ?? null
+  activePanel.value = 'search'
+  runSearch()
 }
 
 function onSearchReset() {
   submitted.value = false
   resultGames.value = []
+  searchKeyword.value = ''
+  searchFilters.value = null
 }
 
 async function onRestoreHistory(h) {
