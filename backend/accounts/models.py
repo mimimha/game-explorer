@@ -8,7 +8,7 @@ class User(AbstractUser):
     """AbstractUser 상속 (PK 기본 id 유지 — 인증 라이브러리 호환)."""
     email = models.EmailField(unique=True)
     nickname = models.CharField(max_length=50, unique=True)
-    birth_date = models.DateField(null=True, blank=True)
+    birth_date = models.DateField()
     profile_img = models.ImageField(upload_to='profiles/', blank=True, null=True)
 
     class Meta:
