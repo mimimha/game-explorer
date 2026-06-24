@@ -2,7 +2,7 @@
   <section v-if="history.length" class="history">
     <div class="row">
       <div class="left">
-        <h3 class="title">최근 추천 기록</h3>
+        <h3 class="title">AI 최근 추천 기록</h3>
         <span class="sub">이전에 추천받은 내용을 다시 확인해보세요.</span>
       </div>
       <RouterLink to="/history" class="more">전체 보기 ›</RouterLink>

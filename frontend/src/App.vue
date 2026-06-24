@@ -124,7 +124,7 @@ onMounted(async () => {
 
 .logo {
   width: 110px;
-  /* height: 52px; */
+  height: 150px;
   object-fit: contain;
   border-radius: 50%;
 }

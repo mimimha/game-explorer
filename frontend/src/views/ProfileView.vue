@@ -68,7 +68,7 @@
             </div>
             <div class="form-field">
               <label>생년월일</label>
-              <input v-model="editForm.birth_date" type="date" />
+              <input v-model="editForm.birth_date" type="date" :max="new Date().toISOString().slice(0, 10)" />
             </div>
             <div class="modal-actions">
               <button type="button" class="btn-cancel" @click="closeEditModal">취소</button>

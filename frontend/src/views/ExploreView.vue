@@ -101,7 +101,7 @@ onMounted(async () => {
       const { data } = await recommendAPI.logs()
       const logs = Array.isArray(data) ? data : (data.results ?? [])
       recentHistory.value = logs.map(l => ({
-        id: l.id,
+        id: l.log_id,
         query: l.prompt_input,
         date: new Date(l.created_at).toLocaleDateString('ko-KR').replace(/\. /g, '.').slice(0, -1),
         count: l.result_count ?? 0,
@@ -112,11 +112,13 @@ onMounted(async () => {
   }
   applyQueryFilter()
   if (route.query.q) applyQueryQ(route.query.q)
+  if (route.query.log) applyQueryLog(route.query.log)
 })
 
 // 홈·Nav 검색 → ?q=keyword, 홈 카드 → ?filter=sale|new 로 진입 시 자동 검색
 watch(() => route.query.filter, applyQueryFilter)
 watch(() => route.query.q, applyQueryQ)
+watch(() => route.query.log, v => { if (v) applyQueryLog(v) })
 
 function applyQueryFilter() {
   const f = route.query.filter
@@ -139,6 +141,12 @@ async function applyQueryQ(q) {
   await nextTick()
   searchPanelRef.value?.setKeyword(q)
   runSearch()
+}
+
+async function applyQueryLog(logId) {
+  if (!logId || !authStore.isLoggedIn) return
+  activePanel.value = 'ai'
+  await onRestoreHistory({ id: logId })
 }
 
 // 키워드 + 정렬 + 필터를 백엔드 list 파라미터로 합쳐 호출
@@ -212,7 +220,7 @@ async function onAiSubmit({ prompt }) {
     const { data } = await recommendAPI.create({ prompt_input: prompt })
     resultGames.value = toGames(data.games ?? data)
     recentHistory.value.unshift({
-      id: data.id ?? Date.now(),
+      id: data.log_id ?? Date.now(),
       query: prompt,
       date: new Date().toLocaleDateString('ko-KR').replace(/\. /g, '.').slice(0, -1),
       count: resultGames.value.length,

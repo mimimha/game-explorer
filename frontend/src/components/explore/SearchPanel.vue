@@ -503,6 +503,7 @@ onMounted(async () => {
   flex-direction: column;
   gap: 8px;
   cursor: pointer;
+  margin-top: 17px;
 }
 .filter-hint-tags {
   display: flex;

@@ -34,7 +34,7 @@
         <GameVideos :game-id="game.id" :videos="game.videos" />
 
         <!-- ── 관련 커뮤니티 글 ── -->
-        <GameCommunityPosts :game-id="game.id" :posts="game.posts" />
+        <!-- <GameCommunityPosts :game-id="game.id" :posts="game.posts" /> -->
       </template>
 
     </div>
