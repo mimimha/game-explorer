@@ -93,13 +93,17 @@ const iconPath = computed(() => {
   color: #1a1510;
   text-align: center;
   margin: 0;
-  white-space: nowrap;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  line-height: 1.3;
 }
 .medal-desc {
   font-size: 11px;
   color: #9e9585;
   text-align: center;
   margin: 0;
-  white-space: nowrap;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  line-height: 1.4;
 }
 </style>

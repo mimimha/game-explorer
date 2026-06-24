@@ -26,16 +26,43 @@
       </button>
     </div>
 
-    <div class="filter-bar">
+    <div class="filter-bar" @click.stop="showFilters = !showFilters">
       <div class="filter-bar-left">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="14">
           <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
         </svg>
         필터
+        <svg
+          xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+          stroke-width="2" stroke="currentColor" width="13"
+          class="chevron" :class="{ open: showFilters }"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+        </svg>
       </div>
-      <button class="reset-btn" @click.stop="reset">초기화 ↺</button>
+      <button v-if="showFilters" class="reset-btn" @click.stop="reset">초기화 ↺</button>
     </div>
 
+    <div v-if="!showFilters" class="filter-hint">
+      <div class="filter-hint-tags">
+        <span class="hint-tag">장르</span>
+        <span class="hint-sep">·</span>
+        <span class="hint-tag">분위기</span>
+        <span class="hint-sep">·</span>
+        <span class="hint-tag">플레이타임</span>
+        <span class="hint-sep">·</span>
+        <span class="hint-tag">인원</span>
+        <span class="hint-sep">·</span>
+        <span class="hint-tag">플랫폼</span>
+        <span class="hint-sep">·</span>
+        <span class="hint-tag">가격</span>
+        <span class="hint-sep">·</span>
+        <span class="hint-tag">평점</span>
+      </div>
+      <p class="filter-hint-desc">위 항목으로 원하는 게임을 골라볼 수 있어요</p>
+    </div>
+
+    <template v-if="showFilters">
     <div v-if="loading" class="opt-loading">필터 불러오는 중…</div>
 
     <template v-else>
@@ -49,7 +76,7 @@
             class="chip"
             :class="{ on: filters.genres.includes(g.id) }"
             @click.stop="toggleGenre(g.id)"
-          >{{ g.label }} <span class="cnt">{{ g.count }}</span></button>
+          >{{ g.label }}</button>
         </div>
       </div>
 
@@ -63,7 +90,7 @@
             class="chip"
             :class="{ on: filters.moods.includes(m.id) }"
             @click.stop="toggleMood(m.id)"
-          >{{ m.label }} <span class="cnt">{{ m.count }}</span></button>
+          >{{ m.label }}</button>
         </div>
       </div>
 
@@ -76,8 +103,8 @@
             :key="o.value"
             class="chip"
             :class="{ on: filters.playtime === o.value }"
-            @click.stop="filters.playtime = o.value"
-          >{{ o.label }}<span v-if="o.count != null" class="cnt">{{ o.count }}</span></button>
+            @click.stop="filters.playtime = filters.playtime === o.value ? 'all' : o.value"
+          >{{ o.label }}</button>
         </div>
       </div>
 
@@ -91,7 +118,7 @@
             class="chip"
             :class="{ on: filters.playModes.includes(o.key) }"
             @click.stop="togglePlayMode(o.key)"
-          >{{ o.label }} <span class="cnt">{{ o.count }}</span></button>
+          >{{ o.label }}</button>
         </div>
       </div>
 
@@ -105,7 +132,7 @@
             class="chip"
             :class="{ on: filters.platforms.includes(b.key) }"
             @click.stop="togglePlatform(b.key)"
-          >{{ b.label }}<span class="cnt">{{ b.count }}</span></button>
+          >{{ b.label }}</button>
         </div>
       </div>
 
@@ -118,8 +145,8 @@
             :key="o.value"
             class="chip"
             :class="{ on: filters.price === o.value }"
-            @click.stop="filters.price = o.value"
-          >{{ o.label }}<span class="cnt">{{ o.count }}</span></button>
+            @click.stop="filters.price = filters.price === o.value ? 'all' : o.value"
+          >{{ o.label }}</button>
         </div>
       </div>
 
@@ -132,8 +159,8 @@
             :key="o.value"
             class="chip"
             :class="{ on: filters.rating === o.value }"
-            @click.stop="filters.rating = o.value"
-          >{{ o.label }}<span class="cnt">{{ o.count }}</span></button>
+            @click.stop="filters.rating = filters.rating === o.value ? 'all' : o.value"
+          >{{ o.label }}</button>
         </div>
       </div>
 
@@ -145,15 +172,16 @@
             class="chip"
             :class="{ on: filters.onSale }"
             @click.stop="filters.onSale = !filters.onSale"
-          >할인 중 <span class="cnt">{{ onSaleCount }}</span></button>
+          >할인 중</button>
         </div>
       </div>
+    </template>
     </template>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { gameAPI } from '@/api/services'
 
 defineProps({
@@ -179,6 +207,7 @@ const NON_CONSOLE = new Set(['PC', 'macOS', 'Linux', 'Android', 'iOS', 'Web'])
 
 const keyword = ref('')
 const loading = ref(true)
+const showFilters = ref(false)
 const options = ref({
   genres: [], platforms: [], moods: [], price: {}, metacritic: {},
   playtime: {}, player_mode: {}, on_sale_count: 0,
@@ -217,10 +246,8 @@ const platformBuckets = computed(() => {
 const priceOptions = computed(() => {
   const p = options.value.price || {}
   if (p.max == null) return []
-  const free = p.free_count ? ` (${p.free_count})` : ''
   return [
-    { value: 'all', label: '전체' },
-    { value: 'free', label: `무료${free}` },
+    { value: 'free', label: '무료' },
     { value: '5000', label: '5천원 이하' },
     { value: '10000', label: '1만원 이하' },
     { value: '20000', label: '2만원 이하' },
@@ -231,7 +258,7 @@ const priceOptions = computed(() => {
 const ratingOptions = computed(() => {
   const m = options.value.metacritic || {}
   if (m.max == null) return []
-  const opts = [{ value: 'all', label: '전체' }]
+  const opts = []
   for (const t of [90, 80, 70]) {
     if (m.max >= t) opts.push({ value: String(t), label: `${t}점 이상` })
   }
@@ -254,11 +281,11 @@ const PLAYTIME_DEF = [
 const playtimeOptions = computed(() => {
   const b = options.value.playtime?.buckets
   if (!b) return []
-  const opts = [{ value: 'all', label: '전체', count: null }]
+  const opts = []
   for (const d of PLAYTIME_DEF) {
     if ((b[d.key] || 0) > 0) opts.push({ value: d.key, label: d.label, count: b[d.key] })
   }
-  return opts.length > 1 ? opts : []
+  return opts.length > 0 ? opts : []
 })
 
 // 플레이 인원 (개수 0인 모드는 숨김)
@@ -329,6 +356,10 @@ function reset() {
 function setKeyword(kw) {
   keyword.value = kw
 }
+
+watch(filters, () => {
+  handleSubmit()
+}, { deep: true })
 
 defineExpose({ reset, setKeyword })
 
@@ -411,6 +442,8 @@ onMounted(async () => {
   color: #3d3529;
 }
 .filter-bar-left { display: flex; align-items: center; gap: 6px; }
+.chevron { transition: transform 0.2s; }
+.chevron.open { transform: rotate(180deg); }
 .reset-btn {
   background: none;
   border: none;
@@ -430,7 +463,7 @@ onMounted(async () => {
 }
 .flabel {
   flex-shrink: 0;
-  width: 52px;
+  width: 40px;
   font-size: 13px;
   font-weight: 600;
   color: #6b6256;
@@ -461,8 +494,37 @@ onMounted(async () => {
   color: #fff;
   background: #1e3a5f;
 }
-.cnt {
+.filter-hint {
+  background: #f7f5f0;
+  border: 1px dashed #d8d2c6;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  cursor: pointer;
+}
+.filter-hint-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+.hint-tag {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1e3a5f;
+  background: #e8eef5;
+  border-radius: 6px;
+  padding: 3px 8px;
+}
+.hint-sep {
   font-size: 11px;
-  opacity: 0.7;
+  color: #c8c2b4;
+}
+.filter-hint-desc {
+  font-size: 12px;
+  color: #9e9585;
+  margin: 0;
 }
 </style>

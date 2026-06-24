@@ -20,7 +20,7 @@
         </svg>
         <input v-model="keyword" type="text" placeholder="게임 검색" />
       </form>
-        <button class="icon-btn" @click="openNotifications">
+        <button v-if="authStore.isLoggedIn" class="icon-btn" @click="openNotifications">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
             stroke-width="1.5" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round"
@@ -40,7 +40,6 @@
           <button class="btn btn-outline" @click="handleLogout">로그아웃</button>
         </template>
         <template v-else>
-          <RouterLink to="/login" class="nav-link">프로필</RouterLink>
           <RouterLink :to="{ name: 'Login' }" class="btn btn-outline">로그인</RouterLink>
           <RouterLink :to="{ name: 'Register' }" class="btn btn-primary">회원가입</RouterLink>
         </template>
@@ -133,8 +132,8 @@ onMounted(async () => {
 .nav-link {
   text-decoration: none;
   color: #3d3529;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 19px;
+  font-weight: 700;
   transition: color 0.15s;
 }
 .nav-link:hover,
@@ -219,8 +218,8 @@ onMounted(async () => {
 }
 
 .nav-avatar {
-  width: 32px;
-  height: 32px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid #e8e4d9;

@@ -205,6 +205,8 @@ async function submitEdit() {
     })
     user.value = res.data
     authStore.setProfile(res.data)
+    const medalsRes = await accountAPI.getMyMedals()
+    mypage.medals = medalsRes.data?.results ?? medalsRes.data ?? []
     closeEditModal()
   } catch {
     alert('프로필 수정에 실패했어요.')

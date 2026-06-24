@@ -25,12 +25,16 @@
 
       <GameResultGrid
         :type="resultMode"
-        :games="resultGames"
+        :games="resultMode === 'search' ? pagedGames : resultGames"
         :loading="aiLoading || searchLoading"
         :restore-loading="restoreLoading"
         :submitted="submitted"
         :sort="searchSort"
+        :total-count="totalCount"
+        :current-page="currentPage"
+        :total-pages="totalPages"
         @update:sort="onSortChange"
+        @update:page="onPageChange"
         @reset="onSearchReset"
       />
 
@@ -42,7 +46,7 @@
 </template>
 
 <script setup>
-import { ref, nextTick, onMounted, watch } from 'vue'
+import { ref, computed, nextTick, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { gameAPI, recommendAPI } from '@/api/services'
@@ -65,6 +69,15 @@ const searchLoading = ref(false)
 const restoreLoading = ref(false)
 const resultGames = ref([])
 const recentHistory = ref([])
+
+// 프론트엔드 페이지네이션
+const PAGE_SIZE = 20
+const currentPage = ref(1)
+const totalCount = computed(() => resultGames.value.length)
+const totalPages = computed(() => Math.ceil(totalCount.value / PAGE_SIZE))
+const pagedGames = computed(() =>
+  resultGames.value.slice((currentPage.value - 1) * PAGE_SIZE, currentPage.value * PAGE_SIZE)
+)
 
 // 검색 모드 상태 (키워드 + 정렬 + 필터)
 const searchKeyword = ref('')
@@ -133,10 +146,9 @@ function buildParams() {
   const params = {}
   if (searchKeyword.value.trim()) params.q = searchKeyword.value.trim()
 
-  // 정렬 (할인순은 on_sale 필터 + 정가 내림차순)
+  // 정렬
   if (searchSort.value === 'discount') {
-    params.on_sale = true
-    params.ordering = '-initial_price'
+    params.ordering = 'discount'   // 백엔드에서 할인 우선 + 이름순 처리
   } else {
     params.ordering = ORDERING[searchSort.value] ?? '-release_date'
   }
@@ -162,6 +174,7 @@ async function runSearch() {
   resultMode.value = 'search'
   submitted.value = true
   searchLoading.value = true
+  currentPage.value = 1
   resultGames.value = []
   try {
     const res = await gameAPI.list(buildParams())
@@ -171,6 +184,11 @@ async function runSearch() {
   } finally {
     searchLoading.value = false
   }
+}
+
+function onPageChange(page) {
+  currentPage.value = page
+  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
 // 정렬 셀렉트 변경 시 재조회

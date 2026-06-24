@@ -1,4 +1,4 @@
-from django.db.models import F, Count, Min, Max
+from django.db.models import F, Count, Min, Max, Case, When, BooleanField, FloatField, Value, ExpressionWrapper
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -23,6 +23,7 @@ class GameListView(generics.ListAPIView):
     filter_backends = [OrderingFilter]
     ordering_fields = ['metacritic_score', 'release_date', 'final_price', 'playtime']
     ordering = ['-game_id']
+    pagination_class = None
 
     # 플레이타임 버킷 경계(시간)
     PLAYTIME_BUCKETS = {
@@ -118,7 +119,31 @@ class GameListView(generics.ListAPIView):
         if q:
             qs = qs.filter(title__icontains=q)
 
+        # 할인순: 할인율 annotation 추가 (order_by는 filter_queryset 오버라이드에서 처리)
+        if p.get('ordering') == 'discount':
+            qs = qs.annotate(
+                discount_rate=Case(
+                    When(
+                        final_price__isnull=False,
+                        initial_price__gt=F('final_price'),
+                        then=ExpressionWrapper(
+                            (F('initial_price') - F('final_price')) * 1.0 / F('initial_price'),
+                            output_field=FloatField(),
+                        ),
+                    ),
+                    default=Value(0.0),
+                    output_field=FloatField(),
+                )
+            )
+
         return qs
+
+    def filter_queryset(self, queryset):
+        queryset = super().filter_queryset(queryset)
+        # OrderingFilter가 기본 정렬(-game_id)로 덮어쓴 뒤 여기서 재적용
+        if self.request.query_params.get('ordering') == 'discount':
+            queryset = queryset.order_by('-discount_rate', 'title')
+        return queryset
 
 
 class GameDetailView(generics.RetrieveAPIView):

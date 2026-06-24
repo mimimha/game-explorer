@@ -17,9 +17,6 @@
           <button class="view-btn" :class="{ active: viewMode === 'grid' }" @click="viewMode = 'grid'">
             <svg viewBox="0 0 16 16" fill="currentColor" width="14"><path d="M1 1h6v6H1zm8 0h6v6H9zM1 9h6v6H1zm8 0h6v6H9z"/></svg>
           </button>
-          <button class="view-btn" :class="{ active: viewMode === 'list' }" @click="viewMode = 'list'">
-            <svg viewBox="0 0 16 16" fill="currentColor" width="14"><path d="M1 3h14v2H1zm0 4h14v2H1zm0 4h14v2H1z"/></svg>
-          </button>
         </template>
         <RouterLink v-else to="/explore" class="more-link">전체 보기 ›</RouterLink>
       </div>
@@ -43,7 +40,7 @@
 
     <!-- 3. 일반 로딩 — 스켈레톤 -->
     <div v-else-if="loading" class="grid">
-      <div v-for="i in 6" :key="i" class="skeleton-card">
+      <div v-for="i in 5" :key="i" class="skeleton-card">
         <div class="sk-thumb"></div>
         <div class="sk-line w70"></div>
         <div class="sk-line w50"></div>
@@ -81,6 +78,28 @@
     <div v-else class="grid">
       <GameCard v-for="g in games" :key="g.id" :game="g" />
     </div>
+
+    <!-- 7. 페이지네이션 -->
+    <div v-if="type === 'search' && totalPages > 1" class="pagination">
+      <button class="pg-btn" :disabled="currentPage === 1" @click="$emit('update:page', currentPage - 1)">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="14">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/>
+        </svg>
+      </button>
+      <button
+        v-for="p in pageNumbers"
+        :key="p"
+        class="pg-num"
+        :class="{ active: p === currentPage, ellipsis: p === '…' }"
+        :disabled="p === '…'"
+        @click="p !== '…' && $emit('update:page', p)"
+      >{{ p }}</button>
+      <button class="pg-btn" :disabled="currentPage === totalPages" @click="$emit('update:page', currentPage + 1)">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="14">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/>
+        </svg>
+      </button>
+    </div>
   </section>
 </template>
 
@@ -94,11 +113,14 @@ const props = defineProps({
   type:           { type: String,  default: 'ai' },
   games:          { type: Array,   default: () => [] },
   loading:        { type: Boolean, default: false },
-  restoreLoading: { type: Boolean, default: false },  // 히스토리 복원 전용
+  restoreLoading: { type: Boolean, default: false },
   submitted:      { type: Boolean, default: false },
   sort:           { type: String,  default: 'recent' },
+  totalCount:     { type: Number,  default: 0 },
+  currentPage:    { type: Number,  default: 1 },
+  totalPages:     { type: Number,  default: 1 },
 })
-defineEmits(['reset', 'update:sort'])
+defineEmits(['reset', 'update:sort', 'update:page'])
 
 const viewMode = ref('grid')
 const carouselEl = ref(null)
@@ -107,7 +129,23 @@ const sectionTitle = computed(() => props.type === 'ai' ? '추천 결과' : '검
 const subtitle = computed(() => {
   if (props.restoreLoading || props.loading) return ''
   if (props.type === 'ai') return 'AI 추천 결과입니다.'
-  return `총 ${props.games.length}개의 게임`
+  if (!props.submitted || props.totalCount === 0) return ''
+  return `총 ${props.totalCount.toLocaleString()}개의 게임`
+})
+
+// 페이지 번호 목록 (앞뒤 2개 + 말줄임표)
+const pageNumbers = computed(() => {
+  const total = props.totalPages
+  const cur = props.currentPage
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1)
+  const pages = new Set([1, total, cur - 1, cur, cur + 1].filter(p => p >= 1 && p <= total))
+  const sorted = [...pages].sort((a, b) => a - b)
+  const result = []
+  for (let i = 0; i < sorted.length; i++) {
+    if (i > 0 && sorted[i] - sorted[i - 1] > 1) result.push('…')
+    result.push(sorted[i])
+  }
+  return result
 })
 
 function scroll(dir) {
@@ -201,7 +239,7 @@ function scroll(dir) {
 /* 그리드 */
 .grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 14px;
   flex: 1;
   overflow: hidden;
@@ -231,4 +269,41 @@ function scroll(dir) {
   0%   { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
+
+/* 페이지네이션 */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 28px;
+}
+.pg-btn, .pg-num {
+  min-width: 34px;
+  height: 34px;
+  padding: 0 6px;
+  border: 1px solid #e8e4d9;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 13px;
+  color: #3d3529;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.pg-btn:hover:not(:disabled), .pg-num:hover:not(:disabled):not(.ellipsis) {
+  border-color: #1e3a5f;
+  color: #1e3a5f;
+}
+.pg-btn:disabled { opacity: 0.35; cursor: default; }
+.pg-num.active {
+  background: #1e3a5f;
+  border-color: #1e3a5f;
+  color: #fff;
+  font-weight: 700;
+}
+.pg-num.ellipsis { border-color: transparent; background: none; cursor: default; color: #9e9585; }
 </style>

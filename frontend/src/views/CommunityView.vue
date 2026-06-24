@@ -35,10 +35,12 @@
             <option value="title">제목</option>
             <option value="author">작성자</option>
           </select>
-          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/>
-          </svg>
-          <input v-model="searchKeyword" type="text" :placeholder="searchType === 'author' ? '닉네임 검색' : '제목 검색'" />
+          <input v-model="searchKeyword" type="text" :placeholder="searchType === 'author' ? '닉네임 검색' : '제목 검색'" class="search-input" />
+          <button type="submit" class="search-btn" aria-label="검색">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/>
+            </svg>
+          </button>
         </form>
         <button v-if="authStore.isLoggedIn" class="btn-write" @click="openWriteModal">
           <svg viewBox="0 0 20 20" fill="currentColor" class="btn-write-icon">
@@ -275,7 +277,7 @@ const postForm = ref({ title: '', content: '', category: '자유' })
 
 function openWriteModal() {
   editPostId.value = null
-  postForm.value = { title: '', content: '', category: '자유' }
+  postForm.value = { title: '', content: '', category: activeCategory.value || '자유' }
   submitError.value = ''
   modalOpen.value = true
 }
@@ -377,45 +379,60 @@ onMounted(fetchPosts)
 .controls-right { display: flex; align-items: center; gap: 10px; }
 
 .search-form {
-  position: relative;
   display: flex;
   align-items: center;
-  gap: 0;
+  height: 36px;
+  border: 1px solid #ddd8cc;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.15s;
+  background: #f7f5f0;
 }
+.search-form:focus-within { border-color: #1e3a5f; }
 
 .search-type-select {
-  height: 36px;
+  height: 100%;
   padding: 0 8px;
-  border: 1px solid #ddd8cc;
-  border-right: none;
-  border-radius: 8px 0 0 8px;
+  border: none;
+  border-right: 1px solid #ddd8cc;
+  border-radius: 0;
   font-size: 13px;
   color: #3d3529;
   background: #f7f5f0;
   outline: none;
   cursor: pointer;
-  transition: border-color 0.15s;
+  flex-shrink: 0;
 }
-.search-type-select:focus { border-color: #1e3a5f; }
-.search-icon {
-  position: absolute;
-  left: 10px;
-  width: 15px;
-  color: #9e9585;
-  pointer-events: none;
-}
-.search-form input {
-  width: 180px;
-  padding: 8px 12px 8px 32px;
-  border: 1px solid #ddd8cc;
-  border-radius: 0 8px 8px 0;
+
+.search-input {
+  width: 160px;
+  height: 100%;
+  padding: 0 10px;
+  border: none;
+  background: #f7f5f0;
   font-size: 13px;
   color: #1a1510;
-  background: #f7f5f0;
   outline: none;
-  transition: border-color 0.15s, background 0.15s;
+  transition: background 0.15s;
 }
-.search-form input:focus { border-color: #1e3a5f; background: #fff; }
+.search-form:focus-within .search-input { background: #fff; }
+
+.search-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 10px;
+  border: none;
+  border-left: 1px solid #ddd8cc;
+  background: #f7f5f0;
+  color: #9e9585;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+.search-btn:hover { background: #ede9e0; color: #1e3a5f; }
+.search-btn svg { width: 15px; height: 15px; }
 
 .btn-write {
   display: flex;
