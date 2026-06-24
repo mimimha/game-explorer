@@ -1,0 +1,87 @@
+"""
+영상(트레일러 1 + 공략 2)만 채운다. RAWG 상세/스팀/스크린샷은 호출하지 않아
+YouTube 쿼터만 소비한다. (load_games 의 영상 단계만 떼어낸 것)
+
+기본 대상: 공략(walkthrough)이 없는 게임.
+  python manage.py backfill_videos --limit 10
+  python manage.py backfill_videos --only-empty      # 영상이 아예 없는 게임만
+  python manage.py backfill_videos                   # 공략 없는 게임 전체
+
+키가 여러 개면(settings.YOUTUBE_DATA_API_KEYS) 한 키 소진 시 자동으로 다음 키 사용.
+게임당 YouTube 검색 2회(트레일러+공략). 일일 쿼터 10,000 units = 100검색/키.
+"""
+import time
+from django.core.management.base import BaseCommand
+from django.db.models import Count, Q
+
+from games.models import Game, GameVideo
+from games.services import rawg, youtube
+
+
+class Command(BaseCommand):
+    help = '트레일러 1 + 공략 2 영상만 백필 (YouTube 쿼터만 사용, 키 자동 전환).'
+
+    def add_arguments(self, parser):
+        parser.add_argument('--limit', type=int, default=None)
+        parser.add_argument('--only-empty', action='store_true',
+                            help='영상이 아예 없는 게임만 대상')
+        parser.add_argument('--sleep', type=float, default=0.3)
+
+    def handle(self, *args, **opts):
+        if opts['only_empty']:
+            qs = Game.objects.annotate(v=Count('videos')).filter(v=0)
+        else:
+            qs = Game.objects.annotate(
+                w=Count('videos', filter=Q(videos__video_type='walkthrough'))
+            ).filter(w=0)
+        qs = qs.exclude(rawg_id__isnull=True).order_by('game_id')
+        if opts['limit']:
+            qs = qs[:opts['limit']]
+
+        games = list(qs)
+        self.stdout.write(f'대상 {len(games)}개\n')
+        total = ok = 0
+        for g in games:
+            total += 1
+            try:
+                n = self._fill_one(g)
+                ok += 1
+                self.stdout.write(f'  ✓ {g.title[:40]:40} 영상 {n}개')
+            except Exception as e:
+                self.stderr.write(self.style.WARNING(f'  ! {g.title} 실패: {e}'))
+            time.sleep(opts['sleep'])
+
+        self.stdout.write(self.style.SUCCESS(f'\n완료: {ok}/{total}'))
+
+    def _fill_one(self, game):
+        rows = []  # (video_dict, video_type)
+
+        # 트레일러 1개 (없으면 RAWG 트레일러 폴백)
+        trailers = youtube.search_videos(
+            game.title, query_terms='gameplay trailer', max_results=1,
+        )
+        if not trailers:
+            trailers = [
+                {'title': m['name'], 'video_url': m['url'], 'thumbnail': ''}
+                for m in rawg.fetch_movies(game.rawg_id)[:1]
+            ]
+        rows += [(v, GameVideo.TRAILER) for v in trailers[:1]]
+
+        # 공략 2개 (긴 영상)
+        walkthroughs = youtube.search_videos(
+            game.title, query_terms='공략 walkthrough',
+            max_results=2, video_duration='long',
+        )
+        rows += [(v, GameVideo.WALKTHROUGH) for v in walkthroughs[:2]]
+
+        if rows:
+            game.videos.all().delete()
+            GameVideo.objects.bulk_create([
+                GameVideo(
+                    game=game, video_type=vtype, title=v['title'],
+                    video_url=v['video_url'], thumbnail=v['thumbnail'],
+                    channel=v.get('channel', ''),
+                    published_at=v.get('published_at', ''),
+                ) for v, vtype in rows
+            ])
+        return len(rows)

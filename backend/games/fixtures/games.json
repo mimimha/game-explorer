@@ -16618,708 +16618,6 @@
 },
 {
   "model": "games.gamevideo",
-  "pk": 126,
-  "fields": {
-    "game": 51,
-    "title": "Hotline Miami - Gameplay Trailer | PS4",
-    "video_url": "https://www.youtube.com/watch?v=_5AJtaYx1Eg",
-    "thumbnail": "https://i.ytimg.com/vi/_5AJtaYx1Eg/hqdefault.jpg",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 127,
-  "fields": {
-    "game": 51,
-    "title": "HOTLINE MIAMI Full Gameplay Walkthrough / No Commentary【FULL GAME】4K 60FPS Ultra HD",
-    "video_url": "https://www.youtube.com/watch?v=xb1Pd4ZUkZ4",
-    "thumbnail": "https://i.ytimg.com/vi/xb1Pd4ZUkZ4/hqdefault.jpg",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 128,
-  "fields": {
-    "game": 51,
-    "title": "Hotline Miami Launch Trailer (PlayStation)",
-    "video_url": "https://www.youtube.com/watch?v=MUN9GzwUNZA",
-    "thumbnail": "https://i.ytimg.com/vi/MUN9GzwUNZA/hqdefault.jpg",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 129,
-  "fields": {
-    "game": 52,
-    "title": "Hitman: Episode 4 - Bangkok PEGI EN",
-    "video_url": "https://steamcdn-a.akamaihd.net/steam/apps/256669006/movie_max.mp4",
-    "thumbnail": "",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 130,
-  "fields": {
-    "game": 52,
-    "title": "Colorado PEGI EN",
-    "video_url": "https://steamcdn-a.akamaihd.net/steam/apps/256671604/movie_max.mp4",
-    "thumbnail": "",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 131,
-  "fields": {
-    "game": 52,
-    "title": "Season Finale PEGI EN",
-    "video_url": "https://steamcdn-a.akamaihd.net/steam/apps/256674176/movie_max.mp4",
-    "thumbnail": "",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 132,
-  "fields": {
-    "game": 52,
-    "title": "Hitman 101 PEGI EN",
-    "video_url": "https://steamcdn-a.akamaihd.net/steam/apps/256678131/movie_max.mp4",
-    "thumbnail": "",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 133,
-  "fields": {
-    "game": 52,
-    "title": "Hitman Landslide PEGI EN",
-    "video_url": "https://steamcdn-a.akamaihd.net/steam/apps/256678651/movie_max.mp4",
-    "thumbnail": "",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 134,
-  "fields": {
-    "game": 52,
-    "title": "Hitman Disc Launch PEGI EN",
-    "video_url": "https://steamcdn-a.akamaihd.net/steam/apps/256678803/movie_max.mp4",
-    "thumbnail": "",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 135,
-  "fields": {
-    "game": 52,
-    "title": "Hitman Welcome To The Playground PEGI EN",
-    "video_url": "https://steamcdn-a.akamaihd.net/steam/apps/256688057/movie_max.mp4",
-    "thumbnail": "",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 136,
-  "fields": {
-    "game": 53,
-    "title": "Outlast Full Official Trailer",
-    "video_url": "https://www.youtube.com/watch?v=uKA-IA4locM",
-    "thumbnail": "https://i.ytimg.com/vi/uKA-IA4locM/hqdefault.jpg",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 137,
-  "fields": {
-    "game": 53,
-    "title": "Outlast: The Jungle | Official Trailer | Netflix",
-    "video_url": "https://www.youtube.com/watch?v=EnvBoDKSNKg",
-    "thumbnail": "https://i.ytimg.com/vi/EnvBoDKSNKg/hqdefault.jpg",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 138,
-  "fields": {
-    "game": 53,
-    "title": "Oh sorry, wrong room! | Outlast Trials",
-    "video_url": "https://www.youtube.com/watch?v=CSXnInJoXj4",
-    "thumbnail": "https://i.ytimg.com/vi/CSXnInJoXj4/hqdefault.jpg",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 139,
-  "fields": {
-    "game": 55,
-    "title": "Opening Credits PEGI",
-    "video_url": "https://steamcdn-a.akamaihd.net/steam/apps/256669389/movie_max.mp4",
-    "thumbnail": "",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 140,
-  "fields": {
-    "game": 55,
-    "title": "Launch Trailer PEGI EN",
-    "video_url": "https://steamcdn-a.akamaihd.net/steam/apps/256669834/movie_max.mp4",
-    "thumbnail": "",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 141,
-  "fields": {
-    "game": 56,
-    "title": "PUBG: BATTLEGROUNDS Cinematic trailer | PUBG",
-    "video_url": "https://www.youtube.com/watch?v=u1oqfdh4xBY",
-    "thumbnail": "https://i.ytimg.com/vi/u1oqfdh4xBY/hqdefault.jpg",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 142,
-  "fields": {
-    "game": 56,
-    "title": "PUBG: Battlegrounds - F2P Gameplay Trailer  | PS5, PS4",
-    "video_url": "https://www.youtube.com/watch?v=8z35rlAslsE",
-    "thumbnail": "https://i.ytimg.com/vi/8z35rlAslsE/hqdefault.jpg",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 143,
-  "fields": {
-    "game": 56,
-    "title": "PLAYERUNKNOWN'S BATTLEGROUNDS - Steam Early Access Launch Trailer",
-    "video_url": "https://www.youtube.com/watch?v=fDLAFIhfFy4",
-    "thumbnail": "https://i.ytimg.com/vi/fDLAFIhfFy4/hqdefault.jpg",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 144,
-  "fields": {
-    "game": 57,
-    "title": "PATH OF EXILE Gameplay Trailer (2018)",
-    "video_url": "https://www.youtube.com/watch?v=eYY1w2Foe54",
-    "thumbnail": "https://i.ytimg.com/vi/eYY1w2Foe54/hqdefault.jpg",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 145,
-  "fields": {
-    "game": 57,
-    "title": "Path of Exile - Gameplay Trailer",
-    "video_url": "https://www.youtube.com/watch?v=ECbc6aftzBE",
-    "thumbnail": "https://i.ytimg.com/vi/ECbc6aftzBE/hqdefault.jpg",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 146,
-  "fields": {
-    "game": 57,
-    "title": "Path of Exile 2 - Official Early Access Gameplay Trailer",
-    "video_url": "https://www.youtube.com/watch?v=KhhNhpOln64",
-    "thumbnail": "https://i.ytimg.com/vi/KhhNhpOln64/hqdefault.jpg",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 147,
-  "fields": {
-    "game": 60,
-    "title": "Wolfenstein: The New Order - Nowhere to Run Gameplay Trailer [1440p] TRUE-HD QUALITY",
-    "video_url": "https://www.youtube.com/watch?v=3Yi48bX4lr8",
-    "thumbnail": "https://i.ytimg.com/vi/3Yi48bX4lr8/hqdefault.jpg",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 148,
-  "fields": {
-    "game": 60,
-    "title": "Wolfenstein: The New Order -- \"Nowhere to Run\" Gameplay Trailer",
-    "video_url": "https://www.youtube.com/watch?v=dwjKMjIE1rs",
-    "thumbnail": "https://i.ytimg.com/vi/dwjKMjIE1rs/hqdefault.jpg",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 149,
-  "fields": {
-    "game": 60,
-    "title": "Wolfenstein: The New Order - E3 Trailer",
-    "video_url": "https://www.youtube.com/watch?v=BlvfqfGTar4",
-    "thumbnail": "https://i.ytimg.com/vi/BlvfqfGTar4/hqdefault.jpg",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 150,
-  "fields": {
-    "game": 68,
-    "title": "Gameplay Trailer",
-    "video_url": "https://steamcdn-a.akamaihd.net/steam/apps/256668279/movie_max.mp4",
-    "thumbnail": "",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 151,
-  "fields": {
-    "game": 68,
-    "title": "Gameplay Trailer 2",
-    "video_url": "https://steamcdn-a.akamaihd.net/steam/apps/256678516/movie_max.mp4",
-    "thumbnail": "",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 152,
-  "fields": {
-    "game": 68,
-    "title": "Launch Trailer",
-    "video_url": "https://steamcdn-a.akamaihd.net/steam/apps/256684390/movie_max.mp4",
-    "thumbnail": "",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 153,
-  "fields": {
-    "game": 70,
-    "title": "Skyrim Special Edition – Gameplay Trailer #2",
-    "video_url": "https://www.youtube.com/watch?v=LSPuJ9ggVcA",
-    "thumbnail": "https://i.ytimg.com/vi/LSPuJ9ggVcA/hqdefault.jpg",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 154,
-  "fields": {
-    "game": 70,
-    "title": "The Elder Scrolls V: Skyrim - Official Trailer",
-    "video_url": "https://www.youtube.com/watch?v=JSRtYpNRoN0",
-    "thumbnail": "https://i.ytimg.com/vi/JSRtYpNRoN0/hqdefault.jpg",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 155,
-  "fields": {
-    "game": 70,
-    "title": "Skyrim Special Edition - Trailer",
-    "video_url": "https://www.youtube.com/watch?v=lTjRZ__-278",
-    "thumbnail": "https://i.ytimg.com/vi/lTjRZ__-278/hqdefault.jpg",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 156,
-  "fields": {
-    "game": 71,
-    "title": "Dishonored 2 - E3 2016 Gameplay Trailer | PS4",
-    "video_url": "https://www.youtube.com/watch?v=IcfkMO5Fw3w",
-    "thumbnail": "https://i.ytimg.com/vi/IcfkMO5Fw3w/hqdefault.jpg",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 157,
-  "fields": {
-    "game": 71,
-    "title": "Dishonored 2 - Official Debut Trailer",
-    "video_url": "https://www.youtube.com/watch?v=32LDc_66r5U",
-    "thumbnail": "https://i.ytimg.com/vi/32LDc_66r5U/hqdefault.jpg",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 158,
-  "fields": {
-    "game": 71,
-    "title": "Dishonored 2 – Corvo Gameplay Trailer",
-    "video_url": "https://www.youtube.com/watch?v=CKPzsH4lZjM",
-    "thumbnail": "https://i.ytimg.com/vi/CKPzsH4lZjM/hqdefault.jpg",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 159,
-  "fields": {
-    "game": 72,
-    "title": "Dishonored Gameplay Trailer",
-    "video_url": "https://www.youtube.com/watch?v=-XbQgdSlsd0",
-    "thumbnail": "https://i.ytimg.com/vi/-XbQgdSlsd0/hqdefault.jpg",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 160,
-  "fields": {
-    "game": 72,
-    "title": "Dishonored Definitive Edition - Launch Gameplay Trailer",
-    "video_url": "https://www.youtube.com/watch?v=hbZI08Wxd-k",
-    "thumbnail": "https://i.ytimg.com/vi/hbZI08Wxd-k/hqdefault.jpg",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 161,
-  "fields": {
-    "game": 72,
-    "title": "Dishonored - Cinematic Trailer",
-    "video_url": "https://www.youtube.com/watch?v=VeIn3WjbVbw",
-    "thumbnail": "https://i.ytimg.com/vi/VeIn3WjbVbw/hqdefault.jpg",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 162,
-  "fields": {
-    "game": 73,
-    "title": "Don't Starve Together- A New Reign: Part 1",
-    "video_url": "https://steamcdn-a.akamaihd.net/steam/apps/256672773/movie_max.mp4",
-    "thumbnail": "",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 163,
-  "fields": {
-    "game": 73,
-    "title": "Don't Starve Together- A New Reign: Part 2",
-    "video_url": "https://steamcdn-a.akamaihd.net/steam/apps/256675303/movie_max.mp4",
-    "thumbnail": "",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 164,
-  "fields": {
-    "game": 73,
-    "title": "Don't Starve Together: A New Reign",
-    "video_url": "https://steamcdn-a.akamaihd.net/steam/apps/256682732/movie_max.mp4",
-    "thumbnail": "",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 165,
-  "fields": {
-    "game": 74,
-    "title": "Ragnarok Trailer",
-    "video_url": "https://steamcdn-a.akamaihd.net/steam/apps/256686495/movie_max.mp4",
-    "thumbnail": "",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 166,
-  "fields": {
-    "game": 74,
-    "title": "Official Trailer",
-    "video_url": "https://steamcdn-a.akamaihd.net/steam/apps/256691711/movie_max.mp4",
-    "thumbnail": "",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 167,
-  "fields": {
-    "game": 79,
-    "title": "Introducing: Agent 47 - Hitman: Absolution Gameplay Trailer",
-    "video_url": "https://www.youtube.com/watch?v=rFnCan12hN8",
-    "thumbnail": "https://i.ytimg.com/vi/rFnCan12hN8/hqdefault.jpg",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 168,
-  "fields": {
-    "game": 79,
-    "title": "Hitman: Absolution - Run for Your Life Gameplay Video (PC, PS3, Xbox 360)",
-    "video_url": "https://www.youtube.com/watch?v=pN6mqOHmuS8",
-    "thumbnail": "https://i.ytimg.com/vi/pN6mqOHmuS8/hqdefault.jpg",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 169,
-  "fields": {
-    "game": 79,
-    "title": "Hitman: Absolution - Gameplay Trailer",
-    "video_url": "https://www.youtube.com/watch?v=17-JsTkEwrU",
-    "thumbnail": "https://i.ytimg.com/vi/17-JsTkEwrU/hqdefault.jpg",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 170,
-  "fields": {
-    "game": 83,
-    "title": "Super Meat Boy Teaser Trailer",
-    "video_url": "https://www.youtube.com/watch?v=snaionoxjos",
-    "thumbnail": "https://i.ytimg.com/vi/snaionoxjos/hqdefault.jpg",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 171,
-  "fields": {
-    "game": 83,
-    "title": "Super Meat Boy Official Trailer",
-    "video_url": "https://www.youtube.com/watch?v=25cdyGMtgX8",
-    "thumbnail": "https://i.ytimg.com/vi/25cdyGMtgX8/hqdefault.jpg",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 172,
-  "fields": {
-    "game": 83,
-    "title": "Super Meat Boy 3D - Official Gameplay Overview Trailer | Games Forged in Germany Showcase 2025",
-    "video_url": "https://www.youtube.com/watch?v=owrjkcAuZPs",
-    "thumbnail": "https://i.ytimg.com/vi/owrjkcAuZPs/hqdefault.jpg",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 173,
-  "fields": {
-    "game": 84,
-    "title": "Gamescom trailer - FR",
-    "video_url": "https://steamcdn-a.akamaihd.net/steam/apps/256669393/movie_max.mp4",
-    "thumbnail": "",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 174,
-  "fields": {
-    "game": 84,
-    "title": "PC Story trailer - FRA",
-    "video_url": "https://steamcdn-a.akamaihd.net/steam/apps/256676762/movie_max.mp4",
-    "thumbnail": "",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 175,
-  "fields": {
-    "game": 84,
-    "title": "Launch trailer - FRA",
-    "video_url": "https://steamcdn-a.akamaihd.net/steam/apps/256679556/movie_max.mp4",
-    "thumbnail": "",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 176,
-  "fields": {
-    "game": 91,
-    "title": "Just Cause 3 DLC Bavarium Sea Heist PEGI ENG",
-    "video_url": "https://steamcdn-a.akamaihd.net/steam/apps/256668226/movie_max.mp4",
-    "thumbnail": "",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 177,
-  "fields": {
-    "game": 91,
-    "title": "JCS_XL PEGI EN",
-    "video_url": "https://steamcdn-a.akamaihd.net/steam/apps/256673313/movie_max.mp4",
-    "thumbnail": "",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 178,
-  "fields": {
-    "game": 100,
-    "title": "Nier Attract Trailer Unrated EN",
-    "video_url": "https://steamcdn-a.akamaihd.net/steam/apps/256680536/movie_max.mp4",
-    "thumbnail": "",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
-  "pk": 179,
-  "fields": {
-    "game": 100,
-    "title": "Nier Pre-Launch PEGI EN",
-    "video_url": "https://steamcdn-a.akamaihd.net/steam/apps/256681393/movie_max.mp4",
-    "thumbnail": "",
-    "channel": "",
-    "published_at": "",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
   "pk": 183,
   "fields": {
     "game": 1,
@@ -19075,19 +18373,6 @@
 },
 {
   "model": "games.gamevideo",
-  "pk": 318,
-  "fields": {
-    "game": 46,
-    "title": "Dark Souls™ III – Gameplay Reveal Trailer",
-    "video_url": "https://www.youtube.com/watch?v=2HIxuGi_2TQ",
-    "thumbnail": "https://i.ytimg.com/vi/2HIxuGi_2TQ/hqdefault.jpg",
-    "channel": "Bandai Namco Entertainment America",
-    "published_at": "2015-08-04",
-    "video_type": "trailer"
-  }
-},
-{
-  "model": "games.gamevideo",
   "pk": 319,
   "fields": {
     "game": 47,
@@ -19213,6 +18498,1995 @@
     "thumbnail": "https://i.ytimg.com/vi/jmJDo-XVwvg/hqdefault.jpg",
     "channel": "GamingAbsolute",
     "published_at": "2015-06-22",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 329,
+  "fields": {
+    "game": 46,
+    "title": "Dark Souls™ III – Gameplay Reveal Trailer",
+    "video_url": "https://www.youtube.com/watch?v=2HIxuGi_2TQ",
+    "thumbnail": "https://i.ytimg.com/vi/2HIxuGi_2TQ/hqdefault.jpg",
+    "channel": "Bandai Namco Entertainment America",
+    "published_at": "2015-08-04",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 330,
+  "fields": {
+    "game": 46,
+    "title": "DARK SOULS 3 Gameplay Walkthrough FULL GAME (4K 60FPS) No Commentary",
+    "video_url": "https://www.youtube.com/watch?v=GZwioBJ3-lk",
+    "thumbnail": "https://i.ytimg.com/vi/GZwioBJ3-lk/hqdefault.jpg",
+    "channel": "Shirrako",
+    "published_at": "2022-02-15",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 331,
+  "fields": {
+    "game": 46,
+    "title": "DARK SOULS 3 Gameplay Walkthrough FULL GAME [4K 60FPS PS5] - No Commentary",
+    "video_url": "https://www.youtube.com/watch?v=tW3ZVQiOtyc",
+    "thumbnail": "https://i.ytimg.com/vi/tW3ZVQiOtyc/hqdefault.jpg",
+    "channel": "MKIceAndFire",
+    "published_at": "2023-01-03",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 332,
+  "fields": {
+    "game": 51,
+    "title": "Hotline Miami - Gameplay Trailer | PS4",
+    "video_url": "https://www.youtube.com/watch?v=_5AJtaYx1Eg",
+    "thumbnail": "https://i.ytimg.com/vi/_5AJtaYx1Eg/hqdefault.jpg",
+    "channel": "PlayStation",
+    "published_at": "2014-08-11",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 333,
+  "fields": {
+    "game": 51,
+    "title": "Hotline Miami Full Walkthrough A+ all chapters",
+    "video_url": "https://www.youtube.com/watch?v=2MvWAXiH-1k",
+    "thumbnail": "https://i.ytimg.com/vi/2MvWAXiH-1k/hqdefault.jpg",
+    "channel": "Carrot Helper - 100% Walkthroughs | No Commentary",
+    "published_at": "2020-03-11",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 334,
+  "fields": {
+    "game": 51,
+    "title": "HOTLINE MIAMI Full Gameplay Walkthrough / No Commentary【FULL GAME】4K 60FPS Ultra HD",
+    "video_url": "https://www.youtube.com/watch?v=xb1Pd4ZUkZ4",
+    "thumbnail": "https://i.ytimg.com/vi/xb1Pd4ZUkZ4/hqdefault.jpg",
+    "channel": "Gamer's Little Playground",
+    "published_at": "2025-01-13",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 335,
+  "fields": {
+    "game": 52,
+    "title": "Hitman 3 - Official Gameplay Trailer",
+    "video_url": "https://www.youtube.com/watch?v=avAXhnbs69w",
+    "thumbnail": "https://i.ytimg.com/vi/avAXhnbs69w/hqdefault.jpg",
+    "channel": "IGN",
+    "published_at": "2020-12-08",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 336,
+  "fields": {
+    "game": 52,
+    "title": "Hitman Trilogy - All Missions | 100% Stealth | FULL GAME Walkthrough | 4K",
+    "video_url": "https://www.youtube.com/watch?v=nnNP9iXUivg",
+    "thumbnail": "https://i.ytimg.com/vi/nnNP9iXUivg/hqdefault.jpg",
+    "channel": "RavenGamesGuide™",
+    "published_at": "2023-09-16",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 337,
+  "fields": {
+    "game": 52,
+    "title": "Hitman - All Missions | FULL GAME Walkthrough No Commentary",
+    "video_url": "https://www.youtube.com/watch?v=llkaMjFzQuE",
+    "thumbnail": "https://i.ytimg.com/vi/llkaMjFzQuE/hqdefault.jpg",
+    "channel": "Gamer Max Channel",
+    "published_at": "2020-06-22",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 338,
+  "fields": {
+    "game": 53,
+    "title": "Outlast Full Official Trailer",
+    "video_url": "https://www.youtube.com/watch?v=uKA-IA4locM",
+    "thumbnail": "https://i.ytimg.com/vi/uKA-IA4locM/hqdefault.jpg",
+    "channel": "GameSpot Trailers",
+    "published_at": "2013-03-12",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 339,
+  "fields": {
+    "game": 53,
+    "title": "Outlast | Full Game Walkthrough | No Commentary",
+    "video_url": "https://www.youtube.com/watch?v=5wV_kKL4Ymw",
+    "thumbnail": "https://i.ytimg.com/vi/5wV_kKL4Ymw/hqdefault.jpg",
+    "channel": "The Game Archivist",
+    "published_at": "2022-01-09",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 340,
+  "fields": {
+    "game": 53,
+    "title": "OUTLAST | Full HD 1080p/60fps Longplay Walkthrough Gameplay No Commentary",
+    "video_url": "https://www.youtube.com/watch?v=zZNfd04GO-U",
+    "thumbnail": "https://i.ytimg.com/vi/zZNfd04GO-U/hqdefault.jpg",
+    "channel": "SHN Survival Horror Network",
+    "published_at": "2017-04-16",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 341,
+  "fields": {
+    "game": 54,
+    "title": "Far Cry 3 - Gameplay Trailer [UK]",
+    "video_url": "https://www.youtube.com/watch?v=RsrYZpswwtM",
+    "thumbnail": "https://i.ytimg.com/vi/RsrYZpswwtM/hqdefault.jpg",
+    "channel": "Ubisoft",
+    "published_at": "2012-03-21",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 342,
+  "fields": {
+    "game": 54,
+    "title": "Far Cry 3 Full Walkthrough Gameplay - No Commentary (PC Longplay)",
+    "video_url": "https://www.youtube.com/watch?v=3lBujASAMEM",
+    "thumbnail": "https://i.ytimg.com/vi/3lBujASAMEM/hqdefault.jpg",
+    "channel": "Lacry",
+    "published_at": "2020-07-22",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 343,
+  "fields": {
+    "game": 54,
+    "title": "FAR CRY 3 Gameplay Walkthrough Part 1 FULL GAME [4K 60FPS PC] - No Commentary",
+    "video_url": "https://www.youtube.com/watch?v=ckOhlNZ1yqY",
+    "thumbnail": "https://i.ytimg.com/vi/ckOhlNZ1yqY/hqdefault.jpg",
+    "channel": "MKIceAndFire",
+    "published_at": "2021-10-02",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 344,
+  "fields": {
+    "game": 55,
+    "title": "Deus Ex Mankind Divided Trailer - New Deus Ex Mankind Divided Gameplay",
+    "video_url": "https://www.youtube.com/watch?v=1XOLX3Dbgqw",
+    "thumbnail": "https://i.ytimg.com/vi/1XOLX3Dbgqw/hqdefault.jpg",
+    "channel": "outsidexbox",
+    "published_at": "2016-04-28",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 345,
+  "fields": {
+    "game": 55,
+    "title": "Deus Ex: Mankind Divided Walkthrough (Pacifist,All Collectibles) part 7 GOLEM CITY",
+    "video_url": "https://www.youtube.com/watch?v=wL1mreUL4LU",
+    "thumbnail": "https://i.ytimg.com/vi/wL1mreUL4LU/hqdefault.jpg",
+    "channel": "patologTV",
+    "published_at": "2016-09-18",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 346,
+  "fields": {
+    "game": 55,
+    "title": "DEUS EX MANKIND DIVIDED Gameplay Walkthrough FULL GAME (4K 60FPS) No Commentary",
+    "video_url": "https://www.youtube.com/watch?v=YQZ2IUjj40c",
+    "thumbnail": "https://i.ytimg.com/vi/YQZ2IUjj40c/hqdefault.jpg",
+    "channel": "Shirrako",
+    "published_at": "2024-07-26",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 347,
+  "fields": {
+    "game": 56,
+    "title": "PUBG: BATTLEGROUNDS Cinematic trailer | PUBG",
+    "video_url": "https://www.youtube.com/watch?v=u1oqfdh4xBY",
+    "thumbnail": "https://i.ytimg.com/vi/u1oqfdh4xBY/hqdefault.jpg",
+    "channel": "PUBG: BATTLEGROUNDS",
+    "published_at": "2022-01-29",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 348,
+  "fields": {
+    "game": 56,
+    "title": "[핏유]PUBG 한국국가대표(상위0.01%랭커)의 1위하는 꿀팁 강의영상[How to win solo play by KOR PROgamer]",
+    "video_url": "https://www.youtube.com/watch?v=KEt0uchs6Xs",
+    "thumbnail": "https://i.ytimg.com/vi/KEt0uchs6Xs/hqdefault.jpg",
+    "channel": "핏유튜브[FITUTUBE]",
+    "published_at": "2017-09-24",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 349,
+  "fields": {
+    "game": 56,
+    "title": "[이벤트] 2025년도 겨울 배틀그라운드 PC방 이벤트 3종 공략 (+스팀 가족 모드 설정법)",
+    "video_url": "https://www.youtube.com/watch?v=I5fcunRWE_8",
+    "thumbnail": "https://i.ytimg.com/vi/I5fcunRWE_8/hqdefault.jpg",
+    "channel": "노잼 배그 일타 강사 김나배",
+    "published_at": "2025-12-23",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 350,
+  "fields": {
+    "game": 57,
+    "title": "PATH OF EXILE Gameplay Trailer (2018)",
+    "video_url": "https://www.youtube.com/watch?v=eYY1w2Foe54",
+    "thumbnail": "https://i.ytimg.com/vi/eYY1w2Foe54/hqdefault.jpg",
+    "channel": "ONE Media +",
+    "published_at": "2018-11-06",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 351,
+  "fields": {
+    "game": 57,
+    "title": "Path of Exile New Player Beginner Guide Full Walkthrough Echoes of the Atlas PoE Part 1 Act 1",
+    "video_url": "https://www.youtube.com/watch?v=BfMPNOOSG5U",
+    "thumbnail": "https://i.ytimg.com/vi/BfMPNOOSG5U/hqdefault.jpg",
+    "channel": "Slaydra",
+    "published_at": "2021-01-16",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 352,
+  "fields": {
+    "game": 57,
+    "title": "Path of Exile Game Play Walkthrough / Playthrough",
+    "video_url": "https://www.youtube.com/watch?v=mK81sUJQbrE",
+    "thumbnail": "https://i.ytimg.com/vi/mK81sUJQbrE/hqdefault.jpg",
+    "channel": "BAAM Game",
+    "published_at": "2019-06-04",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 353,
+  "fields": {
+    "game": 58,
+    "title": "Marvel's Spider-Man (PS4) 2017 E3 Gameplay",
+    "video_url": "https://www.youtube.com/watch?v=K4zm30yeHHE",
+    "thumbnail": "https://i.ytimg.com/vi/K4zm30yeHHE/hqdefault.jpg",
+    "channel": "Marvel Entertainment",
+    "published_at": "2017-06-13",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 354,
+  "fields": {
+    "game": 58,
+    "title": "Marvel's Spider-Man - Full Game Walkthrough",
+    "video_url": "https://www.youtube.com/watch?v=v-dUMsSIPuw",
+    "thumbnail": "https://i.ytimg.com/vi/v-dUMsSIPuw/hqdefault.jpg",
+    "channel": "packattack04082",
+    "published_at": "2023-10-10",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 355,
+  "fields": {
+    "game": 58,
+    "title": "Marvel's Spider-Man - Full Game 100% Longplay Walkthrough",
+    "video_url": "https://www.youtube.com/watch?v=yVVLBFsfbxs",
+    "thumbnail": "https://i.ytimg.com/vi/yVVLBFsfbxs/hqdefault.jpg",
+    "channel": "LizAndErikSeries",
+    "published_at": "2022-09-11",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 356,
+  "fields": {
+    "game": 59,
+    "title": "Alan Wake Gameplay Trailer",
+    "video_url": "https://www.youtube.com/watch?v=VQ1xo-j6E0o",
+    "thumbnail": "https://i.ytimg.com/vi/VQ1xo-j6E0o/hqdefault.jpg",
+    "channel": "gamerzines",
+    "published_at": "2010-04-08",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 357,
+  "fields": {
+    "game": 59,
+    "title": "ALAN WAKE REMASTERED Gameplay Walkthrough Part 1 FULL GAME [4K 60FPS PC ULTRA] - No Commentary",
+    "video_url": "https://www.youtube.com/watch?v=BhZfmEUdMfo",
+    "thumbnail": "https://i.ytimg.com/vi/BhZfmEUdMfo/hqdefault.jpg",
+    "channel": "MKIceAndFire",
+    "published_at": "2021-10-04",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 358,
+  "fields": {
+    "game": 59,
+    "title": "Alan Wake Remastered 100% Walkthrough (All Collectibles, Trophies and Nightmare Difficulty)",
+    "video_url": "https://www.youtube.com/watch?v=SHlPctGPJIM",
+    "thumbnail": "https://i.ytimg.com/vi/SHlPctGPJIM/hqdefault.jpg",
+    "channel": "Videogmz",
+    "published_at": "2021-12-31",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 359,
+  "fields": {
+    "game": 60,
+    "title": "Wolfenstein: The New Order - Nowhere to Run Gameplay Trailer [1440p] TRUE-HD QUALITY",
+    "video_url": "https://www.youtube.com/watch?v=3Yi48bX4lr8",
+    "thumbnail": "https://i.ytimg.com/vi/3Yi48bX4lr8/hqdefault.jpg",
+    "channel": "RajmanGaming HD",
+    "published_at": "2014-04-08",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 360,
+  "fields": {
+    "game": 60,
+    "title": "WOLFENSTEIN THE NEW ORDER Gameplay Walkthrough Part 1 FULL GAME [4K 60FPS PC ULTRA] - No Commentary",
+    "video_url": "https://www.youtube.com/watch?v=hTLqJSvNF3Q",
+    "thumbnail": "https://i.ytimg.com/vi/hTLqJSvNF3Q/hqdefault.jpg",
+    "channel": "MKIceAndFire",
+    "published_at": "2023-02-16",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 361,
+  "fields": {
+    "game": 60,
+    "title": "Wolfenstein: The New Order - Full Game Walkthrough (No Commentary)",
+    "video_url": "https://www.youtube.com/watch?v=m-nbgG3rl8g",
+    "thumbnail": "https://i.ytimg.com/vi/m-nbgG3rl8g/hqdefault.jpg",
+    "channel": "Full Playthroughs",
+    "published_at": "2020-06-27",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 362,
+  "fields": {
+    "game": 61,
+    "title": "Detroit: Become Human - E3 2016 Trailer | PS4",
+    "video_url": "https://www.youtube.com/watch?v=QD1pbWCJcKQ",
+    "thumbnail": "https://i.ytimg.com/vi/QD1pbWCJcKQ/hqdefault.jpg",
+    "channel": "PlayStation",
+    "published_at": "2016-06-14",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 363,
+  "fields": {
+    "game": 61,
+    "title": "DETROIT BECOME HUMAN Gameplay Walkthrough FULL GAME (4K 60FPS) No Commentary",
+    "video_url": "https://www.youtube.com/watch?v=WapSy5vvh1k",
+    "thumbnail": "https://i.ytimg.com/vi/WapSy5vvh1k/hqdefault.jpg",
+    "channel": "Shirrako",
+    "published_at": "2024-12-24",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 364,
+  "fields": {
+    "game": 61,
+    "title": "DETROIT BECOME HUMAN Gameplay Walkthrough Part 1 FULL GAME [1080p HD PS4 PRO] - No Commentary",
+    "video_url": "https://www.youtube.com/watch?v=0aoHlwS0i0I",
+    "thumbnail": "https://i.ytimg.com/vi/0aoHlwS0i0I/hqdefault.jpg",
+    "channel": "MKIceAndFire",
+    "published_at": "2018-05-27",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 365,
+  "fields": {
+    "game": 62,
+    "title": "Did you know that in GARRY'S MOD...",
+    "video_url": "https://www.youtube.com/watch?v=HjW-3uJurDY",
+    "thumbnail": "https://i.ytimg.com/vi/HjW-3uJurDY/hqdefault.jpg",
+    "channel": "Game Facts",
+    "published_at": "2023-01-08",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 366,
+  "fields": {
+    "game": 62,
+    "title": "【버튜버】 아틀라스에 사는 한 반시민 가족 단편 이야기【Half-Life 2 Episode Two Mod : The Sprucecape】 (플레이 & 공략)",
+    "video_url": "https://www.youtube.com/watch?v=8fNmDsy6dhk",
+    "thumbnail": "https://i.ytimg.com/vi/8fNmDsy6dhk/hqdefault.jpg",
+    "channel": "밸라냥",
+    "published_at": "2024-05-29",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 367,
+  "fields": {
+    "game": 62,
+    "title": "【버튜버】 모드 이름이 토끼굴인데..? 콤바인굴과 좀비굴이.. ? 【Half-Life 2 Episode 2 Mod : Rabbit Hole】 (공략 / 실황) 【+ 게리모드】",
+    "video_url": "https://www.youtube.com/watch?v=OmBV7wGbgto",
+    "thumbnail": "https://i.ytimg.com/vi/OmBV7wGbgto/hqdefault.jpg",
+    "channel": "밸라냥",
+    "published_at": "2024-07-30",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 368,
+  "fields": {
+    "game": 63,
+    "title": "Amnesia: The Dark Descent - Trailer",
+    "video_url": "https://www.youtube.com/watch?v=u1nY_5-UrY4",
+    "thumbnail": "https://i.ytimg.com/vi/u1nY_5-UrY4/hqdefault.jpg",
+    "channel": "frictionalgames",
+    "published_at": "2010-09-10",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 369,
+  "fields": {
+    "game": 63,
+    "title": "AMNESIA : The Dark Descent | 4K/60FPS | FULL GAME Walkthrough | ALL ENDINGS",
+    "video_url": "https://www.youtube.com/watch?v=6MQV3PpTPXg",
+    "thumbnail": "https://i.ytimg.com/vi/6MQV3PpTPXg/hqdefault.jpg",
+    "channel": "P.B. Horror Gaming",
+    "published_at": "2020-11-28",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 370,
+  "fields": {
+    "game": 63,
+    "title": "Amnesia: The Dark Descent Full HD 1080p/60fps GTX1070 Longplay Walkthrough Gameplay No Commentary",
+    "video_url": "https://www.youtube.com/watch?v=hyUf3Ctx-Ck",
+    "thumbnail": "https://i.ytimg.com/vi/hyUf3Ctx-Ck/hqdefault.jpg",
+    "channel": "SHN Survival Horror Network",
+    "published_at": "2016-08-23",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 371,
+  "fields": {
+    "game": 64,
+    "title": "Spec Ops: The Line Gameplay Trailer",
+    "video_url": "https://www.youtube.com/watch?v=eaP1-yCqbUw",
+    "thumbnail": "https://i.ytimg.com/vi/eaP1-yCqbUw/hqdefault.jpg",
+    "channel": "2K",
+    "published_at": "2011-12-20",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 372,
+  "fields": {
+    "game": 64,
+    "title": "스펙옵스:더라인(Spec Ops: The Line) 렛츠 플레이 1편(한글패치 적용)",
+    "video_url": "https://www.youtube.com/watch?v=MOiVHvMFk8o",
+    "thumbnail": "https://i.ytimg.com/vi/MOiVHvMFk8o/hqdefault.jpg",
+    "channel": "고다이반",
+    "published_at": "2013-02-02",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 373,
+  "fields": {
+    "game": 64,
+    "title": "전쟁 액션 게임 [스펙옵스 더라인] 공략 플레이 #1",
+    "video_url": "https://www.youtube.com/watch?v=_WsHLXoeOe8",
+    "thumbnail": "https://i.ytimg.com/vi/_WsHLXoeOe8/hqdefault.jpg",
+    "channel": "오프쏜",
+    "published_at": "2019-07-12",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 374,
+  "fields": {
+    "game": 65,
+    "title": "Half-Life Deathmatch: Source Multiplayer Gameplay 2023",
+    "video_url": "https://www.youtube.com/watch?v=k4iLylpKcDs",
+    "thumbnail": "https://i.ytimg.com/vi/k4iLylpKcDs/hqdefault.jpg",
+    "channel": "unLeashed_FPS",
+    "published_at": "2023-01-31",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 375,
+  "fields": {
+    "game": 65,
+    "title": "Half-Life 2: FALSE DESTINATION - Full Walkthrough",
+    "video_url": "https://www.youtube.com/watch?v=pwNxpEZWtTU",
+    "thumbnail": "https://i.ytimg.com/vi/pwNxpEZWtTU/hqdefault.jpg",
+    "channel": "Bolloxed",
+    "published_at": "2020-09-04",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 376,
+  "fields": {
+    "game": 65,
+    "title": "Half-Life in 20:41",
+    "video_url": "https://www.youtube.com/watch?v=VtI5HM7GVGY",
+    "thumbnail": "https://i.ytimg.com/vi/VtI5HM7GVGY/hqdefault.jpg",
+    "channel": "quadrazid",
+    "published_at": "2014-04-12",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 377,
+  "fields": {
+    "game": 66,
+    "title": "Saints Row: The Third - Power CG Trailer",
+    "video_url": "https://www.youtube.com/watch?v=kxQsCNontmI",
+    "thumbnail": "https://i.ytimg.com/vi/kxQsCNontmI/hqdefault.jpg",
+    "channel": "Saints Row",
+    "published_at": "2011-06-01",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 378,
+  "fields": {
+    "game": 66,
+    "title": "Saints Row: The Third - The Full Package Gameplay on Switch 2 - 4K Walkthrough (No Commentary)",
+    "video_url": "https://www.youtube.com/watch?v=joktaiPGFk8",
+    "thumbnail": "https://i.ytimg.com/vi/joktaiPGFk8/hqdefault.jpg",
+    "channel": "World of Nintendo Switch Games",
+    "published_at": "2026-03-05",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 379,
+  "fields": {
+    "game": 66,
+    "title": "[PC] 세인츠 로우 리부트 스토리 공략 #1 / Saints Row Reboot Story Walkthrough #1",
+    "video_url": "https://www.youtube.com/watch?v=eB4EyAvVYwY",
+    "thumbnail": "https://i.ytimg.com/vi/eB4EyAvVYwY/hqdefault.jpg",
+    "channel": "Buffy's Game TV",
+    "published_at": "2022-08-24",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 380,
+  "fields": {
+    "game": 67,
+    "title": "Fallout: New Vegas Trailer - E3 2010",
+    "video_url": "https://www.youtube.com/watch?v=l-x-1fm2cq8",
+    "thumbnail": "https://i.ytimg.com/vi/l-x-1fm2cq8/hqdefault.jpg",
+    "channel": "IGN",
+    "published_at": "2010-06-14",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 381,
+  "fields": {
+    "game": 67,
+    "title": "[Fallout:New Vegas]폴아웃 뉴 베가스 공략(자막있음) #8 시에라 마드레 카지노 입장",
+    "video_url": "https://www.youtube.com/watch?v=QjDqKMCGh_g",
+    "thumbnail": "https://i.ytimg.com/vi/QjDqKMCGh_g/hqdefault.jpg",
+    "channel": "L ucas",
+    "published_at": "2018-11-03",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 382,
+  "fields": {
+    "game": 67,
+    "title": "FALLOUT NEW VEGAS Gameplay Walkthrough FULL GAME [4K 60FPS PC ULTRA] - No Commentary",
+    "video_url": "https://www.youtube.com/watch?v=LWyesA1qO-I",
+    "thumbnail": "https://i.ytimg.com/vi/LWyesA1qO-I/hqdefault.jpg",
+    "channel": "MKIceAndFire",
+    "published_at": "2025-12-19",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 383,
+  "fields": {
+    "game": 68,
+    "title": "Prey – Official Gameplay Trailer",
+    "video_url": "https://www.youtube.com/watch?v=LNHZ9WAertc",
+    "thumbnail": "https://i.ytimg.com/vi/LNHZ9WAertc/hqdefault.jpg",
+    "channel": "Bethesda Softworks",
+    "published_at": "2016-08-04",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 384,
+  "fields": {
+    "game": 68,
+    "title": "PREY Walkthrough Gameplay Part 1 - This Game is Mind Blowing!",
+    "video_url": "https://www.youtube.com/watch?v=4TiX8zCniKY",
+    "thumbnail": "https://i.ytimg.com/vi/4TiX8zCniKY/hqdefault.jpg",
+    "channel": "ESO",
+    "published_at": "2017-05-05",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 385,
+  "fields": {
+    "game": 68,
+    "title": "PREY | Full Gameplay Walkthrough | No Commentary",
+    "video_url": "https://www.youtube.com/watch?v=46LTM84Jv40",
+    "thumbnail": "https://i.ytimg.com/vi/46LTM84Jv40/hqdefault.jpg",
+    "channel": "giedmich",
+    "published_at": "2025-09-10",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 386,
+  "fields": {
+    "game": 69,
+    "title": "Borderlands: Game of the Year Official Trailer",
+    "video_url": "https://www.youtube.com/watch?v=UKzMC90kaRw",
+    "thumbnail": "https://i.ytimg.com/vi/UKzMC90kaRw/hqdefault.jpg",
+    "channel": "Borderlands",
+    "published_at": "2019-03-28",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 387,
+  "fields": {
+    "game": 69,
+    "title": "Borderlands: GOTY Enhanced (PC) - Full Game 4K60 Walkthrough (ALL Missions) - No Commentary",
+    "video_url": "https://www.youtube.com/watch?v=0rI8qA21ghc",
+    "thumbnail": "https://i.ytimg.com/vi/0rI8qA21ghc/hqdefault.jpg",
+    "channel": "ToughGamingGuy",
+    "published_at": "2024-08-30",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 388,
+  "fields": {
+    "game": 69,
+    "title": "Borderlands 1 Full Walkthrough Gameplay - No Commentary 4K (PC Longplay)",
+    "video_url": "https://www.youtube.com/watch?v=b_xRJ45Z0u0",
+    "thumbnail": "https://i.ytimg.com/vi/b_xRJ45Z0u0/hqdefault.jpg",
+    "channel": "Lacry",
+    "published_at": "2025-08-23",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 389,
+  "fields": {
+    "game": 70,
+    "title": "Skyrim Special Edition – Gameplay Trailer #2",
+    "video_url": "https://www.youtube.com/watch?v=LSPuJ9ggVcA",
+    "thumbnail": "https://i.ytimg.com/vi/LSPuJ9ggVcA/hqdefault.jpg",
+    "channel": "Bethesda Softworks",
+    "published_at": "2016-10-21",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 390,
+  "fields": {
+    "game": 70,
+    "title": "PS5 Skyrim Anniversary Edition The Elder Scrolls V - Part 1 Walkthrough Full Game Playthrough",
+    "video_url": "https://www.youtube.com/watch?v=tfpjpZVoGIk",
+    "thumbnail": "https://i.ytimg.com/vi/tfpjpZVoGIk/hqdefault.jpg",
+    "channel": "Aberukun",
+    "published_at": "2021-11-20",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 391,
+  "fields": {
+    "game": 70,
+    "title": "Skyrim Quest Walkthrough - Imperial Legion: Compelling Tribute",
+    "video_url": "https://www.youtube.com/watch?v=ZsGAnDWYY00",
+    "thumbnail": "https://i.ytimg.com/vi/ZsGAnDWYY00/hqdefault.jpg",
+    "channel": "Gaming_Rich",
+    "published_at": "2016-08-07",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 392,
+  "fields": {
+    "game": 71,
+    "title": "Dishonored 2 - E3 2016 Gameplay Trailer | PS4",
+    "video_url": "https://www.youtube.com/watch?v=IcfkMO5Fw3w",
+    "thumbnail": "https://i.ytimg.com/vi/IcfkMO5Fw3w/hqdefault.jpg",
+    "channel": "PlayStation",
+    "published_at": "2016-06-14",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 393,
+  "fields": {
+    "game": 71,
+    "title": "Dishonored 2 - Emily's Powers - Beginner's Guide Walkthrough",
+    "video_url": "https://www.youtube.com/watch?v=FIa6hni0JFo",
+    "thumbnail": "https://i.ytimg.com/vi/FIa6hni0JFo/hqdefault.jpg",
+    "channel": "MrCodeslinger",
+    "published_at": "2016-12-13",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 394,
+  "fields": {
+    "game": 71,
+    "title": "DISHONORED 2 Full Game Walkthrough - No Commentary (#Dishonored2 Full Game Emily Non-Lethal) 2016",
+    "video_url": "https://www.youtube.com/watch?v=JU3VbOvUT1c",
+    "thumbnail": "https://i.ytimg.com/vi/JU3VbOvUT1c/hqdefault.jpg",
+    "channel": "RabidRetrospectGames",
+    "published_at": "2016-11-09",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 395,
+  "fields": {
+    "game": 72,
+    "title": "Dishonored Gameplay Trailer",
+    "video_url": "https://www.youtube.com/watch?v=-XbQgdSlsd0",
+    "thumbnail": "https://i.ytimg.com/vi/-XbQgdSlsd0/hqdefault.jpg",
+    "channel": "Bethesda Softworks",
+    "published_at": "2012-06-01",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 396,
+  "fields": {
+    "game": 72,
+    "title": "[테리호♠] 디스아너드 DLC(브리그모어의 마녀들) 공략 : The Dead Eeld",
+    "video_url": "https://www.youtube.com/watch?v=Nws0Y2qkvRg",
+    "thumbnail": "https://i.ytimg.com/vi/Nws0Y2qkvRg/hqdefault.jpg",
+    "channel": "테리호TV",
+    "published_at": "2015-08-11",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 397,
+  "fields": {
+    "game": 72,
+    "title": "DISHONORED + All DLC  Full Gameplay Walkthrough / No Commentary【FULL GAME】4K 60FPS Ultra HD",
+    "video_url": "https://www.youtube.com/watch?v=CfeBEnrfdxY",
+    "thumbnail": "https://i.ytimg.com/vi/CfeBEnrfdxY/hqdefault.jpg",
+    "channel": "Gamer's Little Playground",
+    "published_at": "2024-06-26",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 398,
+  "fields": {
+    "game": 73,
+    "title": "Don't Starve Together 2021 Gameplay Trailer",
+    "video_url": "https://www.youtube.com/watch?v=dU-aq2JbLkk",
+    "thumbnail": "https://i.ytimg.com/vi/dU-aq2JbLkk/hqdefault.jpg",
+    "channel": "Klei Entertainment",
+    "published_at": "2021-05-05",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 399,
+  "fields": {
+    "game": 73,
+    "title": "[굶지마 투게더]  우왕좌왕 초보 생존기 1화 Don't Starve Together",
+    "video_url": "https://www.youtube.com/watch?v=8Iq7GGsPuz4",
+    "thumbnail": "https://i.ytimg.com/vi/8Iq7GGsPuz4/hqdefault.jpg",
+    "channel": "쥬웰Zuwel",
+    "published_at": "2016-11-11",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 400,
+  "fields": {
+    "game": 73,
+    "title": "굶지마 나홀로 공략 6",
+    "video_url": "https://www.youtube.com/watch?v=u9nZZn_4jlg",
+    "thumbnail": "https://i.ytimg.com/vi/u9nZZn_4jlg/hqdefault.jpg",
+    "channel": "식빵월드",
+    "published_at": "2015-11-16",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 401,
+  "fields": {
+    "game": 74,
+    "title": "Hellblade: Senua's Sacrifice - Official Xbox Series X/S Trailer",
+    "video_url": "https://www.youtube.com/watch?v=JRncx5UhCok",
+    "thumbnail": "https://i.ytimg.com/vi/JRncx5UhCok/hqdefault.jpg",
+    "channel": "IGN",
+    "published_at": "2021-08-09",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 402,
+  "fields": {
+    "game": 74,
+    "title": "헬블레이드 공략, #01, Hellblade: Senua's Sacrifice Walkthrough Gameplay 1080 ti, 2017 신작 게임",
+    "video_url": "https://www.youtube.com/watch?v=a64KrOlGEBs",
+    "thumbnail": "https://i.ytimg.com/vi/a64KrOlGEBs/hqdefault.jpg",
+    "channel": "게임 놀이터",
+    "published_at": "2017-08-08",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 403,
+  "fields": {
+    "game": 74,
+    "title": "헬블레이드:세누아의 희생 Hellblade: Senua's Sacrifice - 공략영상 #1",
+    "video_url": "https://www.youtube.com/watch?v=nsvmDcIg6aM",
+    "thumbnail": "https://i.ytimg.com/vi/nsvmDcIg6aM/hqdefault.jpg",
+    "channel": "이웃집달팽이",
+    "published_at": "2020-09-27",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 404,
+  "fields": {
+    "game": 75,
+    "title": "Grand Theft Auto: Vice City 10th Anniversary Edition Trailer",
+    "video_url": "https://www.youtube.com/watch?v=m8oQllwqw_I",
+    "thumbnail": "https://i.ytimg.com/vi/m8oQllwqw_I/hqdefault.jpg",
+    "channel": "GameSpot",
+    "published_at": "2012-11-29",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 405,
+  "fields": {
+    "game": 75,
+    "title": "GTA Vice City - Full Game Walkthrough in 4K",
+    "video_url": "https://www.youtube.com/watch?v=N9YvopAJEgo",
+    "thumbnail": "https://i.ytimg.com/vi/N9YvopAJEgo/hqdefault.jpg",
+    "channel": "GTA Series Videos",
+    "published_at": "2021-01-21",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 406,
+  "fields": {
+    "game": 75,
+    "title": "Grand Theft Auto: Vice City - All Storyline Missions & Credits (PC)",
+    "video_url": "https://www.youtube.com/watch?v=wD0dyQ9Yzc8",
+    "thumbnail": "https://i.ytimg.com/vi/wD0dyQ9Yzc8/hqdefault.jpg",
+    "channel": "AddictionToGaming",
+    "published_at": "2016-11-05",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 407,
+  "fields": {
+    "game": 76,
+    "title": "Company of Heroes 2 - Gameplay Trailer",
+    "video_url": "https://www.youtube.com/watch?v=BbIfOya35f0",
+    "thumbnail": "https://i.ytimg.com/vi/BbIfOya35f0/hqdefault.jpg",
+    "channel": "IGN",
+    "published_at": "2014-05-08",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 408,
+  "fields": {
+    "game": 76,
+    "title": "COH2 Tips & Tricks Episode #1",
+    "video_url": "https://www.youtube.com/watch?v=iohwFc3yaqE",
+    "thumbnail": "https://i.ytimg.com/vi/iohwFc3yaqE/hqdefault.jpg",
+    "channel": "Stormless",
+    "published_at": "2016-12-11",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 409,
+  "fields": {
+    "game": 76,
+    "title": "Company of Heroes 2 Walkthrough Part 1 - Battle of Stalingrad - Single Player Campaign",
+    "video_url": "https://www.youtube.com/watch?v=SweDgohYDD0",
+    "thumbnail": "https://i.ytimg.com/vi/SweDgohYDD0/hqdefault.jpg",
+    "channel": "GameRiot",
+    "published_at": "2013-06-25",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 410,
+  "fields": {
+    "game": 77,
+    "title": "Injustice: Gods Among Us - Ultimate Edition Launch Trailer",
+    "video_url": "https://www.youtube.com/watch?v=h1l8c5ZllNc",
+    "thumbnail": "https://i.ytimg.com/vi/h1l8c5ZllNc/hqdefault.jpg",
+    "channel": "GameSpot",
+    "published_at": "2013-11-13",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 411,
+  "fields": {
+    "game": 77,
+    "title": "Injustice: Gods Among Us ENDING - PS4 - Part 12 - Superman (Let's Play, Walkthrough, Gameplay)",
+    "video_url": "https://www.youtube.com/watch?v=z1OaSP6xAGs",
+    "thumbnail": "https://i.ytimg.com/vi/z1OaSP6xAGs/hqdefault.jpg",
+    "channel": "Reign_Of_Rain",
+    "published_at": "2014-02-18",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 412,
+  "fields": {
+    "game": 77,
+    "title": "injustice gods among us ending all endings HD walkthrough part 12",
+    "video_url": "https://www.youtube.com/watch?v=z4YyZd3N2yQ",
+    "thumbnail": "https://i.ytimg.com/vi/z4YyZd3N2yQ/hqdefault.jpg",
+    "channel": "HassanAlHajry",
+    "published_at": "2013-04-16",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 413,
+  "fields": {
+    "game": 78,
+    "title": "13 Minutes of Caribbean Open-World Gameplay | Assassin's Creed 4 Black Flag [UK]",
+    "video_url": "https://www.youtube.com/watch?v=0ppfJ9Mv71Y",
+    "thumbnail": "https://i.ytimg.com/vi/0ppfJ9Mv71Y/hqdefault.jpg",
+    "channel": "Assassin's Creed",
+    "published_at": "2013-07-23",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 414,
+  "fields": {
+    "game": 78,
+    "title": "어쌔신 크리드 4 블랙 플래그 #1 시퀀스 1. 에드워드 켄웨이 (메인) [Assassin's Creed IV Black Flag] - 100% Walkthrough",
+    "video_url": "https://www.youtube.com/watch?v=erUuU9GP3xE",
+    "thumbnail": "https://i.ytimg.com/vi/erUuU9GP3xE/hqdefault.jpg",
+    "channel": "유튜범",
+    "published_at": "2019-03-14",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 415,
+  "fields": {
+    "game": 78,
+    "title": "[어쌔신 크리드 4: 블랙플래그 한국어 공략] 아무도 없는 #20 1080p 60프레임 - PC Assassin's Creed IV Black Flag 1080p 60fps",
+    "video_url": "https://www.youtube.com/watch?v=t-JOQHMNa7w",
+    "thumbnail": "https://i.ytimg.com/vi/t-JOQHMNa7w/hqdefault.jpg",
+    "channel": "조용한 게이머 렉스",
+    "published_at": "2015-10-14",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 416,
+  "fields": {
+    "game": 79,
+    "title": "Introducing: Agent 47 - Hitman: Absolution Gameplay Trailer",
+    "video_url": "https://www.youtube.com/watch?v=rFnCan12hN8",
+    "thumbnail": "https://i.ytimg.com/vi/rFnCan12hN8/hqdefault.jpg",
+    "channel": "GameSpot",
+    "published_at": "2012-05-02",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 417,
+  "fields": {
+    "game": 79,
+    "title": "Hitman Absolution FULL Game Walkthrough - All Missions (No Commentary)",
+    "video_url": "https://www.youtube.com/watch?v=Tylv0i5kr3k",
+    "thumbnail": "https://i.ytimg.com/vi/Tylv0i5kr3k/hqdefault.jpg",
+    "channel": "Game_track",
+    "published_at": "2021-08-02",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 418,
+  "fields": {
+    "game": 79,
+    "title": "Hitman: Absolution - Full Game Walkthrough in 4K - Purist Difficulty [All Evidences]",
+    "video_url": "https://www.youtube.com/watch?v=HoDqopWfgl8",
+    "thumbnail": "https://i.ytimg.com/vi/HoDqopWfgl8/hqdefault.jpg",
+    "channel": "Hitman Series",
+    "published_at": "2023-07-03",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 419,
+  "fields": {
+    "game": 80,
+    "title": "Sid Meier's Civilization V Launch Trailer",
+    "video_url": "https://www.youtube.com/watch?v=4lEfl_OebvQ",
+    "thumbnail": "https://i.ytimg.com/vi/4lEfl_OebvQ/hqdefault.jpg",
+    "channel": "Sid Meier's Civilization",
+    "published_at": "2014-02-28",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 420,
+  "fields": {
+    "game": 80,
+    "title": "[문명5] 문명을 처음 하시는 입문자들을 위한 완벽정리 강의영상👨‍🏫 (Sid Meier's Civilization® V)",
+    "video_url": "https://www.youtube.com/watch?v=EotgRK09Uws",
+    "thumbnail": "https://i.ytimg.com/vi/EotgRK09Uws/hqdefault.jpg",
+    "channel": "옥냥이 RoofTopCAT",
+    "published_at": "2023-06-20",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 421,
+  "fields": {
+    "game": 80,
+    "title": "Civilization 5 Brave New World Walkthrough Part 1 - Trade (Let's Play) Playthrough",
+    "video_url": "https://www.youtube.com/watch?v=XO4i4M0qfJc",
+    "thumbnail": "https://i.ytimg.com/vi/XO4i4M0qfJc/hqdefault.jpg",
+    "channel": "GameRiot",
+    "published_at": "2013-07-09",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 422,
+  "fields": {
+    "game": 81,
+    "title": "Control - Official Gameplay Trailer",
+    "video_url": "https://www.youtube.com/watch?v=F74LLDhAhhI",
+    "thumbnail": "https://i.ytimg.com/vi/F74LLDhAhhI/hqdefault.jpg",
+    "channel": "GameSpot Trailers",
+    "published_at": "2019-03-26",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 423,
+  "fields": {
+    "game": 81,
+    "title": "[컨트롤 공략] 메인퀘스트 #10 통제권을 되찾아라 (엔딩) // CONTROL Walkthrough #10 Take Control",
+    "video_url": "https://www.youtube.com/watch?v=NfeN6RZE3gY",
+    "thumbnail": "https://i.ytimg.com/vi/NfeN6RZE3gY/hqdefault.jpg",
+    "channel": "IIiNixIIㅣ아이닉스 100% 게임 공략 채널",
+    "published_at": "2021-08-26",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 424,
+  "fields": {
+    "game": 81,
+    "title": "TAKING CONTROL | CONTROL Gameplay Walkthrough (2019 Game) | Part 4",
+    "video_url": "https://www.youtube.com/watch?v=tRzDmuZtpUg",
+    "thumbnail": "https://i.ytimg.com/vi/tRzDmuZtpUg/hqdefault.jpg",
+    "channel": "ODEEN / Stealth & Survival Gaming /",
+    "published_at": "2026-06-23",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 425,
+  "fields": {
+    "game": 82,
+    "title": "LA Noire: Gameplay Video Trailer",
+    "video_url": "https://www.youtube.com/watch?v=jeYym1U226M",
+    "thumbnail": "https://i.ytimg.com/vi/jeYym1U226M/hqdefault.jpg",
+    "channel": "IGN",
+    "published_at": "2011-02-09",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 426,
+  "fields": {
+    "game": 82,
+    "title": "LA NOIRE - FULL GAME (ALL CASES) - 5 Star Walkthrough - No Commentary",
+    "video_url": "https://www.youtube.com/watch?v=p8vQanpkiz8",
+    "thumbnail": "https://i.ytimg.com/vi/p8vQanpkiz8/hqdefault.jpg",
+    "channel": "SourceSpy91",
+    "published_at": "2020-11-25",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 427,
+  "fields": {
+    "game": 82,
+    "title": "LA Noire - Full Game Walkthrough in 4K",
+    "video_url": "https://www.youtube.com/watch?v=h1VyskSNq2o",
+    "thumbnail": "https://i.ytimg.com/vi/h1VyskSNq2o/hqdefault.jpg",
+    "channel": "GTA Series Videos",
+    "published_at": "2018-01-02",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 428,
+  "fields": {
+    "game": 83,
+    "title": "Super Meat Boy Teaser Trailer",
+    "video_url": "https://www.youtube.com/watch?v=snaionoxjos",
+    "thumbnail": "https://i.ytimg.com/vi/snaionoxjos/hqdefault.jpg",
+    "channel": "IGN",
+    "published_at": "2010-05-12",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 429,
+  "fields": {
+    "game": 83,
+    "title": "Super Meat Boy Forever: Full Game (No Commentary Walkthrough)",
+    "video_url": "https://www.youtube.com/watch?v=zCa-pzFlZgY",
+    "thumbnail": "https://i.ytimg.com/vi/zCa-pzFlZgY/hqdefault.jpg",
+    "channel": "NeatPick",
+    "published_at": "2020-12-25",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 430,
+  "fields": {
+    "game": 83,
+    "title": "[시켠왕]슈퍼미트보이, Super Meat Boy (댓글에 공략있음 Refer to the capture comment)",
+    "video_url": "https://www.youtube.com/watch?v=_7OmabyJHfM",
+    "thumbnail": "https://i.ytimg.com/vi/_7OmabyJHfM/hqdefault.jpg",
+    "channel": "뉴잰",
+    "published_at": "2021-01-12",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 431,
+  "fields": {
+    "game": 84,
+    "title": "For Honor Gameplay Trailer at E3 2015 - Medieval Melee Combat",
+    "video_url": "https://www.youtube.com/watch?v=s2_ek6uAnFo",
+    "thumbnail": "https://i.ytimg.com/vi/s2_ek6uAnFo/hqdefault.jpg",
+    "channel": "outsidexbox",
+    "published_at": "2015-06-15",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 432,
+  "fields": {
+    "game": 84,
+    "title": "FOR HONOR Gameplay Walkthrough Part 1 CAMPAIGN FULL GAME [4K 60FPS PC ULTRA] - No Commentary",
+    "video_url": "https://www.youtube.com/watch?v=3rzE8UL5Jms",
+    "thumbnail": "https://i.ytimg.com/vi/3rzE8UL5Jms/hqdefault.jpg",
+    "channel": "MKIceAndFire",
+    "published_at": "2024-01-22",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 433,
+  "fields": {
+    "game": 84,
+    "title": "FOR HONOR Gameplay Walkthrough FULL GAME No Commentary (PC 4K 60FPS Longplay)",
+    "video_url": "https://www.youtube.com/watch?v=yibZMVtHUoU",
+    "thumbnail": "https://i.ytimg.com/vi/yibZMVtHUoU/hqdefault.jpg",
+    "channel": "TheBlueDragon",
+    "published_at": "2026-01-26",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 434,
+  "fields": {
+    "game": 85,
+    "title": "Star Wars Jedi: Fallen Order Official Gameplay Trailer - E3 2019",
+    "video_url": "https://www.youtube.com/watch?v=TrxtGw0BW78",
+    "thumbnail": "https://i.ytimg.com/vi/TrxtGw0BW78/hqdefault.jpg",
+    "channel": "IGN",
+    "published_at": "2019-06-09",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 435,
+  "fields": {
+    "game": 85,
+    "title": "Star Wars Jedi Fallen Order 100% Walkthrough (All Collectibles, Seeds and Platinum Trophy)",
+    "video_url": "https://www.youtube.com/watch?v=Y4jqjCIvkZs",
+    "thumbnail": "https://i.ytimg.com/vi/Y4jqjCIvkZs/hqdefault.jpg",
+    "channel": "Videogmz",
+    "published_at": "2022-07-23",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 436,
+  "fields": {
+    "game": 85,
+    "title": "STAR WARS JEDI FALLEN ORDER Gameplay Walkthrough Part 1 FULL GAME Jedi Master - 60FPS No Commentary",
+    "video_url": "https://www.youtube.com/watch?v=Y1bWJhvneyI",
+    "thumbnail": "https://i.ytimg.com/vi/Y1bWJhvneyI/hqdefault.jpg",
+    "channel": "MKIceAndFire",
+    "published_at": "2019-11-17",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 437,
+  "fields": {
+    "game": 86,
+    "title": "Uncharted 4: A Thief’s End Gameplay Video - 2014 PlayStation Experience | PS4",
+    "video_url": "https://www.youtube.com/watch?v=Ow2cL-pp6p8",
+    "thumbnail": "https://i.ytimg.com/vi/Ow2cL-pp6p8/hqdefault.jpg",
+    "channel": "PlayStation",
+    "published_at": "2014-12-06",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 438,
+  "fields": {
+    "game": 86,
+    "title": "UNCHARTED 4 A Thief's End Full Gameplay Walkthrough / No Commentary【FULL GAME】4K Ultra HD",
+    "video_url": "https://www.youtube.com/watch?v=rLkT761SR-Q",
+    "thumbnail": "https://i.ytimg.com/vi/rLkT761SR-Q/hqdefault.jpg",
+    "channel": "Gamer's Little Playground",
+    "published_at": "2025-02-03",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 439,
+  "fields": {
+    "game": 86,
+    "title": "UNCHARTED 4 Gameplay Walkthrough FULL GAME [4K 60FPS PS5] - No Commentary",
+    "video_url": "https://www.youtube.com/watch?v=d1fFEP9OFPI",
+    "thumbnail": "https://i.ytimg.com/vi/d1fFEP9OFPI/hqdefault.jpg",
+    "channel": "MKIceAndFire",
+    "published_at": "2024-03-26",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 440,
+  "fields": {
+    "game": 87,
+    "title": "Dead Space Launch Trailer",
+    "video_url": "https://www.youtube.com/watch?v=S7VvKGlVZu8",
+    "thumbnail": "https://i.ytimg.com/vi/S7VvKGlVZu8/hqdefault.jpg",
+    "channel": "Electronic Arts",
+    "published_at": "2008-10-14",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 441,
+  "fields": {
+    "game": 87,
+    "title": "DEAD SPACE (2008) Full Gameplay Walkthrough / No Commentary 【FULL GAME】4K UHD",
+    "video_url": "https://www.youtube.com/watch?v=SlXCoYc5rR4",
+    "thumbnail": "https://i.ytimg.com/vi/SlXCoYc5rR4/hqdefault.jpg",
+    "channel": "Gamer's Little Playground",
+    "published_at": "2023-01-22",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 442,
+  "fields": {
+    "game": 87,
+    "title": "Dead Space - FULL GAME walkthrough | Longplay (Impossible / No Damage)",
+    "video_url": "https://www.youtube.com/watch?v=zDbz9zGtAT4",
+    "thumbnail": "https://i.ytimg.com/vi/zDbz9zGtAT4/hqdefault.jpg",
+    "channel": "Global Gaming",
+    "published_at": "2023-02-28",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 443,
+  "fields": {
+    "game": 88,
+    "title": "Counter-Strike: Source 2004 Trailer (HD)",
+    "video_url": "https://www.youtube.com/watch?v=bvI62FUDpKA",
+    "thumbnail": "https://i.ytimg.com/vi/bvI62FUDpKA/hqdefault.jpg",
+    "channel": "TDG_Twiztid Demonic Gaming",
+    "published_at": "2008-07-08",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 444,
+  "fields": {
+    "game": 88,
+    "title": "카스온라인 Ep. 총력전 진행 방법 (CSO Zombie Scenario Ep. All-Out How To Proceed)",
+    "video_url": "https://www.youtube.com/watch?v=5YBKR0E4Etc",
+    "thumbnail": "https://i.ytimg.com/vi/5YBKR0E4Etc/hqdefault.jpg",
+    "channel": "Hyeon TaeNiing",
+    "published_at": "2018-08-10",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 445,
+  "fields": {
+    "game": 88,
+    "title": "[카운터스트라이크:글로벌오펜시브] 카스 글옵 핵시설 맵? 여긴 옛날에도 많이 했지!_Counter-Strike Global Offensive Gameplay Walkthrough",
+    "video_url": "https://www.youtube.com/watch?v=zlQ_tVmLF7A",
+    "thumbnail": "https://i.ytimg.com/vi/zlQ_tVmLF7A/hqdefault.jpg",
+    "channel": "힛맨🅥",
+    "published_at": "2022-02-13",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 446,
+  "fields": {
+    "game": 89,
+    "title": "Mass Effect 2-Combat Gameplay Trailer HD",
+    "video_url": "https://www.youtube.com/watch?v=b_IqVGayv04",
+    "thumbnail": "https://i.ytimg.com/vi/b_IqVGayv04/hqdefault.jpg",
+    "channel": "NewGenerationGamers",
+    "published_at": "2009-12-09",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 447,
+  "fields": {
+    "game": 89,
+    "title": "-이안- 매스 이펙트 2 공략 [Mass Effect 2](메인미션) 암살자 #1",
+    "video_url": "https://www.youtube.com/watch?v=0XZ9iL5AdbA",
+    "thumbnail": "https://i.ytimg.com/vi/0XZ9iL5AdbA/hqdefault.jpg",
+    "channel": "이안",
+    "published_at": "2015-12-16",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 448,
+  "fields": {
+    "game": 89,
+    "title": "Mass Effect 2 Legendary Edition Full Walkthrough Gameplay - No Commentary (PS4 Longplay)",
+    "video_url": "https://www.youtube.com/watch?v=QIqFFaORXBg",
+    "thumbnail": "https://i.ytimg.com/vi/QIqFFaORXBg/hqdefault.jpg",
+    "channel": "Lacry",
+    "published_at": "2021-05-21",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 449,
+  "fields": {
+    "game": 90,
+    "title": "Death Stranding Gameplay Reveal Trailer (4K) - E3 2018",
+    "video_url": "https://www.youtube.com/watch?v=4OPn5GpGDWQ",
+    "thumbnail": "https://i.ytimg.com/vi/4OPn5GpGDWQ/hqdefault.jpg",
+    "channel": "IGN",
+    "published_at": "2018-06-12",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 450,
+  "fields": {
+    "game": 90,
+    "title": "DEATH STRANDING Gameplay Walkthrough FULL GAME [4K 60FPS PS5 PRO] - No Commentary",
+    "video_url": "https://www.youtube.com/watch?v=n7hPTG5Ue1E",
+    "thumbnail": "https://i.ytimg.com/vi/n7hPTG5Ue1E/hqdefault.jpg",
+    "channel": "MKIceAndFire",
+    "published_at": "2025-05-10",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 451,
+  "fields": {
+    "game": 90,
+    "title": "Death Stranding - FULL GAME WALKTHROUGH - No Commentary",
+    "video_url": "https://www.youtube.com/watch?v=2_p9wLMNOeM",
+    "thumbnail": "https://i.ytimg.com/vi/2_p9wLMNOeM/hqdefault.jpg",
+    "channel": "SourceSpy91",
+    "published_at": "2019-12-18",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 452,
+  "fields": {
+    "game": 91,
+    "title": "Just Cause 3 - Gameplay Trailer in 4K @ 2160p HD ✔",
+    "video_url": "https://www.youtube.com/watch?v=ttlwmnJ7wrY",
+    "thumbnail": "https://i.ytimg.com/vi/ttlwmnJ7wrY/hqdefault.jpg",
+    "channel": "RajmanGaming HD",
+    "published_at": "2015-11-18",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 453,
+  "fields": {
+    "game": 91,
+    "title": "Just Cause 3 - Full Game | All Chapters & Ending (No Commentary)",
+    "video_url": "https://www.youtube.com/watch?v=toc-YQLDIZ8",
+    "thumbnail": "https://i.ytimg.com/vi/toc-YQLDIZ8/hqdefault.jpg",
+    "channel": "Full Playthroughs",
+    "published_at": "2021-08-09",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 454,
+  "fields": {
+    "game": 91,
+    "title": "Just Cause 3 Walkthrough Gameplay Part 1 - Intro - Campaign Mission 1 (PS4 Xbox One)",
+    "video_url": "https://www.youtube.com/watch?v=0C-Mzp9aMvA",
+    "thumbnail": "https://i.ytimg.com/vi/0C-Mzp9aMvA/hqdefault.jpg",
+    "channel": "theRadBrad",
+    "published_at": "2015-11-28",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 455,
+  "fields": {
+    "game": 92,
+    "title": "Metro: Last Light - Launch Trailer",
+    "video_url": "https://www.youtube.com/watch?v=7DUCA8wK9Ls",
+    "thumbnail": "https://i.ytimg.com/vi/7DUCA8wK9Ls/hqdefault.jpg",
+    "channel": "IGN",
+    "published_at": "2013-05-15",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 456,
+  "fields": {
+    "game": 92,
+    "title": "Metro Last Light Redux 100% Walkthrough (Ranger Hardcore/Survival, No Commentary) 19 BRIDGE",
+    "video_url": "https://www.youtube.com/watch?v=38lVIfpG6iM",
+    "thumbnail": "https://i.ytimg.com/vi/38lVIfpG6iM/hqdefault.jpg",
+    "channel": "patologTV",
+    "published_at": "2021-05-20",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 457,
+  "fields": {
+    "game": 92,
+    "title": "[METRO LAST LIGHT] 매트로 라스트 라이트 공략 영상 (Game play walkthrough)",
+    "video_url": "https://www.youtube.com/watch?v=hRFvJB1bYAg",
+    "thumbnail": "https://i.ytimg.com/vi/hRFvJB1bYAg/hqdefault.jpg",
+    "channel": "대설주의보",
+    "published_at": "2024-09-21",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 458,
+  "fields": {
+    "game": 93,
+    "title": "Metro 2033 Redux | Gameplay Trailer",
+    "video_url": "https://www.youtube.com/watch?v=Fdkv0W54ytQ",
+    "thumbnail": "https://i.ytimg.com/vi/Fdkv0W54ytQ/hqdefault.jpg",
+    "channel": "Should You Play It?",
+    "published_at": "2025-04-14",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 459,
+  "fields": {
+    "game": 93,
+    "title": "Metro 2033 Redux │ 100% Cinematic Longplay │ Ranger Hardcore, Survival │ No Commentary",
+    "video_url": "https://www.youtube.com/watch?v=7tu8GLHpNXY",
+    "thumbnail": "https://i.ytimg.com/vi/7tu8GLHpNXY/hqdefault.jpg",
+    "channel": "patologTV",
+    "published_at": "2021-03-04",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 460,
+  "fields": {
+    "game": 93,
+    "title": "[워렉] 메트로 2033 리덕스 모든 일기 공략! #1 (프롤로그~추적)",
+    "video_url": "https://www.youtube.com/watch?v=bObeAR7kzVc",
+    "thumbnail": "https://i.ytimg.com/vi/bObeAR7kzVc/hqdefault.jpg",
+    "channel": "워렉",
+    "published_at": "2019-01-24",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 461,
+  "fields": {
+    "game": 94,
+    "title": "Borderlands: The Pre-Sequel Launch Trailer | PS3",
+    "video_url": "https://www.youtube.com/watch?v=-Jj_256ESeU",
+    "thumbnail": "https://i.ytimg.com/vi/-Jj_256ESeU/hqdefault.jpg",
+    "channel": "PlayStation",
+    "published_at": "2014-10-13",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 462,
+  "fields": {
+    "game": 94,
+    "title": "Borderlands: The Pre-Sequel Any% (CL4P-TP) In-Depth Speedrun Tutorial (Part 1)",
+    "video_url": "https://www.youtube.com/watch?v=p22nvABZ0u8",
+    "thumbnail": "https://i.ytimg.com/vi/p22nvABZ0u8/hqdefault.jpg",
+    "channel": "zzrules21",
+    "published_at": "2021-08-20",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 463,
+  "fields": {
+    "game": 94,
+    "title": "보더랜드 프리시퀄 한글 Part 01 아테나 Borderlands The Pre-Sequel",
+    "video_url": "https://www.youtube.com/watch?v=xeMTavvb5dg",
+    "thumbnail": "https://i.ytimg.com/vi/xeMTavvb5dg/hqdefault.jpg",
+    "channel": "케이대시 K-Dash",
+    "published_at": "2014-12-02",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 464,
+  "fields": {
+    "game": 95,
+    "title": "Counter-Strike: Global Offensive Trailer",
+    "video_url": "https://www.youtube.com/watch?v=edYCtaNueQY",
+    "thumbnail": "https://i.ytimg.com/vi/edYCtaNueQY/hqdefault.jpg",
+    "channel": "Valve",
+    "published_at": "2012-08-17",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 465,
+  "fields": {
+    "game": 95,
+    "title": "[카운터스트라이크:글로벌오펜시브] 카스 글옵 핵시설 맵? 여긴 옛날에도 많이 했지!_Counter-Strike Global Offensive Gameplay Walkthrough",
+    "video_url": "https://www.youtube.com/watch?v=zlQ_tVmLF7A",
+    "thumbnail": "https://i.ytimg.com/vi/zlQ_tVmLF7A/hqdefault.jpg",
+    "channel": "힛맨🅥",
+    "published_at": "2022-02-13",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 466,
+  "fields": {
+    "game": 95,
+    "title": "Counter-Strike: Global Offensive Gameplay Walkthrough [1080p FHD 60FPS ULTRA] - No Commentary",
+    "video_url": "https://www.youtube.com/watch?v=1uZdTLJcAC8",
+    "thumbnail": "https://i.ytimg.com/vi/1uZdTLJcAC8/hqdefault.jpg",
+    "channel": "BAAM Game",
+    "published_at": "2020-07-01",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 467,
+  "fields": {
+    "game": 96,
+    "title": "Left 4 Dead Full Trailer HD",
+    "video_url": "https://www.youtube.com/watch?v=qvOGCZPDv7g",
+    "thumbnail": "https://i.ytimg.com/vi/qvOGCZPDv7g/hqdefault.jpg",
+    "channel": "NissanSkylineGTR1999",
+    "published_at": "2008-12-02",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 468,
+  "fields": {
+    "game": 96,
+    "title": "LEFT 4 DEAD - Full Game Expert Walkthrough Longplay Gameplay No Commentary",
+    "video_url": "https://www.youtube.com/watch?v=7ktJ3mGZIlc",
+    "thumbnail": "https://i.ytimg.com/vi/7ktJ3mGZIlc/hqdefault.jpg",
+    "channel": "Gamer Max Channel",
+    "published_at": "2018-02-28",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 469,
+  "fields": {
+    "game": 96,
+    "title": "Left 4 Dead - FULL GAME Expert Walkthrough Gameplay No Commentary",
+    "video_url": "https://www.youtube.com/watch?v=3ZyMNYXMDfY",
+    "thumbnail": "https://i.ytimg.com/vi/3ZyMNYXMDfY/hqdefault.jpg",
+    "channel": "Gamer Max Channel",
+    "published_at": "2023-08-20",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 470,
+  "fields": {
+    "game": 97,
+    "title": "BioShock 2 - Launch Trailer (4K 60FPS)",
+    "video_url": "https://www.youtube.com/watch?v=USkln2ShR1Y",
+    "thumbnail": "https://i.ytimg.com/vi/USkln2ShR1Y/hqdefault.jpg",
+    "channel": "Lamestream3r",
+    "published_at": "2025-08-12",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 471,
+  "fields": {
+    "game": 97,
+    "title": "BioShock 2 : Remastered (Best Ending) | 4K | Full Game Longplay Walkthrough No Commentary",
+    "video_url": "https://www.youtube.com/watch?v=WhvE1uF0sXQ",
+    "thumbnail": "https://i.ytimg.com/vi/WhvE1uF0sXQ/hqdefault.jpg",
+    "channel": "P.B. Horror Gaming",
+    "published_at": "2019-12-24",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 472,
+  "fields": {
+    "game": 97,
+    "title": "BIOSHOCK 2 REMASTERED PS5 Gameplay Walkthrough FULL GAME (4K 60FPS) No Commentary",
+    "video_url": "https://www.youtube.com/watch?v=i5d0BA95No8",
+    "thumbnail": "https://i.ytimg.com/vi/i5d0BA95No8/hqdefault.jpg",
+    "channel": "Shirrako",
+    "published_at": "2022-10-03",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 473,
+  "fields": {
+    "game": 98,
+    "title": "Hades - v1.0 Gameplay Showcase",
+    "video_url": "https://www.youtube.com/watch?v=YZZFlcE0fWE",
+    "thumbnail": "https://i.ytimg.com/vi/YZZFlcE0fWE/hqdefault.jpg",
+    "channel": "Supergiant Games",
+    "published_at": "2020-09-17",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 474,
+  "fields": {
+    "game": 98,
+    "title": "[게임 공략!] 하데스 모든 보스전 공략!!! 뉴비를 위한 영상...! 화이팅!!! / hades",
+    "video_url": "https://www.youtube.com/watch?v=4FqJcTjoew0",
+    "thumbnail": "https://i.ytimg.com/vi/4FqJcTjoew0/hqdefault.jpg",
+    "channel": "호두킹의 게임창고",
+    "published_at": "2020-10-03",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 475,
+  "fields": {
+    "game": 98,
+    "title": "[하데스] 기본 창을 핵 창으로 만들어주는 그것! (Hades)",
+    "video_url": "https://www.youtube.com/watch?v=BZCs7KoyvvE",
+    "thumbnail": "https://i.ytimg.com/vi/BZCs7KoyvvE/hqdefault.jpg",
+    "channel": "슈가파파",
+    "published_at": "2022-12-24",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 476,
+  "fields": {
+    "game": 99,
+    "title": "Metal Gear Solid V: Ground Zeroes - Launch Trailer",
+    "video_url": "https://www.youtube.com/watch?v=haMLxLbN2WI",
+    "thumbnail": "https://i.ytimg.com/vi/haMLxLbN2WI/hqdefault.jpg",
+    "channel": "GameSpot",
+    "published_at": "2014-03-18",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 477,
+  "fields": {
+    "game": 99,
+    "title": "메탈기어솔리드5 그라운드 제로 #1 (Metal Gear Solid V: Ground Zeroes Gameplay Walkthrough)",
+    "video_url": "https://www.youtube.com/watch?v=GQFSYYJwI6E",
+    "thumbnail": "https://i.ytimg.com/vi/GQFSYYJwI6E/hqdefault.jpg",
+    "channel": "Choibokchi Gameplay",
+    "published_at": "2015-09-14",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 478,
+  "fields": {
+    "game": 99,
+    "title": "메탈기어솔리드5 그라운드 제로 #3 (Metal Gear Solid V: Ground Zeroes Gameplay Walkthrough)",
+    "video_url": "https://www.youtube.com/watch?v=F5ospbHoQmE",
+    "thumbnail": "https://i.ytimg.com/vi/F5ospbHoQmE/hqdefault.jpg",
+    "channel": "Choibokchi Gameplay",
+    "published_at": "2015-09-14",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 479,
+  "fields": {
+    "game": 100,
+    "title": "Nier: Automata - Debut Gameplay Trailer",
+    "video_url": "https://www.youtube.com/watch?v=BPnAEHHPPz0",
+    "thumbnail": "https://i.ytimg.com/vi/BPnAEHHPPz0/hqdefault.jpg",
+    "channel": "IGN",
+    "published_at": "2015-10-29",
+    "video_type": "trailer"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 480,
+  "fields": {
+    "game": 100,
+    "title": "NIER AUTOMATA Gameplay Walkthrough FULL GAME (4K 60FPS) No Commentary",
+    "video_url": "https://www.youtube.com/watch?v=LgRIzMbgv38",
+    "thumbnail": "https://i.ytimg.com/vi/LgRIzMbgv38/hqdefault.jpg",
+    "channel": "Shirrako",
+    "published_at": "2023-01-20",
+    "video_type": "walkthrough"
+  }
+},
+{
+  "model": "games.gamevideo",
+  "pk": 481,
+  "fields": {
+    "game": 100,
+    "title": "Nier: Automata Full Walkthrough Gameplay - No Commentary (PS4 Longplay)",
+    "video_url": "https://www.youtube.com/watch?v=plD3KiWobNQ",
+    "thumbnail": "https://i.ytimg.com/vi/plD3KiWobNQ/hqdefault.jpg",
+    "channel": "Lacry",
+    "published_at": "2022-07-26",
     "video_type": "walkthrough"
   }
 }

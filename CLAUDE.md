@@ -31,6 +31,14 @@ RAWG의 `tags` 배열은 무드·장르·기술·시점을 한데 섞은 **평�
 
 **이미 적용된 마이그레이션 파일을 직접 수정하지 말 것.** 모델 변경은 `makemigrations`로 새 파일을 만들어 커밋한다. db.sqlite3는 각자 로컬이라, 적용 완료된 마이그레이션을 고치면 이미 적용한 사람의 DB엔 반영되지 않아 `no such table` 류 오류가 난다.
 
+## YouTube 영상 수집 (토큰 사용처)
+
+YouTube Data API를 **실제로 호출하는 유일한 모듈은 `backend/games/services/youtube.py`** 다. 다중 키를 지원해 한 키가 일일 쿼터(10,000 units = 100 검색/키)를 소진하면(403 quotaExceeded / 429) 자동으로 다음 키로 넘어간다. 키는 `.env`의 `YOUTUBE_DATA_API_KEYS=키1,키2`(먼저 쓸 키부터) 또는 `YOUTUBE_DATA_API_KEY` + `YOUTUBE_DATA_API_KEY_2`로 설정.
+
+이 서비스를 부르는 정식 수집 커맨드는 `load_games`(전체 적재 시 영상 포함)와 `backfill_videos`(영상만, RAWG/스팀/스크린샷 미호출 → YouTube 쿼터만 사용). 게임당 검색 2회(트레일러 1 + 공략 2). 한 번 수집하면 `GameVideo` → fixture(`games.json`)에 저장되어, 조회·재생·`loaddata`는 토큰을 쓰지 않는다(토큰은 '새 수집' 때만).
+
 ## 임시 스크립트 (커밋 금지)
 
-`backend/try_walkthrough.py`, `backend/verify_one_game.py`, `backend/analyze_tags.py`는 튜닝·분석용 임시 파일이다. **`git add .`로 묶지 말 것.** (`backfill_meta.py`는 정식 management command라 커밋 대상)
+`backend/try_walkthrough.py`, `backend/verify_one_game.py`, `backend/analyze_tags.py`는 튜닝·분석용 임시 파일이다. **`git add .`로 묶지 말 것.** (`backfill_meta.py`·`backfill_videos.py`·`export_translations.py`·`import_translations.py`는 정식 management command라 커밋 대상)
+
+⚠️ **`try_walkthrough.py`는 `youtube.py`를 거치지 않고 YouTube API를 자체적으로 직접 호출한다**(단일 키, 키 자동 전환 없음). 돌리면 그 시점 단일 키의 쿼터를 그대로 소비하므로 주의. 나머지 정식 수집 흐름(`load_games`/`backfill_videos`)은 `youtube.py`를 거쳐 키 전환 혜택을 받는다.
