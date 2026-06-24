@@ -27,6 +27,10 @@ class Command(BaseCommand):
         parser.add_argument('--ordering', type=str, default='-added')
         parser.add_argument('--dates', type=str, default=None,
                             help="출시일 범위 예: 2023-01-01,2023-12-31")
+        parser.add_argument('--genres', type=str, default=None,
+                            help="RAWG 장르 슬러그(콤마). 예: indie")
+        parser.add_argument('--tags', type=str, default=None,
+                            help="RAWG 태그 슬러그(콤마). 예: horror,pixel-graphics")
         parser.add_argument('--no-steam', action='store_true',
                             help='Steam 가격 수집 생략')
         parser.add_argument('--no-youtube', action='store_true',
@@ -42,6 +46,7 @@ class Command(BaseCommand):
                 games = rawg.fetch_game_list(
                     page=page, page_size=opts['page_size'],
                     ordering=opts['ordering'], dates=opts['dates'],
+                    genres=opts['genres'], tags=opts['tags'],
                 )
             except Exception as e:
                 self.stderr.write(self.style.ERROR(f'목록 호출 실패: {e}'))

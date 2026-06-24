@@ -95,6 +95,14 @@ function toGames(data) {
   return Array.isArray(data) ? data : (data.results ?? [])
 }
 
+// AI 추천 응답(results: [{game, reason, match_score}]) → 납작한 게임 카드 배열
+function toRecGames(data) {
+  const results = data?.results ?? (Array.isArray(data) ? data : [])
+  return results.map(r =>
+    r && r.game ? { ...r.game, reason: r.reason, match_score: r.match_score } : r,
+  )
+}
+
 onMounted(async () => {
   if (authStore.isLoggedIn) {
     try {
@@ -218,7 +226,7 @@ async function onAiSubmit({ prompt }) {
 
   try {
     const { data } = await recommendAPI.create({ prompt_input: prompt })
-    resultGames.value = toGames(data.games ?? data)
+    resultGames.value = toRecGames(data)
     recentHistory.value.unshift({
       id: data.log_id ?? Date.now(),
       query: prompt,
@@ -254,7 +262,7 @@ async function onRestoreHistory(h) {
 
   try {
     const { data } = await recommendAPI.logDetail(h.id)
-    resultGames.value = toGames(data.games ?? data)
+    resultGames.value = toRecGames(data)
   } catch {
     toastRef.value?.show('기록 불러오기 중 오류가 발생했어요.', 'error')
   } finally {

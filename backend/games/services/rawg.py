@@ -17,11 +17,20 @@ def _get(url, params=None):
     return resp.json()
 
 
-def fetch_game_list(page=1, page_size=20, ordering='-added', dates=None):
-    """게임 목록 한 페이지. results 배열 반환."""
+def fetch_game_list(page=1, page_size=20, ordering='-added',
+                    dates=None, genres=None, tags=None):
+    """게임 목록 한 페이지. results 배열 반환.
+
+    genres: RAWG 장르 슬러그(예: 'indie', 'action'). 콤마로 다중.
+    tags:   RAWG 태그 슬러그(예: 'horror', 'pixel-graphics', '2d'). 콤마로 다중.
+    """
     params = {'page': page, 'page_size': page_size, 'ordering': ordering}
     if dates:
         params['dates'] = dates       # 예: '2023-01-01,2023-12-31'
+    if genres:
+        params['genres'] = genres
+    if tags:
+        params['tags'] = tags
     data = _get(BASE, params)
     return data.get('results', [])
 

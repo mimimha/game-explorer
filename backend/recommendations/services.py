@@ -1,27 +1,37 @@
 """
-추천 계산 로직 (2층 구조).
+AI 추천 계산 로직 — GMS(LLM) "카탈로그 픽" 단일 호출 방식.
 
-  ① LLM(GMS)으로  prompt → 구조화된 의도(JSON) 추출
-  ② 그 의도로 우리 Game DB 를 필터·점수화 (후보 선정)   ← "프롬프트 단어 ↔ 적재 게임" 연결 지점
-  ③ LLM 으로 후보별 추천 이유(reason) 생성
+흐름:
+  1) 우리 Game 카탈로그(id·제목·장르·짧은 소개)를 구성
+  2) 사용자 요청 + 카탈로그를 GMS 에 한 번 보내, 목록 안에서만 N개를 고르게 함
+     → "도트 느낌의 공포게임" 같은 모호한 표현도 LLM 이 판단해 매칭
+  3) 반환된 game_id 를 검증(목록 밖 = 환각 → 폐기)하고 결과로 변환
 
-settings.RECOMMEND_USE_LLM 이 False 거나 LLM 호출이 실패하면
-기존 랜덤 placeholder 로 안전하게 폴백한다. (키 없이도 동작/시연 가능)
+settings.RECOMMEND_USE_LLM 이 False 거나 GMS 호출이 실패하면
+랜덤 placeholder 로 안전하게 폴백한다. (키 없이도 동작/시연 가능)
+
+⚠️ 토큰: _pick_games() 안의 gms.chat_json() 호출에서만 GMS 토큰이 소비된다.
+   RECOMMEND_USE_LLM=False 이면 호출 자체가 없어 토큰 0.
 """
 import json
 import logging
 
 from django.conf import settings
 
-from games.models import Game, Genre
+from games.models import Game
 from . import gms
 
 logger = logging.getLogger(__name__)
 
+# 카탈로그에 게임 소개(description)를 포함할지 — True 면 매칭 품질↑·토큰↑,
+# False 면 제목+장르만(토큰 약 절반).
+CATALOG_WITH_DESC = True      # GMS는 호출당 과금이라 소개 포함해도 추가비용 0 → 품질↑
+DESC_CHARS = 90               # 소개를 보낼 때 게임당 최대 글자수
+
 
 def generate_recommendations(prompt: str, user=None, limit: int = 5):
     """
-    prompt(취향 문장) → [{'game_id': int, 'reason': str, 'match_score': int}, ...]
+    prompt(요청 문장) → [{'game_id': int, 'reason': str, 'match_score': int}, ...]
     LLM 경로 실패 시 어떤 예외든 잡아 랜덤으로 폴백한다.
     """
     if settings.RECOMMEND_USE_LLM:
@@ -33,122 +43,81 @@ def generate_recommendations(prompt: str, user=None, limit: int = 5):
     return _random_recommendations(prompt, limit=limit)
 
 
-# ── LLM 경로 (①+②+③) ────────────────────────────────────────────
+# ── LLM 경로 ─────────────────────────────────────────────────────
 def _llm_recommendations(prompt, limit=5):
-    intent = _extract_intent(prompt)                  # ① 의도 추출
-    candidates = _filter_games(intent, limit=limit)   # ② DB 필터·점수
-    if not candidates:                                # 매칭 0건이면 채우기
-        candidates = _random_games(limit)
-    reasons = _generate_reasons(prompt, candidates)   # ③ 이유 생성
+    catalog = _build_catalog()
+    picks = _pick_games(prompt, catalog, limit)        # GMS 1회 호출
 
+    # 목록에 실제로 존재하는 game_id 만 사용(환각 방지)
+    valid = set(Game.objects.values_list('game_id', flat=True))
     results = []
-    for rank, (game, score) in enumerate(candidates):
-        results.append({
-            'game_id': game.game_id,
-            'reason': reasons.get(game.game_id) or _fallback_reason(prompt),
-            'match_score': score if score is not None else max(50, 95 - rank * 8),
-        })
-    return results
+    for rank, p in enumerate(picks):
+        gid = p.get('game_id')
+        if gid in valid:
+            results.append({
+                'game_id': gid,
+                'reason': (p.get('reason') or _fallback_reason(prompt)).strip(),
+                'match_score': max(50, 95 - rank * 9),  # 순위 기반 점수
+            })
+        if len(results) >= limit:
+            break
+
+    return results or _random_recommendations(prompt, limit=limit)
 
 
-def _extract_intent(prompt):
-    """① 자유 문장 → {genres, price_max, is_korean, platforms, keywords}."""
-    genre_names = list(Genre.objects.values_list('genre_name', flat=True))
-    system = (
-        '너는 게임 추천 시스템의 의도 분석기다. 사용자 문장에서 선호를 추출해 '
-        'JSON 으로만 답한다. 키: '
-        'genres(배열, 반드시 아래 목록 중에서만), '
-        'price_max(정수 KRW 또는 null), '
-        'is_korean(불리언 또는 null), '
-        'platforms(배열), '
-        'keywords(제목 검색용 영어 단어 배열). '
-        f'사용 가능한 장르: {", ".join(genre_names) or "(없음)"}'
-    )
-    data = gms.chat_json(
-        [{'role': 'system', 'content': system},
-         {'role': 'user', 'content': prompt}],
-        temperature=0.2,
-    )
-    return {
-        'genres': data.get('genres') or [],
-        'price_max': data.get('price_max'),
-        'is_korean': data.get('is_korean'),
-        'platforms': data.get('platforms') or [],
-        'keywords': data.get('keywords') or [],
-    }
-
-
-def _filter_games(intent, limit=5):
-    """
-    ② intent 로 Game 필터 + 장르/키워드 겹침으로 점수화.
-    반환: [(game, match_score 0~100), ...]  (점수 내림차순, 상위 limit)
-    """
+def _build_catalog():
+    """LLM 에 보낼 우리 게임 목록. (토큰 절약 위해 최소 필드만)"""
     qs = Game.objects.prefetch_related('genres').all()
-
-    # 하드 필터 (조건이 명시됐을 때만)
-    if intent.get('price_max') is not None:
-        qs = qs.filter(final_price__isnull=False,
-                       final_price__lte=intent['price_max'])
-    if intent.get('is_korean') is True:
-        qs = qs.filter(is_korean=True)
-
-    want_genres = {g.lower() for g in intent.get('genres', [])}
-    keywords = [k.lower() for k in intent.get('keywords', []) if k]
-
-    scored = []
-    for game in qs:
-        gnames = {gn.lower() for gn in
-                  game.genres.values_list('genre_name', flat=True)}
-        score = 30 * len(want_genres & gnames)                 # 장르 일치
-        title = (game.title or '').lower()
-        score += 10 * sum(1 for k in keywords if k in title)   # 제목 키워드
-        if game.metacritic_score:                              # 평점 가산(0~5)
-            score += min(game.metacritic_score, 100) // 20
-        if score > 0:
-            scored.append((game, min(score, 100)))
-
-    scored.sort(key=lambda x: x[1], reverse=True)
-    return scored[:limit]
-
-
-def _generate_reasons(prompt, candidates):
-    """③ 후보 전체를 한 번의 호출로 보내 {game_id: reason} 생성 (토큰 절약)."""
-    if not candidates:
-        return {}
-    listing = [
-        {
-            'game_id': g.game_id,
+    catalog = []
+    for g in qs:
+        item = {
+            'id': g.game_id,
             'title': g.title,
             'genres': list(g.genres.values_list('genre_name', flat=True)),
         }
-        for g, _ in candidates
-    ]
+        if CATALOG_WITH_DESC and g.description:
+            item['desc'] = g.description[:DESC_CHARS]
+        catalog.append(item)
+    return catalog
+
+
+def _pick_games(prompt, catalog, limit):
+    """
+    GMS 단일 호출: 요청 + 카탈로그 → [{game_id, reason}].
+    ⚠️ 여기서만 토큰 소비.
+    """
     system = (
-        '너는 게임 추천 카피라이터다. 사용자의 취향 문장과 후보 게임 목록을 보고 '
-        '각 게임이 왜 어울리는지 한국어 한 문장(40자 내외)으로 설명한다. '
-        'JSON 으로만 답한다. 형식: '
-        '{"reasons": [{"game_id": int, "reason": str}, ...]}'
+        '너는 인디 게임 추천 큐레이터다. 아래 [게임 목록] 안에서만 사용자 요청에 '
+        '잘 맞는 게임을 골라라.\n'
+        '규칙:\n'
+        f'- 1순위: 요청에 "정확히" 맞는 게임을 고른다. 사용자가 아트스타일(예: 도트/픽셀)과 '
+        '분위기·장르(예: 공포)를 함께 요구하면, 그 조건을 모두 충족하는 게임이 정확히 맞는 것이다.\n'
+        f'- 정확히 맞는 게임이 {limit}개보다 적으면, 분위기나 스타일이 비슷한 게임으로 '
+        f'{limit}개까지 채운다. 단 요청과 전혀 무관한 게임은 넣지 마라.\n'
+        '- 정확히 맞는 게임의 reason 은 자연스럽게 쓰고, 비슷해서(정확히는 아니지만) 채운 게임은 '
+        'reason 을 "비슷한 분위기 · " 로 시작해 구분되게 쓴다.\n'
+        '- 반드시 목록에 있는 game_id(id 필드)만 사용한다. 목록에 없는 게임은 절대 만들지 않는다.\n'
+        '- "도트/픽셀 느낌", "공포", "힐링" 같은 분위기·아트스타일·장르 표현은 '
+        '제목·장르·소개와 네가 아는 게임 지식을 종합해 판단한다.\n'
+        '- reason 은 "고른 바로 그 게임"에 대한 설명이어야 한다. '
+        '목록에 없는 다른 게임 이름을 reason 에 절대 언급하지 마라.\n'
+        '- reason 은 한국어 한 문장(40자 내외)으로, 그 게임이 요청과 어떻게 맞는지 설명한다.\n'
+        '- JSON 으로만 답한다. 형식: '
+        '{"recommendations": [{"game_id": <id>, "reason": "<한국어 문장>"}, ...]}'
     )
-    user_msg = json.dumps({'prompt': prompt, 'games': listing},
-                          ensure_ascii=False)
-    try:
-        data = gms.chat_json(
-            [{'role': 'system', 'content': system},
-             {'role': 'user', 'content': user_msg}],
-            temperature=0.6,
-        )
-        return {r['game_id']: r.get('reason', '')
-                for r in data.get('reasons', []) if 'game_id' in r}
-    except Exception as e:  # 이유 생성만 실패해도 후보는 살린다
-        logger.warning('추천 이유 생성 실패: %s', e)
-        return {}
+    user_msg = json.dumps(
+        {'request': prompt, 'count': limit, 'games': catalog},
+        ensure_ascii=False,
+    )
+    data = gms.chat_json(
+        [{'role': 'system', 'content': system},
+         {'role': 'user', 'content': user_msg}],
+        temperature=0.3,
+    )
+    return data.get('recommendations', []) or []
 
 
-# ── 폴백(랜덤) 경로 — 기존 placeholder 동작 그대로 ────────────────
-def _random_games(limit):
-    return [(g, None) for g in Game.objects.order_by('?')[:limit]]
-
-
+# ── 폴백(랜덤) 경로 ───────────────────────────────────────────────
 def _random_recommendations(prompt, limit=5):
     """LLM 미사용/실패 시: 무작위 게임 + 더미 이유/점수."""
     results = []

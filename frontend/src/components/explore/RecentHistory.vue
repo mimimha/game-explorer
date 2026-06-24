@@ -5,7 +5,7 @@
         <h3 class="title">AI 최근 추천 기록</h3>
         <span class="sub">이전에 추천받은 내용을 다시 확인해보세요.</span>
       </div>
-      <RouterLink to="/history" class="more">전체 보기 ›</RouterLink>
+      <RouterLink to="/profile" class="more">전체 보기 ›</RouterLink>
     </div>
 
     <!-- 캐러셀 래퍼 -->
