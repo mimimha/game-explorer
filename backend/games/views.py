@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import AllowAny
 
-from .models import Game, Genre, Platform
+from .models import Game, Genre, Platform, Mood
 from .serializers import (
     GameCardSerializer, GameDetailSerializer, GenreSerializer,
 )
@@ -21,16 +21,27 @@ class GameListView(generics.ListAPIView):
     permission_classes = [AllowAny]
     serializer_class = GameCardSerializer
     filter_backends = [OrderingFilter]
-    ordering_fields = ['metacritic_score', 'release_date', 'final_price']
+    ordering_fields = ['metacritic_score', 'release_date', 'final_price', 'playtime']
     ordering = ['-game_id']
 
+    # 플레이타임 버킷 경계(시간)
+    PLAYTIME_BUCKETS = {
+        'short': (None, 10),     # 10시간 미만
+        'medium': (10, 40),      # 10~40시간
+        'long': (40, None),      # 40시간 이상
+    }
+
     def get_queryset(self):
-        qs = Game.objects.prefetch_related('genres', 'platforms').all()
+        qs = Game.objects.prefetch_related('genres', 'platforms', 'moods').all()
         p = self.request.query_params
 
         genres = p.getlist('genre')          # tag_id 기준 (다중 선택)
         if genres:
             qs = qs.filter(genres__tag_id__in=genres).distinct()
+
+        moods = p.getlist('mood')            # mood_id 기준 (다중 선택)
+        if moods:
+            qs = qs.filter(moods__mood_id__in=moods).distinct()
 
         platforms = p.getlist('platform')    # platform_id 또는 이름 (다중 선택)
         if platforms:
@@ -76,6 +87,33 @@ class GameListView(generics.ListAPIView):
         if offline is not None:
             qs = qs.filter(offline=offline.lower() == 'true')
 
+        # 플레이타임 — 버킷(short/medium/long) 또는 직접 범위(gte/lte)
+        bucket = p.get('playtime_bucket')
+        if bucket in self.PLAYTIME_BUCKETS:
+            lo, hi = self.PLAYTIME_BUCKETS[bucket]
+            qs = qs.filter(playtime__isnull=False)
+            if lo is not None:
+                qs = qs.filter(playtime__gte=lo)
+            if hi is not None:
+                qs = qs.filter(playtime__lt=hi)
+        if p.get('playtime_gte'):
+            qs = qs.filter(playtime__gte=p.get('playtime_gte'))
+        if p.get('playtime_lte'):
+            qs = qs.filter(playtime__lte=p.get('playtime_lte'))
+
+        # 플레이 인원 — single/multi/coop (다중 선택 시 OR)
+        modes = p.getlist('player_mode')
+        if modes:
+            from django.db.models import Q
+            cond = Q()
+            if 'single' in modes:
+                cond |= Q(is_singleplayer=True)
+            if 'multi' in modes:
+                cond |= Q(is_multiplayer=True)
+            if 'coop' in modes:
+                cond |= Q(is_coop=True)
+            qs = qs.filter(cond)
+
         q = p.get('q')
         if q:
             qs = qs.filter(title__icontains=q)
@@ -90,7 +128,7 @@ class GameDetailView(generics.RetrieveAPIView):
     lookup_field = 'game_id'
     lookup_url_kwarg = 'game_id'
     queryset = Game.objects.prefetch_related(
-        'genres', 'platforms', 'screenshots', 'videos'
+        'genres', 'platforms', 'moods', 'screenshots', 'videos'
     )
 
 
@@ -168,9 +206,14 @@ class FilterOptionsView(APIView):
             Platform.objects.annotate(count=Count('games'))
             .filter(count__gt=0).order_by('-count')
         )
+        moods = (
+            Mood.objects.annotate(count=Count('games'))
+            .filter(count__gt=0).order_by('-count')
+        )
         agg = Game.objects.aggregate(
             price_min=Min('final_price'), price_max=Max('final_price'),
             score_min=Min('metacritic_score'), score_max=Max('metacritic_score'),
+            playtime_min=Min('playtime'), playtime_max=Max('playtime'),
         )
         on_sale_count = Game.objects.filter(
             final_price__isnull=False, initial_price__gt=F('final_price')
@@ -185,11 +228,28 @@ class FilterOptionsView(APIView):
                 {'id': p.platform_id, 'name': p.platform_name, 'count': p.count}
                 for p in platforms
             ],
+            'moods': [
+                {'id': m.mood_id, 'name': m.mood_name, 'count': m.count}
+                for m in moods
+            ],
             'price': {
                 'min': agg['price_min'],
                 'max': agg['price_max'],
                 'free_count': Game.objects.filter(final_price=0).count(),
             },
             'metacritic': {'min': agg['score_min'], 'max': agg['score_max']},
+            'playtime': {
+                'min': agg['playtime_min'], 'max': agg['playtime_max'],
+                'buckets': {
+                    'short': Game.objects.filter(playtime__gt=0, playtime__lt=10).count(),
+                    'medium': Game.objects.filter(playtime__gte=10, playtime__lt=40).count(),
+                    'long': Game.objects.filter(playtime__gte=40).count(),
+                },
+            },
+            'player_mode': {
+                'single': Game.objects.filter(is_singleplayer=True).count(),
+                'multi': Game.objects.filter(is_multiplayer=True).count(),
+                'coop': Game.objects.filter(is_coop=True).count(),
+            },
             'on_sale_count': on_sale_count,
         })

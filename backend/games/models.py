@@ -26,6 +26,18 @@ class Platform(models.Model):
         return self.platform_name
 
 
+class Mood(models.Model):
+    """분위기/무드 — Game_Mood 조인으로 Game 과 M:N. (RAWG 태그 화이트리스트에서 적재)"""
+    mood_id = models.AutoField(primary_key=True)
+    mood_name = models.CharField(max_length=50, unique=True)
+
+    class Meta:
+        db_table = 'mood'
+
+    def __str__(self):
+        return self.mood_name
+
+
 class Game(models.Model):
     game_id = models.AutoField(primary_key=True)
 
@@ -44,6 +56,15 @@ class Game(models.Model):
     required_age = models.IntegerField(default=0)
     offline = models.BooleanField(default=False)
 
+    # 평균 플레이타임(시간) — RAWG playtime. 정보 없으면 null.
+    playtime = models.IntegerField(null=True, blank=True)
+
+    # 플레이 인원/모드 — RAWG tags 우선, 없으면 Steam categories 폴백.
+    # 둘 다 정보가 없으면 null (= 알 수 없음, False 와 구분).
+    is_singleplayer = models.BooleanField(null=True, blank=True, default=None)
+    is_multiplayer = models.BooleanField(null=True, blank=True, default=None)
+    is_coop = models.BooleanField(null=True, blank=True, default=None)
+
     # 외부 식별자
     rawg_id = models.IntegerField(unique=True, null=True, blank=True)
     steam_id = models.IntegerField(unique=True, null=True, blank=True)
@@ -54,6 +75,9 @@ class Game(models.Model):
     )
     platforms = models.ManyToManyField(
         Platform, through='GamePlatform', related_name='games', blank=True
+    )
+    moods = models.ManyToManyField(
+        Mood, through='GameMood', related_name='games', blank=True
     )
 
     class Meta:
@@ -102,6 +126,21 @@ class GamePlatform(models.Model):
         return f'{self.game.title} - {self.platform.platform_name}'
 
 
+class GameMood(models.Model):
+    """Game ↔ Mood M:N 조인."""
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, db_column='game_id')
+    mood = models.ForeignKey(Mood, on_delete=models.CASCADE, db_column='mood_id')
+
+    class Meta:
+        db_table = 'game_mood'
+        constraints = [
+            models.UniqueConstraint(fields=['game', 'mood'], name='unique_game_mood'),
+        ]
+
+    def __str__(self):
+        return f'{self.game.title} - {self.mood.mood_name}'
+
+
 class Screenshot(models.Model):
     """ERD Screenshot — Game 과 1:N."""
     screenshot_id = models.AutoField(primary_key=True)
@@ -130,6 +169,16 @@ class GameVideo(models.Model):
     thumbnail = models.CharField(max_length=255, blank=True)
     channel = models.CharField(max_length=100, blank=True, default='')      # 업로드 채널명
     published_at = models.CharField(max_length=10, blank=True, default='')  # YYYY-MM-DD
+    # 영상 종류: 트레일러 / 공략(스트리밍). 상세 페이지에서 구분 표시.
+    TRAILER = 'trailer'
+    WALKTHROUGH = 'walkthrough'
+    VIDEO_TYPE_CHOICES = [
+        (TRAILER, '트레일러'),
+        (WALKTHROUGH, '공략'),
+    ]
+    video_type = models.CharField(
+        max_length=20, choices=VIDEO_TYPE_CHOICES, default=TRAILER,
+    )
 
     class Meta:
         db_table = 'game_video'

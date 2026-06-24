@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Game, Genre, Platform, Screenshot, GameVideo
+from .models import Game, Genre, Platform, Mood, Screenshot, GameVideo
 
 
 class GenreSerializer(serializers.ModelSerializer):
@@ -8,6 +8,15 @@ class GenreSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Genre
+        fields = ['id', 'name']
+
+
+class MoodSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(source='mood_id', read_only=True)
+    name = serializers.CharField(source='mood_name', read_only=True)
+
+    class Meta:
+        model = Mood
         fields = ['id', 'name']
 
 
@@ -33,7 +42,7 @@ class GameVideoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GameVideo
-        fields = ['id', 'title', 'video_url', 'thumbnail', 'channel', 'published_at']
+        fields = ['id', 'video_type', 'title', 'video_url', 'thumbnail', 'channel', 'published_at']
 
 
 class GameCardSerializer(serializers.ModelSerializer):
@@ -41,13 +50,16 @@ class GameCardSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(source='game_id', read_only=True)
     genres = GenreSerializer(many=True, read_only=True)
     platforms = PlatformSerializer(many=True, read_only=True)
+    moods = MoodSerializer(many=True, read_only=True)
 
     class Meta:
         model = Game
         fields = [
             'id', 'title', 'capsule_url',
             'initial_price', 'final_price',
-            'is_korean', 'genres', 'platforms',
+            'is_korean', 'playtime',
+            'is_singleplayer', 'is_multiplayer', 'is_coop',
+            'genres', 'platforms', 'moods',
         ]
 
 
@@ -56,6 +68,7 @@ class GameDetailSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(source='game_id', read_only=True)
     genres = GenreSerializer(many=True, read_only=True)
     platforms = PlatformSerializer(many=True, read_only=True)
+    moods = MoodSerializer(many=True, read_only=True)
     screenshots = ScreenshotSerializer(many=True, read_only=True)
     videos = GameVideoSerializer(many=True, read_only=True)
     is_wishlisted = serializers.SerializerMethodField()
@@ -67,9 +80,11 @@ class GameDetailSerializer(serializers.ModelSerializer):
             'id', 'title', 'capsule_url', 'description',
             'initial_price', 'final_price', 'is_price_synced',
             'metacritic_score', 'release_date',
-            'is_korean', 'required_age', 'offline',
+            'is_korean', 'required_age', 'offline', 'playtime',
+            'is_singleplayer', 'is_multiplayer', 'is_coop',
             'rawg_id', 'steam_id',
-            'is_wishlisted', 'genres', 'platforms', 'screenshots', 'videos',
+            'is_wishlisted', 'genres', 'platforms', 'moods',
+            'screenshots', 'videos',
         ]
 
     def get_is_wishlisted(self, obj):
