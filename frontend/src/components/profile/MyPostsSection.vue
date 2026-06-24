@@ -1,8 +1,8 @@
 <template>
   <section class="section-card">
     <div class="section-header">
-      <h3 class="section-title">내가 쓴 글</h3>
-      <RouterLink to="/community?my=1" class="view-all">전체 보기 &rsaquo;</RouterLink>
+      <h3 class="section-title">작성한 글</h3>
+      <RouterLink to="/community?my=1" class="view-all">커뮤니티 가기 &rsaquo;</RouterLink>
     </div>
 
     <div v-if="posts.length === 0" class="empty">
@@ -11,7 +11,7 @@
 
     <ul v-else class="post-list">
       <li v-for="post in posts" :key="post.id" class="post-item">
-        <RouterLink :to="`/posts/${post.id}`" class="post-link">
+        <RouterLink :to="`/community/${post.id}`" class="post-link">
           <span class="category-badge" :class="categoryClass(post.category)">
             {{ post.category }}
           </span>

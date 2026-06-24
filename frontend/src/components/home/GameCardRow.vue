@@ -62,6 +62,8 @@ function formatPrice(price) {
   text-decoration: none;
   color: inherit;
   transition: box-shadow 0.15s;
+  height: 100%;
+  box-sizing: border-box;
 }
 .row-card:hover {
   box-shadow: 0 4px 12px rgba(30,58,95,0.08);

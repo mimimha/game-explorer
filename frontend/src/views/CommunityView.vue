@@ -31,10 +31,14 @@
 
       <div class="controls-right">
         <form class="search-form" @submit.prevent="doSearch">
+          <select v-model="searchType" class="search-type-select">
+            <option value="title">제목</option>
+            <option value="author">작성자</option>
+          </select>
           <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/>
           </svg>
-          <input v-model="searchKeyword" type="text" placeholder="제목 검색" />
+          <input v-model="searchKeyword" type="text" :placeholder="searchType === 'author' ? '닉네임 검색' : '제목 검색'" />
         </form>
         <button v-if="authStore.isLoggedIn" class="btn-write" @click="openWriteModal">
           <svg viewBox="0 0 20 20" fill="currentColor" class="btn-write-icon">
@@ -87,8 +91,8 @@
                   </span>
                 </div>
               </td>
-              <td class="col-author">
-                <div class="author-cell">
+              <td class="col-author" @click.stop="goToProfile(post.author.id)">
+                <div class="author-cell author-link">
                   <img :src="post.author.profile_img || defaultAvatar" class="author-avatar" alt="" />
                   <span>{{ post.author.nickname }}</span>
                 </div>
@@ -96,7 +100,7 @@
               <td class="col-date">{{ formatDate(post.created_at) }}</td>
               <td class="col-count">
                 <span v-if="post.comment_count > 0" class="comment-count">{{ post.comment_count }}</span>
-                <span v-else class="comment-none">-</span>
+                <span v-else class="comment-none">0</span>
               </td>
             </tr>
           </tbody>
@@ -141,7 +145,7 @@
                 <select v-model="postForm.category">
                   <option value="자유">자유</option>
                   <option value="공략">공략</option>
-                  <option value="파티원모집">파티원모집</option>
+                  <option value="파티원모집">파티원 모집</option>
                 </select>
               </div>
               <div class="form-field form-field--title">
@@ -198,6 +202,8 @@ const currentPage = ref(1)
 const activeCategory = ref('')
 const searchKeyword = ref('')
 const appliedKeyword = ref('')
+const searchType = ref('title')
+const appliedSearchType = ref('title')
 
 const totalPages = computed(() => Math.ceil(totalCount.value / PAGE_SIZE))
 
@@ -217,7 +223,10 @@ async function fetchPosts() {
   try {
     const params = { page: currentPage.value }
     if (activeCategory.value) params.category = activeCategory.value
-    if (appliedKeyword.value) params.q = appliedKeyword.value
+    if (appliedKeyword.value) {
+      params.q = appliedKeyword.value
+      params.search_type = appliedSearchType.value
+    }
     const { data } = await communityAPI.getPosts(params)
     posts.value = data.results ?? data
     totalCount.value = data.count ?? posts.value.length
@@ -235,6 +244,7 @@ function selectCategory(val) {
 
 function doSearch() {
   appliedKeyword.value = searchKeyword.value.trim()
+  appliedSearchType.value = searchType.value
   currentPage.value = 1
 }
 
@@ -245,6 +255,10 @@ function goPage(p) {
 
 function goToPost(postId) {
   router.push({ name: 'post-detail', params: { postId } })
+}
+
+function goToProfile(userId) {
+  router.push({ name: 'user-profile', params: { userId } })
 }
 
 function formatDate(iso) {
@@ -302,7 +316,7 @@ async function submitPost() {
   }
 }
 
-watch([activeCategory, currentPage, appliedKeyword], fetchPosts)
+watch([activeCategory, currentPage, appliedKeyword, appliedSearchType], fetchPosts)
 
 onMounted(fetchPosts)
 </script>
@@ -366,7 +380,23 @@ onMounted(fetchPosts)
   position: relative;
   display: flex;
   align-items: center;
+  gap: 0;
 }
+
+.search-type-select {
+  height: 36px;
+  padding: 0 8px;
+  border: 1px solid #ddd8cc;
+  border-right: none;
+  border-radius: 8px 0 0 8px;
+  font-size: 13px;
+  color: #3d3529;
+  background: #f7f5f0;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.search-type-select:focus { border-color: #1e3a5f; }
 .search-icon {
   position: absolute;
   left: 10px;
@@ -375,10 +405,10 @@ onMounted(fetchPosts)
   pointer-events: none;
 }
 .search-form input {
-  width: 200px;
+  width: 180px;
   padding: 8px 12px 8px 32px;
   border: 1px solid #ddd8cc;
-  border-radius: 8px;
+  border-radius: 0 8px 8px 0;
   font-size: 13px;
   color: #1a1510;
   background: #f7f5f0;
@@ -528,6 +558,12 @@ onMounted(fetchPosts)
   align-items: center;
   gap: 8px;
 }
+.author-link {
+  cursor: pointer;
+  border-radius: 6px;
+  transition: color 0.12s;
+}
+.author-link:hover { color: #1e3a5f; }
 .author-avatar {
   width: 24px;
   height: 24px;

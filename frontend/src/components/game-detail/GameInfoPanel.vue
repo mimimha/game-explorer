@@ -73,10 +73,16 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { wishlistAPI } from '@/api/services'
+import { useAuthStore } from '@/stores/auth'
 
 const props = defineProps({
   game: { type: Object, required: true },
 })
+
+const router = useRouter()
+const authStore = useAuthStore()
 
 const MAX_VISIBLE = 5
 const showAll = ref(false)
@@ -91,9 +97,22 @@ function formatPrice(p) {
   return Number(p || 0).toLocaleString('ko-KR')
 }
 
-function toggleWish() {
-  wished.value = !wished.value
-  // TODO: POST /api/wishlist/{game.id}/toggle/
+async function toggleWish() {
+  if (!authStore.isLoggedIn) {
+    router.push('/login')
+    return
+  }
+  const prev = wished.value
+  wished.value = !prev
+  try {
+    if (!prev) {
+      await wishlistAPI.add(props.game.id)
+    } else {
+      await wishlistAPI.remove(props.game.id)
+    }
+  } catch {
+    wished.value = prev
+  }
 }
 </script>
 

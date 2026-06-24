@@ -7,14 +7,14 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
         </svg>
       </h2>
-      <p class="desc">키워드와 필터로 원하는 게임을 찾아보세요. (실제 보유 데이터 기준)</p>
+      <p class="desc">키워드와 필터로 원하는 게임을 찾아보세요.</p>
     </div>
 
     <div class="search-wrap">
       <input
         v-model="keyword"
         type="text"
-        placeholder="게임 제목을 검색하세요"
+        placeholder="게임을 검색하세요"
         class="search-input"
         @focus="$emit('activate')"
         @keydown.enter="handleSubmit"
@@ -63,7 +63,7 @@
             class="chip"
             :class="{ on: filters.platforms.includes(b.key) }"
             @click.stop="togglePlatform(b.key)"
-          >{{ b.label }}</button>
+          >{{ b.label }}<span class="cnt">{{ b.count }}</span></button>
         </div>
       </div>
 
@@ -77,7 +77,7 @@
             class="chip"
             :class="{ on: filters.price === o.value }"
             @click.stop="filters.price = o.value"
-          >{{ o.label }}</button>
+          >{{ o.label }}<span class="cnt">{{ o.count }}</span></button>
         </div>
       </div>
 
@@ -91,7 +91,7 @@
             class="chip"
             :class="{ on: filters.rating === o.value }"
             @click.stop="filters.rating = o.value"
-          >{{ o.label }}</button>
+          >{{ o.label }}<span class="cnt">{{ o.count }}</span></button>
         </div>
       </div>
 
