@@ -269,7 +269,7 @@ async function fetchAll() {
       ])
       user.value = meRes.data
       Object.assign(mypage, mypageRes.data)
-      recentLogs.value = (logsRes.data?.results ?? logsRes.data ?? []).slice(0, 3)
+      recentLogs.value = logsRes.data?.results ?? logsRes.data ?? []
     } else {
       // 타인 공개 프로필 — 백엔드가 counts·posts·wishlist·logs 모두 반환
       const res = await accountAPI.getUserProfile(route.params.userId)

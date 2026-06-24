@@ -45,8 +45,8 @@
           <button class="btn btn-outline" @click="handleLogout">로그아웃</button>
         </template>
         <template v-else>
-          <RouterLink :to="{ name: 'Login' }" class="btn btn-outline">로그인</RouterLink>
-          <RouterLink :to="{ name: 'Register' }" class="btn btn-primary">회원가입</RouterLink>
+          <RouterLink :to="{ name: 'login' }" class="btn btn-outline">로그인</RouterLink>
+          <RouterLink :to="{ name: 'register' }" class="btn btn-primary">회원가입</RouterLink>
         </template>
       </div>
     </nav>

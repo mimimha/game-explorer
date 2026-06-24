@@ -6,8 +6,6 @@
       :subtitle="subtitle"
       :more-to="moreTo"
       :show-arrows="showArrows"
-      @prev="onPrev"
-      @next="onNext"
     />
 
     <!-- 로딩 스켈레톤 -->
@@ -105,8 +103,6 @@ onMounted(async () => {
   }
 })
 
-function onPrev() {}
-function onNext() {}
 </script>
 
 <style scoped>
@@ -128,19 +124,6 @@ function onNext() {}
 .login-nudge-card {
   min-width: 0;
 }
-.today-label {
-  position: absolute;
-  top: -10px;
-  left: 10px;
-  background: #1e3a5f;
-  color: white;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 999px;
-  z-index: 1;
-}
-
 /* 로그인 유도 카드 */
 .login-nudge-card {
   position: relative;
@@ -168,19 +151,6 @@ function onNext() {}
 }
 .nudge-overlay strong { color: #fff; }
 .login-nudge-card strong { color: #1a1510; }
-.nudge-btn {
-  display: block;
-  background: #1a1510;
-  color: white;
-  border-radius: 8px;
-  padding: 9px 14px;
-  font-size: 12px;
-  font-weight: 700;
-  text-decoration: none;
-}
-.nudge-btn:hover { background: #1e3a5f; }
-.nudge-sub { font-size: 10px; color: #9e9585; }
-
 /* 배너 그리드 (할인/최신) */
 .banner-grid {
   display: grid;
@@ -216,10 +186,6 @@ function onNext() {}
   font-size: 18px;
   font-weight: 700;
   color: #1a1510;
-}
-.banner-sub {
-  font-size: 13px;
-  color: #9e9585;
 }
 .banner-more-btn {
   display: block;
