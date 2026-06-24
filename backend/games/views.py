@@ -117,7 +117,9 @@ class GameListView(generics.ListAPIView):
 
         q = p.get('q')
         if q:
-            qs = qs.filter(title__icontains=q)
+            from django.db.models import Q
+            # 영문 원제 + 한글 번역 제목 동시 검색
+            qs = qs.filter(Q(title__icontains=q) | Q(title_ko__icontains=q))
 
         # 할인순: 할인율 annotation 추가 (order_by는 filter_queryset 오버라이드에서 처리)
         if p.get('ordering') == 'discount':

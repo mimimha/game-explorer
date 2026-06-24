@@ -27,8 +27,8 @@
           <GameInfoPanel :game="game" />
         </div>
 
-        <!-- ── 게임 소개 ── -->
-        <GameDescription :description="game.description" />
+        <!-- ── 게임 소개 (한글 번역 우선) ── -->
+        <GameDescription :description-ko="game.description_ko" :description="game.description" />
 
         <!-- ── 공략·스트리밍 영상 ── -->
         <GameVideos :game-id="game.id" :videos="game.videos" />
@@ -70,7 +70,8 @@ function mapGame(d) {
     supports_korean: d.is_korean,
     is_online: !d.offline,
     release_status: d.release_date ? '출시됨' : '미정',
-    description: d.description || '',          // 백엔드 미제공 시 빈 값
+    description: d.description || '',          // 원문(EN) — 폴백용
+    description_ko: d.description_ko || '',    // 한글 번역(우선 표시)
     // 갤러리용: image_url → url, 라벨 부여
     screenshots: (d.screenshots || []).map((s, i) => ({
       id: s.id,

@@ -49,7 +49,13 @@ class Game(models.Model):
         max_digits=10, decimal_places=2, null=True, blank=True
     )
     capsule_url = models.CharField(max_length=255, blank=True)
-    description = models.TextField(blank=True, default='')  # RAWG description_raw
+    description = models.TextField(blank=True, default='')  # RAWG description_raw (원문 EN)
+
+    # 한국어 번역 (LLM 적재). 한글 검색·표시용. 비어있으면 아직 미번역.
+    title_ko = models.CharField(max_length=200, blank=True, default='')
+    description_ko = models.TextField(blank=True, default='')
+    # 관리자가 수동 수정한 번역을 보호 (True 면 import_translations 가 건너뜀)
+    translation_locked = models.BooleanField(default=False)
     metacritic_score = models.IntegerField(null=True, blank=True)
     release_date = models.DateField(null=True, blank=True)
     is_korean = models.BooleanField(default=False)
