@@ -36,28 +36,26 @@ class GameListView(generics.ListAPIView):
         qs = Game.objects.prefetch_related('genres', 'platforms', 'moods').all()
         p = self.request.query_params
 
-        genres = p.getlist('genre')          # tag_id 기준 (다중 선택)
+        genres = p.getlist('genre')          # tag_id 기준 (다중 선택 → AND 교집합)
+        for genre in genres:
+            qs = qs.filter(genres__tag_id=genre)
         if genres:
-            qs = qs.filter(genres__tag_id__in=genres).distinct()
+            qs = qs.distinct()
 
-        moods = p.getlist('mood')            # mood_id 기준 (다중 선택)
+        moods = p.getlist('mood')            # mood_id 기준 (다중 선택 → AND 교집합)
+        for mood in moods:
+            qs = qs.filter(moods__mood_id=mood)
         if moods:
-            qs = qs.filter(moods__mood_id__in=moods).distinct()
+            qs = qs.distinct()
 
-        platforms = p.getlist('platform')    # platform_id 또는 이름 (다중 선택)
+        platforms = p.getlist('platform')    # platform_id 또는 이름 (다중 선택 → AND 교집합)
+        for platform in platforms:
+            if platform.isdigit():
+                qs = qs.filter(platforms__platform_id=platform)
+            else:
+                qs = qs.filter(platforms__platform_name=platform)
         if platforms:
-            ids = [v for v in platforms if v.isdigit()]
-            names = [v for v in platforms if not v.isdigit()]
-            cond = None
-            if ids:
-                from django.db.models import Q
-                cond = Q(platforms__platform_id__in=ids)
-            if names:
-                from django.db.models import Q
-                name_cond = Q(platforms__platform_name__in=names)
-                cond = name_cond if cond is None else cond | name_cond
-            if cond is not None:
-                qs = qs.filter(cond).distinct()
+            qs = qs.distinct()
 
         # 가격 구간
         price_gte = p.get('price_gte')
@@ -102,18 +100,15 @@ class GameListView(generics.ListAPIView):
         if p.get('playtime_lte'):
             qs = qs.filter(playtime__lte=p.get('playtime_lte'))
 
-        # 플레이 인원 — single/multi/coop (다중 선택 시 OR)
+        # 플레이 인원 — single/multi/coop (다중 선택 → AND 교집합)
         modes = p.getlist('player_mode')
         if modes:
-            from django.db.models import Q
-            cond = Q()
             if 'single' in modes:
-                cond |= Q(is_singleplayer=True)
+                qs = qs.filter(is_singleplayer=True)
             if 'multi' in modes:
-                cond |= Q(is_multiplayer=True)
+                qs = qs.filter(is_multiplayer=True)
             if 'coop' in modes:
-                cond |= Q(is_coop=True)
-            qs = qs.filter(cond)
+                qs = qs.filter(is_coop=True)
 
         q = p.get('q')
         if q:
