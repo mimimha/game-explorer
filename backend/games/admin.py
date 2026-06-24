@@ -33,10 +33,12 @@ class GameVideoInline(admin.TabularInline):
 
 @admin.register(Game)
 class GameAdmin(admin.ModelAdmin):
-    list_display = ['game_id', 'title', 'final_price',
-                    'metacritic_score', 'release_date']
-    list_filter = ['is_korean', 'offline']
-    search_fields = ['title']
+    list_display = ['game_id', 'title', 'title_ko', 'translation_locked',
+                    'final_price', 'metacritic_score', 'release_date']
+    # 목록에서 한글 제목·잠금을 바로 수정 (LLM 오역 교정용)
+    list_editable = ['title_ko', 'translation_locked']
+    list_filter = ['is_korean', 'offline', 'translation_locked']
+    search_fields = ['title', 'title_ko']
     inlines = [GameTagInline, GamePlatformInline,
                ScreenshotInline, GameVideoInline]
     # 목록 상단에 "RAWG 신작 가져오기" 버튼을 추가한 템플릿

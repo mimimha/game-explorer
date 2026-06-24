@@ -116,7 +116,9 @@ class GameListView(generics.ListAPIView):
 
         q = p.get('q')
         if q:
-            qs = qs.filter(title__icontains=q)
+            from django.db.models import Q
+            # 영문 원제 + 한글 번역 제목 동시 검색
+            qs = qs.filter(Q(title__icontains=q) | Q(title_ko__icontains=q))
 
         return qs
 

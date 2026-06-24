@@ -55,7 +55,7 @@ class GameCardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Game
         fields = [
-            'id', 'title', 'capsule_url',
+            'id', 'title', 'title_ko', 'capsule_url',
             'initial_price', 'final_price',
             'is_korean', 'playtime',
             'is_singleplayer', 'is_multiplayer', 'is_coop',
@@ -77,7 +77,8 @@ class GameDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Game
         fields = [
-            'id', 'title', 'capsule_url', 'description',
+            'id', 'title', 'title_ko', 'capsule_url',
+            'description', 'description_ko',
             'initial_price', 'final_price', 'is_price_synced',
             'metacritic_score', 'release_date',
             'is_korean', 'required_age', 'offline', 'playtime',
