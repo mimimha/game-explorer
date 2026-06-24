@@ -7,7 +7,7 @@ from django.shortcuts import redirect
 from django.urls import path
 
 from .models import (
-    Game, Genre, Platform, GameTag, GamePlatform, Screenshot, GameVideo,
+    Game, Genre, Platform, Mood, GameTag, GamePlatform, Screenshot, GameVideo,
 )
 
 
@@ -90,6 +90,12 @@ class GenreAdmin(admin.ModelAdmin):
 class PlatformAdmin(admin.ModelAdmin):
     list_display = ['platform_id', 'platform_name']
     search_fields = ['platform_name']
+
+
+@admin.register(Mood)
+class MoodAdmin(admin.ModelAdmin):
+    list_display = ['mood_id', 'mood_name']
+    search_fields = ['mood_name']
 
 
 admin.site.register(Screenshot)

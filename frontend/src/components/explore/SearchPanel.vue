@@ -53,6 +53,48 @@
         </div>
       </div>
 
+      <!-- 분위기/무드 (다중) -->
+      <div v-if="moodOptions.length" class="frow">
+        <span class="flabel">분위기</span>
+        <div class="chips">
+          <button
+            v-for="m in moodOptions"
+            :key="m.id"
+            class="chip"
+            :class="{ on: filters.moods.includes(m.id) }"
+            @click.stop="toggleMood(m.id)"
+          >{{ m.label }} <span class="cnt">{{ m.count }}</span></button>
+        </div>
+      </div>
+
+      <!-- 플레이타임 (단일) -->
+      <div v-if="playtimeOptions.length" class="frow">
+        <span class="flabel">플레이타임</span>
+        <div class="chips">
+          <button
+            v-for="o in playtimeOptions"
+            :key="o.value"
+            class="chip"
+            :class="{ on: filters.playtime === o.value }"
+            @click.stop="filters.playtime = o.value"
+          >{{ o.label }}<span v-if="o.count != null" class="cnt">{{ o.count }}</span></button>
+        </div>
+      </div>
+
+      <!-- 플레이 인원 (다중) -->
+      <div v-if="playModeOptions.length" class="frow">
+        <span class="flabel">인원</span>
+        <div class="chips">
+          <button
+            v-for="o in playModeOptions"
+            :key="o.key"
+            class="chip"
+            :class="{ on: filters.playModes.includes(o.key) }"
+            @click.stop="togglePlayMode(o.key)"
+          >{{ o.label }} <span class="cnt">{{ o.count }}</span></button>
+        </div>
+      </div>
+
       <!-- 플랫폼 (다중, 그룹) -->
       <div v-if="platformBuckets.length" class="frow">
         <span class="flabel">플랫폼</span>
@@ -137,11 +179,17 @@ const NON_CONSOLE = new Set(['PC', 'macOS', 'Linux', 'Android', 'iOS', 'Web'])
 
 const keyword = ref('')
 const loading = ref(true)
-const options = ref({ genres: [], platforms: [], price: {}, metacritic: {}, on_sale_count: 0 })
+const options = ref({
+  genres: [], platforms: [], moods: [], price: {}, metacritic: {},
+  playtime: {}, player_mode: {}, on_sale_count: 0,
+})
 
 const filters = ref({
   genres: [],        // genre tag_id 배열
   platforms: [],     // 버킷 key 배열
+  moods: [],         // mood_id 배열
+  playModes: [],     // 'single' | 'multi' | 'coop' 배열
+  playtime: 'all',   // all | short | medium | long
   price: 'all',      // all | free | 5000 | 10000 | 20000 | 20000+
   rating: 'all',     // all | 90 | 80 | 70
   onSale: false,
@@ -192,6 +240,40 @@ const ratingOptions = computed(() => {
 
 const onSaleCount = computed(() => options.value.on_sale_count || 0)
 
+// 무드 — 백엔드가 한국어 라벨로 내려줌
+const moodOptions = computed(() =>
+  (options.value.moods || []).map(m => ({ id: m.id, count: m.count, label: m.name })),
+)
+
+// 플레이타임 버킷 (개수 0인 구간은 숨김)
+const PLAYTIME_DEF = [
+  { key: 'short', label: '짧은 (~10시간)' },
+  { key: 'medium', label: '보통 (10~40시간)' },
+  { key: 'long', label: '긴 (40시간~)' },
+]
+const playtimeOptions = computed(() => {
+  const b = options.value.playtime?.buckets
+  if (!b) return []
+  const opts = [{ value: 'all', label: '전체', count: null }]
+  for (const d of PLAYTIME_DEF) {
+    if ((b[d.key] || 0) > 0) opts.push({ value: d.key, label: d.label, count: b[d.key] })
+  }
+  return opts.length > 1 ? opts : []
+})
+
+// 플레이 인원 (개수 0인 모드는 숨김)
+const PLAYMODE_DEF = [
+  { key: 'single', label: '싱글' },
+  { key: 'multi', label: '멀티' },
+  { key: 'coop', label: '협동' },
+]
+const playModeOptions = computed(() => {
+  const pm = options.value.player_mode || {}
+  return PLAYMODE_DEF
+    .filter(d => (pm[d.key] || 0) > 0)
+    .map(d => ({ key: d.key, label: d.label, count: pm[d.key] }))
+})
+
 function toggleGenre(id) {
   const i = filters.value.genres.indexOf(id)
   if (i === -1) filters.value.genres.push(id)
@@ -201,6 +283,16 @@ function togglePlatform(key) {
   const i = filters.value.platforms.indexOf(key)
   if (i === -1) filters.value.platforms.push(key)
   else filters.value.platforms.splice(i, 1)
+}
+function toggleMood(id) {
+  const i = filters.value.moods.indexOf(id)
+  if (i === -1) filters.value.moods.push(id)
+  else filters.value.moods.splice(i, 1)
+}
+function togglePlayMode(key) {
+  const i = filters.value.playModes.indexOf(key)
+  if (i === -1) filters.value.playModes.push(key)
+  else filters.value.playModes.splice(i, 1)
 }
 
 // 선택된 버킷 key → 실제 platform_name 배열로 변환
@@ -215,6 +307,9 @@ function handleSubmit() {
     filters: {
       genres: [...filters.value.genres],
       platforms: resolvePlatformNames(),
+      moods: [...filters.value.moods],
+      playModes: [...filters.value.playModes],
+      playtime: filters.value.playtime,
       price: filters.value.price,
       rating: filters.value.rating,
       onSale: filters.value.onSale,
@@ -224,7 +319,10 @@ function handleSubmit() {
 
 function reset() {
   keyword.value = ''
-  filters.value = { genres: [], platforms: [], price: 'all', rating: 'all', onSale: false }
+  filters.value = {
+    genres: [], platforms: [], moods: [], playModes: [], playtime: 'all',
+    price: 'all', rating: 'all', onSale: false,
+  }
   emit('reset')
 }
 

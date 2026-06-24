@@ -73,9 +73,10 @@ def fetch_movies(rawg_id):
 def parse_game_fields(detail):
     """
     RAWG 상세 응답 → Game 모델 필드 dict.
-    (genres·platforms 는 별도 처리하므로 여기선 제외)
+    (genres·platforms·moods 는 별도 처리하므로 여기선 제외)
     """
     released = detail.get('released')   # 'YYYY-MM-DD' or None
+    playtime = detail.get('playtime')   # 평균 시간(정수). 0/없음이면 정보 없음.
     return {
         'rawg_id': detail['id'],
         'title': detail.get('name', '')[:200],
@@ -84,7 +85,88 @@ def parse_game_fields(detail):
         'metacritic_score': detail.get('metacritic'),
         'release_date': released or None,
         'required_age': 0,
+        'playtime': playtime if playtime else None,  # 0 → null(알 수 없음)
     }
+
+
+# RAWG 영문 태그 → 한국어 무드 라벨 (분위기/무드 화이트리스트).
+# 장르성 태그(RPG, Open World 등)는 제외하고 '분위기'에 해당하는 것만 큐레이션.
+MOOD_TAG_MAP = {
+    'Atmospheric': '분위기 있는',
+    'Great Soundtrack': '음악이 좋은',
+    'Story Rich': '스토리 중심',
+    'Funny': '유쾌한',
+    'Comedy': '코미디',
+    'Relaxing': '편안한',
+    'Cozy': '아늑한',
+    'Dark': '어두운',
+    'Dark Fantasy': '다크 판타지',
+    'Horror': '공포',
+    'Psychological Horror': '심리 공포',
+    'Tense': '긴장감 있는',
+    'Emotional': '감성적인',
+    'Sad': '슬픈',
+    'Cute': '귀여운',
+    'Beautiful': '아름다운',
+    'Colorful': '화사한',
+    'Epic': '웅장한',
+    'Mystery': '미스터리',
+    'Surreal': '초현실적인',
+    'Minimalist': '미니멀',
+    'Retro': '레트로',
+    'Violent': '폭력적인',
+    # 실데이터 전수 집계로 추가한 무드 (빈도순)
+    'Gore': '잔혹한',
+    'Cinematic': '영화 같은',
+    'Difficult': '어려운',
+    'Post-apocalyptic': '종말 이후',
+    'Dystopian': '디스토피아',
+    'Survival Horror': '생존 공포',
+    'Futuristic': '미래적인',
+}
+
+# 플레이 인원/모드 판정용 RAWG 태그 (소문자 비교).
+_RAWG_SINGLE = {'singleplayer', 'single player'}
+_RAWG_MULTI = {
+    'multiplayer', 'online multiplayer', 'local multiplayer',
+    'massively multiplayer', 'pvp', 'online pvp', 'cross-platform multiplayer',
+}
+_RAWG_COOP = {
+    'co-op', 'online co-op', 'local co-op', 'co-op campaign',
+    'split screen', 'online co-op', 'local co-op campaign',
+}
+
+
+def _eng_tag_names(detail):
+    """RAWG 상세에서 영문 태그 이름 리스트."""
+    return [
+        t['name'] for t in (detail.get('tags') or [])
+        if t.get('name') and t.get('language') == 'eng'
+    ]
+
+
+def extract_mood_names(detail):
+    """RAWG 태그 중 무드 화이트리스트에 매칭되는 한국어 라벨 리스트(중복 제거)."""
+    names = []
+    for tag in _eng_tag_names(detail):
+        label = MOOD_TAG_MAP.get(tag)
+        if label and label not in names:
+            names.append(label)
+    return names
+
+
+def extract_player_modes(detail):
+    """
+    RAWG 태그에서 플레이 인원/모드 추출.
+    반환: {'single', 'multi', 'coop'} (각 bool) 또는 None(판정 근거 태그가 전혀 없음).
+    """
+    tags = {t.lower() for t in _eng_tag_names(detail)}
+    single = bool(tags & _RAWG_SINGLE)
+    multi = bool(tags & _RAWG_MULTI)
+    coop = bool(tags & _RAWG_COOP)
+    if not (single or multi or coop):
+        return None      # RAWG 근거 없음 → Steam 폴백에 맡김
+    return {'single': single, 'multi': multi, 'coop': coop}
 
 
 def extract_genre_names(detail):

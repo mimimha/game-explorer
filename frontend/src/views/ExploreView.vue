@@ -146,6 +146,9 @@ function buildParams() {
   if (f) {
     if (f.genres?.length) params.genre = f.genres
     if (f.platforms?.length) params.platform = f.platforms
+    if (f.moods?.length) params.mood = f.moods
+    if (f.playModes?.length) params.player_mode = f.playModes
+    if (f.playtime && f.playtime !== 'all') params.playtime_bucket = f.playtime
     if (f.onSale) params.on_sale = true
     if (f.rating && f.rating !== 'all') params.metacritic_gte = f.rating
     if (f.price === 'free') params.free = true
