@@ -6,7 +6,7 @@
           <img src="@/assets/logo.png" alt="방구석 탐험대" class="logo" />
         </RouterLink>
         <RouterLink :to="{ name: 'explore' }" class="nav-link">게임 라이브러리</RouterLink>
-        <RouterLink :to="{ name: 'home' }" class="nav-link">커뮤니티</RouterLink>
+        <RouterLink :to="{ name: 'community' }" class="nav-link">커뮤니티</RouterLink>
       </div>
 
       
@@ -31,14 +31,13 @@
 
         <template v-if="authStore.isLoggedIn">
           <RouterLink to="/profile" class="nav-link profile-link">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-              stroke-width="1.5" stroke="currentColor" width="20" height="20">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-            </svg>
-            프로필
+            <img
+              :src="authStore.user?.profile_img || defaultAvatar"
+              class="nav-avatar"
+              alt="프로필"
+            />
           </RouterLink>
-          <button class="btn btn-outline" @click="authStore.logout">로그아웃</button>
+          <button class="btn btn-outline" @click="handleLogout">로그아웃</button>
         </template>
         <template v-else>
           <RouterLink to="/login" class="nav-link">프로필</RouterLink>
@@ -53,9 +52,11 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { accountAPI } from '@/api/services'
+import defaultAvatar from '@/assets/profile.png'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -63,15 +64,33 @@ const authStore = useAuthStore()
 const keyword = ref('')
 const notifCount = ref('')
 
+function handleLogout() {
+  authStore.logout()
+  router.push({ name: 'home' })
+}
+
 function onSearch() {
-  if (keyword.value.trim()) {
-    router.push({ name: 'search', query: { q: keyword.value } })
-  }
+  const q = keyword.value.trim()
+  if (!q) return
+  keyword.value = ''
+  router.push({ name: 'explore', query: { q } })
 }
 
 function openNotifications() {
   // TODO: 알림 패널 열기
 }
+
+// 새로고침 후 profile_img 복원
+onMounted(async () => {
+  if (authStore.isLoggedIn && !authStore.user?.profile_img) {
+    try {
+      const { data } = await accountAPI.getMe()
+      authStore.setProfile(data)
+    } catch {
+      // 인증 만료 등은 인터셉터가 처리
+    }
+  }
+})
 </script>
 
 <style scoped>
@@ -105,8 +124,8 @@ function openNotifications() {
 }
 
 .logo {
-  width: 52px;
-  height: 52px;
+  width: 110px;
+  /* height: 52px; */
   object-fit: contain;
   border-radius: 50%;
 }
@@ -197,7 +216,18 @@ function openNotifications() {
 .profile-link {
   display: flex;
   align-items: center;
-  gap: 4px;
+}
+
+.nav-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e8e4d9;
+  transition: border-color 0.15s;
+}
+.profile-link:hover .nav-avatar {
+  border-color: #1e3a5f;
 }
 
 .btn {

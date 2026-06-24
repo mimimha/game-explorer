@@ -2,7 +2,7 @@
   <footer class="footer">
     <div class="footer-container">
     <div class="footer-left">
-      <h3>방구석 탐험대 (IndieWay)</h3>
+      <h3>방구석 탐험대</h3>
       <p>당신의 취향을 찾아 떠나는 인디 게임 탐험기</p>
       <p>© 2026 취향저격이조. All Rights Reserved.</p>
     </div>

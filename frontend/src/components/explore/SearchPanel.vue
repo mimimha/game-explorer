@@ -228,7 +228,11 @@ function reset() {
   emit('reset')
 }
 
-defineExpose({ reset })
+function setKeyword(kw) {
+  keyword.value = kw
+}
+
+defineExpose({ reset, setKeyword })
 
 onMounted(async () => {
   try {

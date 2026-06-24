@@ -20,6 +20,11 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Token ${token}`
   }
+  // FormData 전송 시 Content-Type을 제거해야 axios가
+  // multipart/form-data; boundary=... 를 자동으로 설정한다.
+  if (config.data instanceof FormData) {
+    delete config.headers['Content-Type']
+  }
   return config
 })
 

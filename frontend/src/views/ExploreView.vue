@@ -10,6 +10,7 @@
           @submit="onAiSubmit"
         />
         <SearchPanel
+          ref="searchPanelRef"
           :is-active="activePanel === 'search'"
           @activate="activePanel = 'search'"
           @submit="onSearchSubmit"
@@ -41,7 +42,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, nextTick, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { gameAPI, recommendAPI } from '@/api/services'
@@ -54,6 +55,7 @@ import ToastAlert from '@/components/common/ToastAlert.vue'
 const authStore = useAuthStore()
 const route = useRoute()
 const toastRef = ref(null)
+const searchPanelRef = ref(null)
 
 const activePanel = ref('ai')
 const resultMode = ref('ai')
@@ -96,10 +98,12 @@ onMounted(async () => {
     }
   }
   applyQueryFilter()
+  if (route.query.q) applyQueryQ(route.query.q)
 })
 
-// 홈에서 ?filter=sale / ?filter=new 로 진입 → 자동 검색
+// 홈·Nav 검색 → ?q=keyword, 홈 카드 → ?filter=sale|new 로 진입 시 자동 검색
 watch(() => route.query.filter, applyQueryFilter)
+watch(() => route.query.q, applyQueryQ)
 
 function applyQueryFilter() {
   const f = route.query.filter
@@ -112,6 +116,16 @@ function applyQueryFilter() {
     searchSort.value = 'recent'
     runSearch()
   }
+}
+
+async function applyQueryQ(q) {
+  if (!q) return
+  activePanel.value = 'search'
+  searchKeyword.value = q
+  // SearchPanel이 마운트된 후 setKeyword 호출
+  await nextTick()
+  searchPanelRef.value?.setKeyword(q)
+  runSearch()
 }
 
 // 키워드 + 정렬 + 필터를 백엔드 list 파라미터로 합쳐 호출
