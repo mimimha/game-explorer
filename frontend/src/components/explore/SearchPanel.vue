@@ -10,20 +10,28 @@
       <p class="desc">키워드와 필터로 원하는 게임을 찾아보세요.</p>
     </div>
 
-    <div class="search-wrap">
+    <div ref="searchWrapRef" class="search-wrap">
       <input
         v-model="keyword"
         type="text"
         placeholder="게임을 검색하세요"
         class="search-input"
+        autocomplete="off"
         @focus="$emit('activate')"
-        @keydown.enter="handleSubmit"
+        @input="onSuggestInput"
+        @keydown="onSuggestKeydown"
       />
       <button class="search-btn" @click.stop="handleSubmit">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="16">
           <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
         </svg>
       </button>
+      <GameSuggestDropdown
+        :suggestions="suggestions"
+        :active-idx="activeIdx"
+        @select="onSuggestSelect"
+        @hover="onSuggestHover"
+      />
     </div>
 
     <div class="filter-bar" @click.stop="showFilters = !showFilters">
@@ -181,8 +189,9 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { gameAPI } from '@/api/services'
+import GameSuggestDropdown from '@/components/common/GameSuggestDropdown.vue'
 
 defineProps({
   isActive: { type: Boolean, default: false },
@@ -206,6 +215,68 @@ const PLATFORM_BUCKETS_DEF = [
 const NON_CONSOLE = new Set(['PC', 'macOS', 'Linux', 'Android', 'iOS', 'Web'])
 
 const keyword = ref('')
+
+// ── 자동완성 ──
+const searchWrapRef = ref(null)
+const suggestions = ref([])
+const activeIdx = ref(-1)
+let suggestTimer = null
+let latestSuggestVal = ''
+
+function onSuggestInput(e) {
+  const val = e.target.value
+  latestSuggestVal = val
+  clearTimeout(suggestTimer)
+  activeIdx.value = -1
+  if (!val.trim()) { suggestions.value = []; return }
+  suggestTimer = setTimeout(async () => {
+    const current = latestSuggestVal.trim()
+    if (!current) { suggestions.value = []; return }
+    try {
+      const { data } = await gameAPI.suggest(current)
+      suggestions.value = data
+    } catch { suggestions.value = [] }
+  }, 280)
+}
+
+function closeSuggestions() {
+  suggestions.value = []
+  activeIdx.value = -1
+}
+
+function onDocumentClick(e) {
+  if (searchWrapRef.value && !searchWrapRef.value.contains(e.target)) {
+    closeSuggestions()
+  }
+}
+
+function onSuggestHover(i) { activeIdx.value = i }
+
+function onSuggestSelect(s) {
+  keyword.value = s.title_ko || s.title
+  closeSuggestions()
+  handleSubmit()
+}
+
+function onSuggestKeydown(e) {
+  if (e.key === 'ArrowDown' && suggestions.value.length) {
+    e.preventDefault()
+    activeIdx.value = Math.min(activeIdx.value + 1, suggestions.value.length - 1)
+  } else if (e.key === 'ArrowUp' && suggestions.value.length) {
+    e.preventDefault()
+    activeIdx.value = Math.max(activeIdx.value - 1, -1)
+  } else if (e.key === 'Enter') {
+    if (activeIdx.value >= 0 && suggestions.value.length) {
+      e.preventDefault()
+      onSuggestSelect(suggestions.value[activeIdx.value])
+    } else {
+      handleSubmit()
+    }
+  } else if (e.key === 'Escape') {
+    closeSuggestions()
+  }
+}
+
 const loading = ref(true)
 const showFilters = ref(false)
 const options = ref({
@@ -364,6 +435,7 @@ watch(filters, () => {
 defineExpose({ reset, setKeyword })
 
 onMounted(async () => {
+  document.addEventListener('mousedown', onDocumentClick)
   try {
     const { data } = await gameAPI.filterOptions()
     options.value = data
@@ -372,6 +444,10 @@ onMounted(async () => {
   } finally {
     loading.value = false
   }
+})
+
+onUnmounted(() => {
+  document.removeEventListener('mousedown', onDocumentClick)
 })
 </script>
 

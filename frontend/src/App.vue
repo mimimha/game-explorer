@@ -12,22 +12,27 @@
       
 
       <div class="nav-right">
-        <form class="nav-search" @submit.prevent="onSearch">
-        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
-          viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-        </svg>
-        <input v-model="keyword" type="text" placeholder="게임 검색" />
-      </form>
-        <button v-if="authStore.isLoggedIn" class="icon-btn" @click="openNotifications">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-            stroke-width="1.5" stroke="currentColor">
+        <form ref="navSearchRef" class="nav-search" @submit.prevent="onSearch" role="search">
+          <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round"
-              d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+              d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
           </svg>
-          <span v-if="notifCount" class="notif-badge">{{ notifCount }}</span>
-        </button>
+          <input
+            v-model="keyword"
+            type="text"
+            placeholder="게임 검색"
+            autocomplete="off"
+            @keydown="(e) => suggestKeydown(e, onSelectSuggestion, onSearch)"
+          />
+          <GameSuggestDropdown
+            :suggestions="suggestions"
+            :active-idx="activeIdx"
+            @select="onSelectSuggestion"
+            @hover="onNavSuggestHover"
+          />
+        </form>
+        <NotificationBubble v-if="authStore.isLoggedIn" />
 
         <template v-if="authStore.isLoggedIn">
           <RouterLink to="/profile" class="nav-link profile-link">
@@ -51,36 +56,52 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { accountAPI } from '@/api/services'
 import defaultAvatar from '@/assets/profile.png'
+import { useGameSuggest } from '@/composables/useGameSuggest'
+import GameSuggestDropdown from '@/components/common/GameSuggestDropdown.vue'
+import NotificationBubble from '@/components/common/NotificationBubble.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
 
+const navSearchRef = ref(null)
 const keyword = ref('')
-const notifCount = ref('')
+const { suggestions, activeIdx, onKeydown: suggestKeydown, clear: suggestClear } = useGameSuggest(keyword)
+
+function onNavSuggestHover(i) { activeIdx.value = i }
+
+function onNavDocumentClick(e) {
+  if (navSearchRef.value && !navSearchRef.value.contains(e.target)) {
+    suggestClear()
+  }
+}
 
 function handleLogout() {
   authStore.logout()
   router.push({ name: 'home' })
 }
 
+function onSelectSuggestion(s) {
+  keyword.value = ''
+  suggestClear()
+  router.push({ name: 'explore', query: { q: s.title_ko || s.title } })
+}
+
 function onSearch() {
   const q = keyword.value.trim()
+  suggestClear()
   if (!q) return
   keyword.value = ''
   router.push({ name: 'explore', query: { q } })
 }
 
-function openNotifications() {
-  // TODO: 알림 패널 열기
-}
-
 // 새로고침 후 profile_img 복원
 onMounted(async () => {
+  document.addEventListener('mousedown', onNavDocumentClick)
   if (authStore.isLoggedIn && !authStore.user?.profile_img) {
     try {
       const { data } = await accountAPI.getMe()
@@ -89,6 +110,10 @@ onMounted(async () => {
       // 인증 만료 등은 인터셉터가 처리
     }
   }
+})
+
+onUnmounted(() => {
+  document.removeEventListener('mousedown', onNavDocumentClick)
 })
 </script>
 
@@ -115,6 +140,7 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 28px;
+  margin-bottom: 10px;
 }
 
 .logo-wrap {
@@ -124,7 +150,7 @@ onMounted(async () => {
 
 .logo {
   width: 110px;
-  height: 150px;
+  height: 110%;
   object-fit: contain;
   border-radius: 50%;
 }
@@ -145,7 +171,6 @@ onMounted(async () => {
   position: relative;
   display: flex;
   align-items: center;
-
 }
 
 .search-icon {

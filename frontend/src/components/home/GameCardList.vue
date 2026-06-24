@@ -22,8 +22,10 @@
     <!-- 취향 분석 섹션 -->
     <div v-else-if="type === 'recommendation'" class="card-grid">
       <div v-if="!authStore.isLoggedIn" class="login-nudge-card">
-        <p>로그인하고<br /><strong>나만의 취향</strong>을<br />분석받아보세요!</p>
-
+        <img :src="cardOneImg" alt="1번 카드" class="nudge-card-img" />
+        <div class="nudge-overlay">
+          <p>로그인하고<br /><strong>나만의 취향</strong>을<br />분석받아보세요!</p>
+        </div>
       </div>
 
       <div
@@ -78,6 +80,7 @@ import GameCardRow from './GameCardRow.vue'
 import SectionHeader from './SectionHeader.vue'
 import { useAuthStore } from '@/stores/auth'
 import { fetchGames } from '@/services/api'
+import cardOneImg from '@/assets/1번 카드.png'
 
 const props = defineProps({
   num: { type: Number, required: true },
@@ -140,20 +143,30 @@ function onNext() {}
 
 /* 로그인 유도 카드 */
 .login-nudge-card {
-  background: #f0ece3;
-  border: 1.5px dashed #c8c2b4;
+  position: relative;
   border-radius: 12px;
+  overflow: hidden;
+  min-width: 0;
+}
+.nudge-card-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.nudge-overlay {
+  position: absolute;
+  inset: 0;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 20px 12px;
-  gap: 10px;
+  background: rgba(94, 94, 94, 0.35);
   text-align: center;
-  font-size: 13px;
-  color: #6b6256;
-  line-height: 1.5;
+  font-size: 16px;
+  color: #fff;
+  line-height: 1.6;
 }
+.nudge-overlay strong { color: #fff; }
 .login-nudge-card strong { color: #1a1510; }
 .nudge-btn {
   display: block;

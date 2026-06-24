@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.db.models import F, Count, Min, Max, Case, When, BooleanField, FloatField, Value, ExpressionWrapper
 from rest_framework import generics
 from rest_framework.views import APIView
@@ -9,6 +11,23 @@ from .models import Game, Genre, Platform, Mood
 from .serializers import (
     GameCardSerializer, GameDetailSerializer, GenreSerializer,
 )
+
+
+def _calc_age(birth_date):
+    today = date.today()
+    return today.year - birth_date.year - (
+        (today.month, today.day) < (birth_date.month, birth_date.day)
+    )
+
+
+def _apply_age_filter(qs, request):
+    """로그인 유저의 생년월일 기준으로 이용 불가 게임 제외."""
+    if not request.user.is_authenticated:
+        return qs
+    bd = getattr(request.user, 'birth_date', None)
+    if not bd:
+        return qs
+    return qs.filter(required_age__lte=_calc_age(bd))
 
 
 class GameListView(generics.ListAPIView):
@@ -33,7 +52,10 @@ class GameListView(generics.ListAPIView):
     }
 
     def get_queryset(self):
-        qs = Game.objects.prefetch_related('genres', 'platforms', 'moods').all()
+        qs = _apply_age_filter(
+            Game.objects.prefetch_related('genres', 'platforms', 'moods').all(),
+            self.request,
+        )
         p = self.request.query_params
 
         genres = p.getlist('genre')          # tag_id 기준 (다중 선택 → AND 교집합)
@@ -174,7 +196,7 @@ class RecommendedGamesView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        games = Game.objects.order_by('?')[:5]
+        games = _apply_age_filter(Game.objects.all(), request).order_by('?')[:5]
         return Response(GameCardSerializer(
             games, many=True, context={'request': request}).data)
 
@@ -184,7 +206,7 @@ class OnSaleGamesView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        games = Game.objects.filter(
+        games = _apply_age_filter(Game.objects.all(), request).filter(
             final_price__isnull=False,
             initial_price__gt=F('final_price'),
         ).order_by('-initial_price')[:20]
@@ -197,10 +219,29 @@ class NewReleaseGamesView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        games = Game.objects.exclude(release_date__isnull=True)\
-                            .order_by('-release_date')[:20]
+        games = _apply_age_filter(Game.objects.all(), request)\
+                    .exclude(release_date__isnull=True)\
+                    .order_by('-release_date')[:20]
         return Response(GameCardSerializer(
             games, many=True, context={'request': request}).data)
+
+
+class GameSuggestView(APIView):
+    """GET /games/suggest/?q=  제목 자동완성 (최대 8건)"""
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        q = request.query_params.get('q', '').strip()
+        if not q:
+            return Response([])
+        from django.db.models import Q
+        games = _apply_age_filter(Game.objects.all(), request).filter(
+            Q(title__icontains=q) | Q(title_ko__icontains=q)
+        ).only('game_id', 'title', 'title_ko')[:8]
+        return Response([
+            {'game_id': g.game_id, 'title': g.title, 'title_ko': g.title_ko}
+            for g in games
+        ])
 
 
 class GenreListView(generics.ListAPIView):

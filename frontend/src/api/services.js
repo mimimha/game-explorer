@@ -25,6 +25,8 @@ export const accountAPI = {
   getUserProfile: (userId) => api.get(E.accounts.userProfile(userId)),
   follow: (userId) => api.post(E.accounts.follow(userId)),
   unfollow: (userId) => api.delete(E.accounts.follow(userId)),
+  getFollowers: (userId) => api.get(E.accounts.followers(userId)),
+  getFollowing: (userId) => api.get(E.accounts.following(userId)),
 }
 
 // ── 게임 ──
@@ -37,6 +39,7 @@ export const gameAPI = {
   onSale: () => api.get(E.games.onSale),
   newReleases: () => api.get(E.games.newReleases),
   filterOptions: () => api.get(E.games.filterOptions),
+  suggest: (q) => api.get(E.games.suggest, { params: { q } }),
   genres: () => api.get(E.games.genres),
 }
 
@@ -65,4 +68,12 @@ export const recommendAPI = {
   create: (payload) => api.post(E.recommend.create, payload),  // {prompt_input}
   logs: () => api.get(E.recommend.logs),
   logDetail: (logId) => api.get(E.recommend.logDetail(logId)),
+}
+
+// ── 알림 ──
+export const notificationAPI = {
+  list: () => api.get(E.notifications.list),
+  count: () => api.get(E.notifications.count),
+  readAll: () => api.post(E.notifications.readAll),
+  read: (id) => api.patch(E.notifications.read(id)),
 }

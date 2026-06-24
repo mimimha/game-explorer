@@ -1,13 +1,14 @@
 <template>
-  <section v-if="logs.length" class="history">
-    <div class="row">
-      <div class="left">
-        <h3 class="title">AI 추천 기록</h3>
-        <span class="sub">이전에 추천받은 내용을 다시 확인해보세요.</span>
-      </div>
+  <section class="section-card">
+    <div class="section-header">
+      <h3 class="section-title">AI 추천 기록</h3>
     </div>
 
-    <div class="carousel">
+    <div v-if="!logs.length" class="empty">
+      아직 AI 추천 기록이 없어요.
+    </div>
+
+    <div v-else class="carousel">
       <button
         class="arrow arrow-left"
         :class="{ hidden: !canScrollLeft }"
@@ -98,17 +99,33 @@ function formatDate(dt) {
 </script>
 
 <style scoped>
-.history { margin-bottom: 48px; }
+.section-card {
+  background: #fff;
+  border: 1px solid #e8e4d9;
+  border-radius: 16px;
+  padding: 24px 28px;
+}
 
-.row {
+.section-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 16px;
 }
-.left { display: flex; align-items: baseline; gap: 10px; }
-.title { font-size: 18px; font-weight: 800; color: #1a1510; }
-.sub { font-size: 13px; color: #9e9585; }
+
+.section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1510;
+  margin: 0;
+}
+
+.empty {
+  font-size: 14px;
+  color: #9e9585;
+  text-align: center;
+  padding: 24px 0;
+}
 
 .carousel {
   position: relative;

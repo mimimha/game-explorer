@@ -11,7 +11,7 @@
     <header class="page-header">
       <div>
         <h1 class="page-title">커뮤니티</h1>
-        <p class="page-sub">인디게임에 대한 자유로운 이야기, 공략, 후기를 나눠보세요!</p>
+        <p class="page-sub">인디게임에 대한 자유로운 이야기, 공략, 파티원 모집에 대한 이야기를 나눠보세요!</p>
       </div>
     </header>
 
@@ -30,18 +30,6 @@
       </div>
 
       <div class="controls-right">
-        <form class="search-form" @submit.prevent="doSearch">
-          <select v-model="searchType" class="search-type-select">
-            <option value="title">제목</option>
-            <option value="author">작성자</option>
-          </select>
-          <input v-model="searchKeyword" type="text" :placeholder="searchType === 'author' ? '닉네임 검색' : '제목 검색'" class="search-input" />
-          <button type="submit" class="search-btn" aria-label="검색">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/>
-            </svg>
-          </button>
-        </form>
         <button v-if="authStore.isLoggedIn" class="btn-write" @click="openWriteModal">
           <svg viewBox="0 0 20 20" fill="currentColor" class="btn-write-icon">
             <path d="M2.695 14.763l-1.262 3.154a.5.5 0 0 0 .65.65l3.155-1.262a4 4 0 0 0 1.343-.885L17.5 5.5a2.121 2.121 0 0 0-3-3L3.58 13.42a4 4 0 0 0-.885 1.343Z"/>
@@ -127,6 +115,22 @@
       </template>
     </div>
 
+    <!-- Search Bar -->
+    <div class="search-center">
+      <form class="search-form" @submit.prevent="doSearch">
+        <select v-model="searchType" class="search-type-select">
+          <option value="title">제목</option>
+          <option value="author">작성자</option>
+        </select>
+        <input v-model="searchKeyword" type="text" :placeholder="searchType === 'author' ? '닉네임 검색' : '제목 검색'" class="search-input" />
+        <button type="submit" class="search-btn" aria-label="검색">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/>
+          </svg>
+        </button>
+      </form>
+    </div>
+
     <!-- Write/Edit Modal -->
     <Teleport to="body">
       <div v-if="modalOpen" class="modal-overlay" @click.self="closeModal">
@@ -192,7 +196,7 @@ const TABS = [
   { label: '전체', value: '' },
   { label: '자유', value: '자유' },
   { label: '공략', value: '공략' },
-  { label: '파티원모집', value: '파티원모집' },
+  { label: '파티원 모집', value: '파티원모집' },
 ]
 
 const PAGE_SIZE = 20
@@ -378,6 +382,11 @@ onMounted(fetchPosts)
 
 .controls-right { display: flex; align-items: center; gap: 10px; }
 
+.search-center {
+  display: flex;
+  justify-content: center;
+}
+
 .search-form {
   display: flex;
   align-items: center;
@@ -392,7 +401,7 @@ onMounted(fetchPosts)
 
 .search-type-select {
   height: 100%;
-  padding: 0 8px;
+  padding: 0 15px 0 10px;
   border: none;
   border-right: 1px solid #ddd8cc;
   border-radius: 0;
@@ -405,7 +414,7 @@ onMounted(fetchPosts)
 }
 
 .search-input {
-  width: 160px;
+  width: 260px;
   height: 100%;
   padding: 0 10px;
   border: none;
@@ -422,16 +431,16 @@ onMounted(fetchPosts)
   align-items: center;
   justify-content: center;
   height: 100%;
-  padding: 0 10px;
+  padding: 0 12px;
   border: none;
   border-left: 1px solid #ddd8cc;
-  background: #f7f5f0;
-  color: #9e9585;
+  background: #1e3a5f;
+  color: #fff;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition: background 0.15s;
   flex-shrink: 0;
 }
-.search-btn:hover { background: #ede9e0; color: #1e3a5f; }
+.search-btn:hover { background: #162d4a; }
 .search-btn svg { width: 15px; height: 15px; }
 
 .btn-write {
