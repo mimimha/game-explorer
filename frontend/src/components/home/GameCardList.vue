@@ -12,7 +12,7 @@
 
     <!-- 로딩 스켈레톤 -->
     <div v-if="loading" class="card-grid">
-      <div v-for="i in 6" :key="i" class="skeleton-card">
+      <div v-for="i in 5" :key="i" class="skeleton-card">
         <div class="skeleton-thumb"></div>
         <div class="skeleton-line w80"></div>
         <div class="skeleton-line w50"></div>
@@ -23,15 +23,15 @@
     <div v-else-if="type === 'recommendation'" class="card-grid">
       <div v-if="!authStore.isLoggedIn" class="login-nudge-card">
         <p>로그인하고<br /><strong>나만의 취향</strong>을<br />분석받아보세요!</p>
-        <RouterLink to="/login" class="nudge-btn">로그인 / 회원가입</RouterLink>
+
       </div>
 
       <div
-        v-for="(game, index) in games.slice(0, authStore.isLoggedIn ? 6 : 5)"
+        v-for="(game, index) in games.slice(0, authStore.isLoggedIn ? 5 : 4)"
         :key="game.id || index"
         class="today-wrap"
       >
-        <span v-if="index === 0" class="today-label">오늘의 추천</span>
+  
         <GameCard :game="game" :show-wishlist="true" />
       </div>
     </div>
@@ -114,12 +114,16 @@ function onNext() {}
 /* 취향 분석 그리드 */
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 16px;
 }
 
 .today-wrap {
   position: relative;
+  min-width: 0;
+}
+.login-nudge-card {
+  min-width: 0;
 }
 .today-label {
   position: absolute;
@@ -172,6 +176,7 @@ function onNext() {}
 }
 
 .banner-left {
+  height: 340px;
   background: #f0ece3;
   border: 1px solid #e8e4d9;
   border-radius: 12px;
@@ -179,10 +184,11 @@ function onNext() {}
   display: flex;
   flex-direction: column;
   gap: 12px;
+  box-sizing: border-box;
 }
 .banner-image {
   flex: 1;
-  min-height: 200px;
+  min-height: 0;
   background: #e0dbd0;
   border-radius: 8px;
   display: flex;
@@ -219,9 +225,9 @@ function onNext() {}
 .banner-right {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: repeat(3, auto);
+  grid-template-rows: repeat(3, 1fr);
   gap: 12px;
-  align-content: start;
+  align-content: stretch;
 }
 
 /* 스켈레톤 */

@@ -24,7 +24,11 @@ class PostListCreateView(generics.ListCreateAPIView):
             qs = qs.filter(category=category)
         q = self.request.query_params.get('q')
         if q:
-            qs = qs.filter(title__icontains=q)
+            search_type = self.request.query_params.get('search_type', 'title')
+            if search_type == 'author':
+                qs = qs.filter(user__nickname__icontains=q)
+            else:
+                qs = qs.filter(title__icontains=q)
         return qs
 
     def get_serializer_class(self):

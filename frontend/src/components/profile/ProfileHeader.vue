@@ -37,7 +37,7 @@
 
           <!-- 타인: 팔로우/언팔로우 -->
           <button v-else class="btn-follow" :class="{ following: isFollowing }" @click="$emit('followToggle')">
-            {{ isFollowing ? '팔로잉' : '팔로우' }}
+            {{ isFollowing ? '언팔로우' : '팔로우' }}
           </button>
 
           <button class="btn-follow-stat" @click="$emit('showFollowers')">

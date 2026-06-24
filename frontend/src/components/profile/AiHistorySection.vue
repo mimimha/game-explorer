@@ -2,7 +2,7 @@
   <section class="section-card">
     <div class="section-header">
       <h3 class="section-title">AI 추천 기록</h3>
-      <RouterLink to="/explore?tab=ai" class="view-all">전체 보기 &rsaquo;</RouterLink>
+
     </div>
 
     <div v-if="logs.length === 0" class="empty">

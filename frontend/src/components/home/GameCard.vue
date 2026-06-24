@@ -51,7 +51,9 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
+import { wishlistAPI } from '@/api/services'
+import { useAuthStore } from '@/stores/auth'
 
 const props = defineProps({
   game: {
@@ -68,6 +70,8 @@ const props = defineProps({
   }
 })
 
+const router = useRouter()
+const authStore = useAuthStore()
 const isWishlisted = ref(props.game.is_wishlisted || false)
 
 const discountRate = computed(() => {
@@ -81,8 +85,22 @@ const discountRate = computed(() => {
 
 const genreNames = computed(() => (props.game.genres || []).map(g => g.name))
 
-function toggleWishlist() {
-  isWishlisted.value = !isWishlisted.value
+async function toggleWishlist() {
+  if (!authStore.isLoggedIn) {
+    router.push('/login')
+    return
+  }
+  const prev = isWishlisted.value
+  isWishlisted.value = !prev
+  try {
+    if (!prev) {
+      await wishlistAPI.add(props.game.id)
+    } else {
+      await wishlistAPI.remove(props.game.id)
+    }
+  } catch {
+    isWishlisted.value = prev
+  }
 }
 
 function formatPrice(price) {
@@ -94,6 +112,7 @@ function formatPrice(price) {
 <style scoped>
 .card {
   display: block;
+  width: 100%;
   text-decoration: none;
   color: inherit;
   background: #fff;
@@ -114,6 +133,7 @@ function formatPrice(price) {
   background: #f0ece3;
 }
 .thumbnail img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;

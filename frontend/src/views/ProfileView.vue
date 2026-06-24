@@ -100,8 +100,11 @@ const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
 
-// /profile = 본인, /users/:userId = 타인
-const isOwner = computed(() => !route.params.userId)
+// /profile = 본인, /users/:userId 이지만 자기 자신 ID인 경우도 본인으로 처리
+const isOwner = computed(() => {
+  if (!route.params.userId) return true
+  return String(route.params.userId) === String(authStore.user?.id)
+})
 
 const loading = ref(true)
 const error = ref(null)

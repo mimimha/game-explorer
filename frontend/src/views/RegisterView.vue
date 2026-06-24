@@ -10,14 +10,28 @@
 
       <form @submit.prevent="handleRegister" class="auth-form" novalidate>
 
+        <div class="form-group" :class="{ error: errors.username, success: touched.username && !errors.username }">
+          <label for="username">이름</label>
+          <input
+            id="username"
+            v-model="form.username"
+            placeholder="성함"
+            type="text"
+            autocomplete="username"
+            @blur="validateField('username')"
+            @input="clearError('username')"
+          />
+          <span class="field-msg" v-if="errors.nickname">{{ errors.username }}</span>
+        </div>
+
         <div class="form-group" :class="{ error: errors.nickname, success: touched.nickname && !errors.nickname }">
           <label for="nickname">닉네임</label>
           <input
             id="nickname"
             v-model="form.nickname"
             type="text"
-            placeholder="게임에서 쓸 닉네임"
-            autocomplete="username"
+            placeholder="게임에서 사용할 닉네임"
+            autocomplete="nickname"
             @blur="validateField('nickname')"
             @input="clearError('nickname')"
           />
@@ -55,12 +69,7 @@
               {{ showPassword ? '숨기기' : '보기' }}
             </button>
           </div>
-          <div class="pw-strength" v-if="form.password">
-            <div class="pw-bar">
-              <div class="pw-fill" :class="strengthClass" :style="{ width: strengthWidth }"></div>
-            </div>
-            <span class="pw-label" :class="strengthClass">{{ strengthLabel }}</span>
-          </div>
+      
           <span class="field-msg" v-if="errors.password">{{ errors.password }}</span>
         </div>
 
@@ -80,7 +89,7 @@
         </div>
 
         <div class="form-group" :class="{ error: errors.birth_date }">
-          <label for="birth_date">생년월일 <span class="optional">(선택)</span></label>
+          <label for="birth_date">생년월일</label>
           <input
             id="birth_date"
             v-model="form.birth_date"
@@ -148,36 +157,14 @@ const maxDate = computed(() => {
   return d.toISOString().split('T')[0]
 })
 
-// 비밀번호 강도
-const passwordStrength = computed(() => {
-  const pw = form.password
-  if (!pw) return 0
-  let score = 0
-  if (pw.length >= 8) score++
-  if (/[A-Z]/.test(pw)) score++
-  if (/[0-9]/.test(pw)) score++
-  if (/[^A-Za-z0-9]/.test(pw)) score++
-  return score
-})
 
-const strengthClass = computed(() => {
-  const s = passwordStrength.value
-  if (s <= 1) return 'weak'
-  if (s === 2) return 'fair'
-  if (s === 3) return 'good'
-  return 'strong'
-})
-
-const strengthWidth = computed(() => {
-  return (passwordStrength.value / 4 * 100) + '%'
-})
-
-const strengthLabel = computed(() => {
-  const map = { weak: '취약', fair: '보통', good: '양호', strong: '강함' }
-  return map[strengthClass.value]
-})
 
 const rules = {
+  username: (v) => {
+    if (!v) return '이름을 입력해주세요'
+    if (v.length < 2) return '이름은 2자 이상이어야 해요'
+    return ''
+  },
   nickname: (v) => {
     if (!v) return '닉네임을 입력해주세요'
     if (v.length < 2) return '닉네임은 2자 이상이어야 해요'
@@ -199,11 +186,11 @@ const rules = {
     if (v !== form.password) return '비밀번호가 일치하지 않아요'
     return ''
   },
-  birth_date: (v) => {
-    if (!v) return ''
-    if (new Date(v) > new Date(maxDate.value)) return '만 14세 이상만 가입 가능해요'
-    return ''
-  },
+  // birth_date: (v) => {
+  //   if (!v) return ''
+  //   if (new Date(v) > new Date(maxDate.value)) return '만 14세 이상만 가입 가능해요'
+  //   return ''
+  // },
   agreed: (v) => {
     if (!v) return '이용약관에 동의해주세요'
     return ''
@@ -235,7 +222,7 @@ const handleRegister = async () => {
   isLoading.value = true
   try {
     const { data } = await authAPI.register({
-      username: form.nickname,
+      username: form.username,
       nickname: form.nickname,
       email: form.email,
       password1: form.password,
