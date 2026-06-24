@@ -80,6 +80,7 @@ def parse_game_fields(detail):
         'rawg_id': detail['id'],
         'title': detail.get('name', '')[:200],
         'capsule_url': detail.get('background_image') or '',
+        'description': detail.get('description_raw') or '',  # 일반 텍스트 소개
         'metacritic_score': detail.get('metacritic'),
         'release_date': released or None,
         'required_age': 0,

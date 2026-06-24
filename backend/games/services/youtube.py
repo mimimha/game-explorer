@@ -1,4 +1,5 @@
 """YouTube Data API 검색 → 게임 영상 추출. (스트리밍 영상 소스)"""
+import html
 import requests
 from django.conf import settings
 
@@ -38,8 +39,11 @@ def search_videos(game_title, max_results=3):
         thumbs = snippet.get('thumbnails', {})
         thumb = (thumbs.get('high') or thumbs.get('default') or {}).get('url', '')
         videos.append({
-            'title': snippet.get('title', '')[:200],
+            # YouTube 제목은 HTML escape 되어 옴(&quot; 등) → 디코드
+            'title': html.unescape(snippet.get('title', ''))[:200],
             'video_url': f'https://www.youtube.com/watch?v={vid}',
             'thumbnail': thumb,
+            'channel': html.unescape(snippet.get('channelTitle', ''))[:100],
+            'published_at': (snippet.get('publishedAt') or '')[:10],  # YYYY-MM-DD
         })
     return videos

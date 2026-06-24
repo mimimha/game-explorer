@@ -112,5 +112,7 @@ class Command(BaseCommand):
                     GameVideo(
                         game=game, title=v['title'],
                         video_url=v['video_url'], thumbnail=v['thumbnail'],
+                        channel=v.get('channel', ''),
+                        published_at=v.get('published_at', ''),
                     ) for v in vids
                 ])
