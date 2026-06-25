@@ -176,9 +176,15 @@ class GameListView(generics.ListAPIView):
 
     def filter_queryset(self, queryset):
         queryset = super().filter_queryset(queryset)
-        # OrderingFilter가 기본 정렬(-game_id)로 덮어쓴 뒤 여기서 재적용
-        if self.request.query_params.get('ordering') == 'discount':
+        ordering = self.request.query_params.get('ordering')
+        if ordering == 'discount':
             queryset = queryset.order_by('-discount_rate', 'title')
+        elif ordering == '-release_date':
+            # release_date가 없는 게임은 맨 뒤로
+            queryset = queryset.order_by(F('release_date').desc(nulls_last=True))
+        elif ordering == 'final_price':
+            # final_price가 null인 게임은 맨 뒤로
+            queryset = queryset.order_by(F('final_price').asc(nulls_last=True))
         return queryset
 
     # 의도(키워드/필터)가 있는 검색만 취향 신호로 기록

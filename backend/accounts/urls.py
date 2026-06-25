@@ -18,4 +18,5 @@ urlpatterns = [
     path('accounts/notifications/count/', views.NotificationCountView.as_view(), name='notif-count'),
     path('accounts/notifications/read-all/', views.NotificationReadAllView.as_view(), name='notif-read-all'),
     path('accounts/notifications/<int:notif_id>/read/', views.NotificationReadView.as_view(), name='notif-read'),
+    path('accounts/notifications/<int:notif_id>/', views.NotificationDeleteView.as_view(), name='notif-delete'),
 ]

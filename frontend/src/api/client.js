@@ -6,6 +6,7 @@
 //   .env.production  → VITE_API_BASE_URL=https://api.도메인.com/api/v1
 // ──────────────────────────────────────────────────────────────
 import axios from 'axios'
+import { useAuthStore } from '@/stores/auth'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -33,8 +34,14 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('token')
-      window.location.href = '/login'
+      const authStore = useAuthStore()
+      authStore.logout()
+      // 인증이 필요한 페이지에서만 로그인으로 리다이렉트
+      // 홈·탐색 등 공개 페이지는 토큰만 지우고 비로그인 상태로 유지
+      const requiresAuthPaths = ['/profile', '/wishlist']
+      if (requiresAuthPaths.some(p => window.location.pathname.startsWith(p))) {
+        window.location.href = '/login'
+      }
     }
     return Promise.reject(error)
   },

@@ -125,6 +125,7 @@ import { ref, reactive, computed, onMounted, onBeforeUnmount, watch, nextTick } 
 import { RouterLink, useRouter, useRoute } from 'vue-router'
 import { accountAPI, recommendAPI } from '@/api/services'
 import { useAuthStore } from '@/stores/auth'
+import { useNotificationStore } from '@/stores/notifications'
 import defaultFollowAvatar from '@/assets/profile.png'
 
 import ProfileHeader from '@/components/profile/ProfileHeader.vue'
@@ -137,6 +138,7 @@ import AiHistorySection from '@/components/profile/AiHistorySection.vue'
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
+const notificationStore = useNotificationStore()
 
 // /profile = 본인, /users/:userId 이지만 자기 자신 ID인 경우도 본인으로 처리
 const isOwner = computed(() => {
@@ -338,6 +340,7 @@ async function submitEdit() {
     })
     user.value = res.data
     authStore.setProfile(res.data)
+    notificationStore.refresh()
     const medalsRes = await accountAPI.getMyMedals()
     mypage.medals = medalsRes.data?.results ?? medalsRes.data ?? []
     closeEditModal()
@@ -355,6 +358,7 @@ async function handleAvatarChange(file) {
     const res = await accountAPI.updateMe(formData)
     user.value = res.data
     authStore.setProfile(res.data)
+    notificationStore.refresh()
   } catch {
     alert('프로필 사진 변경에 실패했어요.')
   }

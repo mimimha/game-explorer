@@ -8,11 +8,12 @@
       </div>
       <div class="right">
         <template v-if="type === 'search'">
+          <span class="sort-label">정렬 :</span>
           <select :value="sort" @change="$emit('update:sort', $event.target.value)" class="sort-select">
-            <option value="discount">정렬: 할인순</option>
-            <option value="recent">정렬: 최신순</option>
-            <option value="rating">정렬: 평점순</option>
-            <option value="price">정렬: 가격순</option>
+            <option value="recent">최신순</option>
+            <option value="discount">할인순</option>
+            <option value="rating">평점순</option>
+            <option value="price">가격순</option>
           </select>
         </template>
       </div>
@@ -56,7 +57,7 @@
     <!-- 5. 결과 그리드 (AI/검색 공통) + 페이지네이션 -->
     <template v-else>
       <div class="grid">
-        <GameCard v-for="g in games" :key="g.id" :game="g" />
+        <GameCard v-for="g in games" :key="g.id" :game="g" :sort-mode="type === 'search' ? sort : null" />
       </div>
       <Pagination
         v-if="totalPages > 1"
@@ -108,12 +109,18 @@ const subtitle = computed(() => {
 .left { display: flex; align-items: baseline; gap: 10px; }
 .title { font-size: 18px; font-weight: 800; color: #1a1510; }
 .sub { font-size: 13px; color: #9e9585; min-height: 18px; }
-.right { display: flex; align-items: center; gap: 8px; }
+.right { display: flex; align-items: center; gap: 4px; }
 .more-link { font-size: 13px; font-weight: 600; color: #1e3a5f; text-decoration: none; }
 .more-link:hover { opacity: 0.7; }
 
+.sort-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b6050;
+  white-space: nowrap;
+}
 .sort-select {
-  padding: 6px 12px;
+  padding: 6px 12px 6px 8px;
   border: 1px solid #e8e4d9;
   border-radius: 8px;
   font-size: 13px;
@@ -154,6 +161,12 @@ const subtitle = computed(() => {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 14px;
+}
+
+@media (max-width: 960px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 /* 스켈레톤 */

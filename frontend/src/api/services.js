@@ -84,4 +84,5 @@ export const notificationAPI = {
   count: () => api.get(E.notifications.count),
   readAll: () => api.post(E.notifications.readAll),
   read: (id) => api.patch(E.notifications.read(id)),
+  delete: (id) => api.delete(E.notifications.delete(id)),
 }

@@ -57,6 +57,7 @@ class GameCardSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'title', 'title_ko', 'capsule_url',
             'initial_price', 'final_price',
+            'metacritic_score', 'release_date',
             'is_korean', 'playtime',
             'is_singleplayer', 'is_multiplayer', 'is_coop',
             'genres', 'platforms', 'moods',

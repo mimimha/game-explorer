@@ -10,8 +10,6 @@
         </svg>
       </div>
 
-      <!-- 할인 배지 -->
-      <span v-if="discountRate" class="badge-discount">-{{ discountRate }}%</span>
 
       <!-- 위시리스트 버튼 (취향 분석 섹션에서만) -->
       <button v-if="showWishlist" class="wishlist-btn" @click.prevent="toggleWishlist">
@@ -57,6 +55,38 @@
           <span class="tag">태그</span>
         </span>
       </div>
+
+      <!-- 정렬 기준별 강조 정보 -->
+      <div v-if="sortMode" class="sort-info" :class="`sort-info--${sortMode}`">
+        <!-- 최신순: 출시일 -->
+        <template v-if="sortMode === 'recent'">
+          <span class="si-date">{{ releaseDateFormatted || '출시일 미정' }}</span>
+        </template>
+
+        <!-- 할인순: 할인율 + 현재가 -->
+        <template v-else-if="sortMode === 'discount'">
+          <template v-if="discountRate">
+            <span class="si-disc-rate">-{{ discountRate }}%</span>
+            <span class="si-disc-price">{{ formatPrice(game.final_price) }}</span>
+          </template>
+          <span v-else class="si-empty">할인 없음</span>
+        </template>
+
+        <!-- 평점순: 별점 -->
+        <template v-else-if="sortMode === 'rating'">
+          <template v-if="game.metacritic_score">
+            <span class="si-star">★</span>
+            <span class="si-score">{{ game.metacritic_score }}</span>
+          </template>
+          <span v-else class="si-empty">평점 없음</span>
+        </template>
+
+        <!-- 가격순: 가격 표시 -->
+        <template v-else-if="sortMode === 'price'">
+          <span v-if="discountRate" class="si-price-orig">{{ formatPrice(game.initial_price) }}</span>
+          <span class="si-price-final">{{ formatPrice(game.final_price) }}</span>
+        </template>
+      </div>
     </div>
   </RouterLink>
 </template>
@@ -66,6 +96,7 @@ import { ref, computed } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { wishlistAPI } from '@/api/services'
 import { useAuthStore } from '@/stores/auth'
+import { useNotificationStore } from '@/stores/notifications'
 
 const props = defineProps({
   game: {
@@ -79,11 +110,16 @@ const props = defineProps({
   showWishlist: {
     type: Boolean,
     default: false
+  },
+  sortMode: {
+    type: String,
+    default: null   // 'recent' | 'discount' | 'rating' | 'price'
   }
 })
 
 const router = useRouter()
 const authStore = useAuthStore()
+const notificationStore = useNotificationStore()
 const isWishlisted = ref(props.game.is_wishlisted || false)
 
 const discountRate = computed(() => {
@@ -97,6 +133,17 @@ const discountRate = computed(() => {
 
 const genreNames = computed(() => (props.game.genres || []).map(g => g.name))
 
+const releaseDateFormatted = computed(() => {
+  const raw = props.game.release_date
+  if (!raw) return null
+  const d = new Date(raw)
+  if (isNaN(d)) return raw
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}.${m}.${day}`
+})
+
 async function toggleWishlist() {
   if (!authStore.isLoggedIn) {
     router.push('/login')
@@ -107,6 +154,7 @@ async function toggleWishlist() {
   try {
     if (!prev) {
       await wishlistAPI.add(props.game.id)
+      notificationStore.refresh()
     } else {
       await wishlistAPI.remove(props.game.id)
     }
@@ -116,7 +164,8 @@ async function toggleWishlist() {
 }
 
 function formatPrice(price) {
-  if (price === null || price === undefined) return '무료'
+  if (price === null || price === undefined) return '추후 업데이트 예정'
+  if (Number(price) === 0) return '무료'
   return '₩' + Number(price).toLocaleString('ko-KR')
 }
 </script>
@@ -242,6 +291,78 @@ function formatPrice(price) {
   background: #FFF0D6;
   border-radius: 999px;
   padding: 2px 8px;
+}
+
+/* ── 정렬 기준 정보 ── */
+.sort-info {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 25px 0 0;
+  min-height: 22px;
+}
+
+/* 최신순: 출시일 */
+.sort-info--recent .si-date {
+  display: inline-block;
+  background: #F0EBE0;
+  color: #6B5A45;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 9px;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+}
+
+/* 할인순 */
+.sort-info--discount .si-disc-rate {
+  background: #D97706;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+}
+.sort-info--discount .si-disc-price {
+  font-size: 13px;
+  font-weight: 700;
+  color: #3A2410;
+}
+
+/* 평점순 */
+.sort-info--rating {
+  gap: 3px;
+}
+.sort-info--rating .si-star {
+  color: #D97706;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+.sort-info--rating .si-score {
+  font-size: 14px;
+  font-weight: 800;
+  color: #2F2418;
+}
+
+/* 가격순 */
+.sort-info--price .si-price-orig {
+  font-size: 11px;
+  color: #9E9585;
+  text-decoration: line-through;
+}
+.sort-info--price .si-price-final {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e3a5f;
+}
+
+/* 공통 빈값 */
+.si-empty {
+  font-size: 11px;
+  color: #C2B8A8;
 }
 
 /* 취향 관련도 지표 */

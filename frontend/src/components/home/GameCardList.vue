@@ -124,6 +124,12 @@ onMounted(async () => {
   gap: 16px;
 }
 
+@media (max-width: 960px) {
+  .card-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
 .today-wrap {
   position: relative;
   min-width: 0;

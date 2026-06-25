@@ -45,8 +45,16 @@
               <span class="notif-type-icon">{{ typeIcon(n.notif_type) }}</span>
               <div class="notif-content">
                 <p class="notif-msg">{{ n.message }}</p>
-                <span class="notif-time">{{ timeAgo(n.created_at) }}</span>
+                <div class="notif-meta">
+                  <span class="notif-time">{{ timeAgo(n.created_at) }}</span>
+                  <span class="notif-read-badge" :class="n.is_read ? 'read' : 'unread-badge'">
+                    {{ n.is_read ? '읽음' : '안읽음' }}
+                  </span>
+                </div>
               </div>
+              <button class="notif-del-btn" @click.stop="deleteNotif(n)" aria-label="삭제">
+                ✕
+              </button>
             </div>
           </template>
         </div>
@@ -66,8 +74,10 @@
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { notificationAPI } from '@/api/services'
+import { useNotificationStore } from '@/stores/notifications'
 
 const router = useRouter()
+const notificationStore = useNotificationStore()
 
 const PER_PAGE = 5
 
@@ -90,6 +100,10 @@ watch(isOpen, (val) => {
   if (val) fetchNotifications()
 })
 
+watch(() => notificationStore.refreshKey, () => {
+  if (!isOpen.value) initCount()
+})
+
 watch(totalPages, (tp) => {
   if (page.value > tp) page.value = tp
 })
@@ -107,7 +121,7 @@ async function fetchNotifications() {
 }
 
 async function onNotifClick(n) {
-  // 읽음 처리
+  // 읽음 처리 (이력은 유지)
   if (!n.is_read) {
     try {
       await notificationAPI.read(n.id)
@@ -120,6 +134,13 @@ async function onNotifClick(n) {
     isOpen.value = false
     router.push(route)
   }
+}
+
+async function deleteNotif(n) {
+  try {
+    await notificationAPI.delete(n.id)
+    items.value = items.value.filter(i => i.id !== n.id)
+  } catch { /* ignore */ }
 }
 
 function resolveRoute(n) {
@@ -187,12 +208,18 @@ async function initCount() {
 
 defineExpose({ initCount })
 
+let countInterval = null
+
 onMounted(() => {
   document.addEventListener('mousedown', onDocClick)
   initCount()
+  countInterval = setInterval(() => {
+    if (!isOpen.value) initCount()
+  }, 30000)
 })
 onUnmounted(() => {
   document.removeEventListener('mousedown', onDocClick)
+  clearInterval(countInterval)
 })
 </script>
 
@@ -329,12 +356,49 @@ onUnmounted(() => {
   font-size: 13px;
   color: #3A2410;
   line-height: 1.45;
-  margin: 0 0 3px;
+  margin: 0 0 4px;
   word-break: keep-all;
+}
+.notif-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 .notif-time {
   font-size: 11px;
   color: #6B5A45;
+}
+.notif-read-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 999px;
+}
+.notif-read-badge.read {
+  background: #f0ece3;
+  color: #9e9585;
+}
+.notif-read-badge.unread-badge {
+  background: #FFF0D6;
+  color: #D97706;
+}
+
+.notif-del-btn {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  font-size: 11px;
+  color: #C2B8A8;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  line-height: 1;
+  transition: color 0.12s, background 0.12s;
+  align-self: center;
+}
+.notif-del-btn:hover {
+  color: #c0392b;
+  background: #fff5f5;
 }
 
 /* 페이지네이션 */
