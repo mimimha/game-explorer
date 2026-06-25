@@ -8,6 +8,7 @@ import ProfileView from '@/views/ProfileView.vue'
 import CommunityView from '@/views/CommunityView.vue'
 import PostDetailView from '@/views/PostDetailView.vue'
 import WishlistView from '@/views/WishlistView.vue'
+import ErrorView from '@/views/ErrorView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -66,6 +67,11 @@ const router = createRouter({
     name: 'wishlist',
     component: WishlistView,
     meta: { requiresAuth: true },
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'error',
+    component: ErrorView,
   },
   ],
 })

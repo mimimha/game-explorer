@@ -43,7 +43,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRoute, RouterLink } from 'vue-router'
+import { useRoute, useRouter, RouterLink } from 'vue-router'
 import { onBeforeRouteLeave } from 'vue-router'
 import { gameAPI } from '@/api/services'
 import { useExploreStore } from '@/stores/explore'
@@ -54,6 +54,7 @@ import GameVideos from '@/components/game-detail/GameVideos.vue'
 import GameCommunityPosts from '@/components/game-detail/GameCommunityPosts.vue'
 
 const route = useRoute()
+const router = useRouter()
 const exploreStore = useExploreStore()
 const loading = ref(true)
 const game = ref({})
@@ -103,7 +104,7 @@ onMounted(async () => {
     const { data } = await gameAPI.detail(gameId)
     game.value = mapGame(data)
   } catch (e) {
-    console.error('게임 상세 로드 실패:', e)
+    router.replace({ name: 'error' })
   } finally {
     loading.value = false
   }
