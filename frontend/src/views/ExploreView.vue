@@ -86,8 +86,9 @@ const currentPage = computed(() => resultMode.value === 'ai' ? aiPage.value : se
 const totalCount = computed(() => resultGames.value.length)
 const totalPages = computed(() => Math.max(1, Math.ceil(totalCount.value / pageSize.value)))
 
-// 화면에 실제로 그릴 항목 (현재 페이지만 잘라서)
+// 화면에 실제로 그릴 항목 (AI는 전체, 검색은 현재 페이지만)
 const pagedGames = computed(() => {
+  if (resultMode.value === 'ai') return resultGames.value
   const start = (currentPage.value - 1) * pageSize.value
   return resultGames.value.slice(start, start + pageSize.value)
 })

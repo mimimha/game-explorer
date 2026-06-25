@@ -162,6 +162,7 @@ defineExpose({ setPrompt: (v) => { prompt.value = v } })
   display: flex;
   align-items: center;
   gap: 6px;
+  margin-left: auto;
   padding: 10px 22px;
   background: #c96012;
   color: white;

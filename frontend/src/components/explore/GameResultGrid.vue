@@ -15,7 +15,6 @@
             <option value="price">정렬: 가격순</option>
           </select>
         </template>
-        <RouterLink v-else to="/explore" class="more-link">전체 보기 ›</RouterLink>
       </div>
     </div>
 
@@ -60,6 +59,7 @@
         <GameCard v-for="g in games" :key="g.id" :game="g" />
       </div>
       <Pagination
+        v-if="totalPages > 1"
         :current-page="currentPage"
         :total-pages="totalPages"
         @change="$emit('page-change', $event)"
@@ -70,7 +70,6 @@
 
 <script setup>
 import { computed } from 'vue'
-import { RouterLink } from 'vue-router'
 import GameCard from '../home/GameCard.vue'
 import EmptyState from './EmptyState.vue'
 import Pagination from '../common/Pagination.vue'

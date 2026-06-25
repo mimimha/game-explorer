@@ -105,7 +105,7 @@ function formatDate(dt) {
   color: #6b6256;
   text-decoration: none;
 }
-.view-all:hover { color: #1e3a5f; }
+.view-all:hover { color: #c96012; }
 
 .empty {
   font-size: 14px;
@@ -140,7 +140,7 @@ function formatDate(dt) {
 }
 .game-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(30, 58, 95, 0.1);
+  box-shadow: 0 6px 18px rgba(201, 96, 18, 0.1);
 }
 
 .card-thumb {
