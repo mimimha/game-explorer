@@ -121,37 +121,54 @@ function toRecGames(data) {
   })
 }
 
+// 추천 기록(과거 질의 목록) 로드 — 로그인 상태에서만
+async function loadRecentHistory() {
+  if (!authStore.isLoggedIn) return
+  try {
+    const { data } = await recommendAPI.logs()
+    const logs = Array.isArray(data) ? data : (data.results ?? [])
+    recentHistory.value = logs.map(l => ({
+      id: l.log_id,
+      query: l.prompt_input,
+      date: new Date(l.created_at).toLocaleDateString('ko-KR').replace(/\. /g, '.').slice(0, -1),
+      count: l.result_count ?? 0,
+    }))
+  } catch {
+    recentHistory.value = []
+  }
+}
+
 onMounted(async () => {
+  // 추천 기록은 복원 여부와 무관하게 항상 로드 → 상세 갔다 뒤로가기 해도 기록 유지
+  await loadRecentHistory()
+
   const saved = exploreStore.restore()
   if (saved) {
+    if (saved.resultMode === 'ai') {
+      // AI 추천 결과에서 상세로 갔다 뒤로가기 → 그리드는 '전체 게임 목록'을 보여준다.
+      // 추천 기록 태그는 유지되며(위에서 로드), 태그를 누르면(onRestoreHistory)
+      // 그 추천에 해당하는 AI 게임들만 다시 보인다.
+      activePanel.value = saved.activePanel || 'ai'
+      searchKeyword.value = ''
+      searchFilters.value = null
+      searchSort.value = 'recent'
+      runSearch()                 // 키워드·필터 없음 → 전체 게임
+      return
+    }
+    // 검색 모드: 기존 결과 그대로 복원
     resultMode.value = saved.resultMode
     resultGames.value = saved.resultGames
     searchKeyword.value = saved.searchKeyword
     searchSort.value = saved.searchSort
     searchFilters.value = saved.searchFilters
     submitted.value = saved.submitted
-    if (saved.resultMode === 'ai') aiPage.value = saved.currentPage || 1
-    else searchPage.value = saved.currentPage || 1
+    searchPage.value = saved.currentPage || 1
     activePanel.value = saved.activePanel
     await nextTick()
     if (saved.searchKeyword) searchPanelRef.value?.setKeyword(saved.searchKeyword)
     return
   }
 
-  if (authStore.isLoggedIn) {
-    try {
-      const { data } = await recommendAPI.logs()
-      const logs = Array.isArray(data) ? data : (data.results ?? [])
-      recentHistory.value = logs.map(l => ({
-        id: l.log_id,
-        query: l.prompt_input,
-        date: new Date(l.created_at).toLocaleDateString('ko-KR').replace(/\. /g, '.').slice(0, -1),
-        count: l.result_count ?? 0,
-      }))
-    } catch {
-      recentHistory.value = []
-    }
-  }
   // 진입 쿼리에 따라: ?filter=sale|new → 해당 검색, ?q= → 키워드 검색,
   // 아무것도 없으면 기본으로 전체 게임 목록을 바로 보여준다.
   if (route.query.filter) {

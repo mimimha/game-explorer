@@ -7,7 +7,13 @@
     </div>
 
     <div v-if="videos.length" class="carousel">
-      <div class="track" ref="trackEl">
+      <button class="arrow-left" @click="trackEl?.scrollBy({ left: -310, behavior: 'smooth' })" :class="{ hidden: !canLeft }">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" width="14">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m15.75 19.5-7.5-7.5 7.5-7.5"/>
+        </svg>
+      </button>
+
+      <div class="track" ref="trackEl" @scroll="onScroll">
         <a
           v-for="v in videos"
           :key="v.id"
@@ -71,11 +77,13 @@ function videoInfo(v) {
 }
 
 const trackEl = ref(null)
+const canLeft = ref(false)
 const canRight = ref(false)
 
 function onScroll() {
   const el = trackEl.value
   if (!el) return
+  canLeft.value = el.scrollLeft > 4
   canRight.value = el.scrollLeft + el.clientWidth < el.scrollWidth - 4
 }
 
@@ -184,6 +192,28 @@ onBeforeUnmount(() => ro?.disconnect())
   overflow: hidden;
 }
 .video-info { font-size: 11px; color: #9e9585; margin: 0; }
+
+/* 왼쪽 화살표 */
+.arrow-left {
+  position: absolute;
+  top: 50%;
+  left: -14px;
+  transform: translateY(-60%);
+  width: 32px; height: 32px;
+  background: #fff;
+  border: 1.5px solid #ddd8cc;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #3d3529;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: all 0.15s;
+  z-index: 2;
+}
+.arrow-left:hover { border-color: #1e3a5f; color: #1e3a5f; }
+.arrow-left.hidden { opacity: 0; pointer-events: none; }
 
 /* 오른쪽 화살표 */
 .arrow-right {
