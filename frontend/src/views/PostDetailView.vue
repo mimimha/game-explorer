@@ -60,15 +60,23 @@
 
         <!-- Post Body -->
         <div class="post-body">
-          <template v-for="(block, i) in renderedContent" :key="i">
+          <template v-for="(block, i) in groupedContent" :key="i">
             <template v-if="block.type === 'text'">
               <p v-for="(line, j) in block.value.split('\n')" :key="j" class="content-line">
                 <template v-if="line">{{ line }}</template>
                 <br v-else />
               </p>
             </template>
-            <div v-else class="content-image-block">
-              <img :src="block.url" class="post-image" @click="openLightbox(block.url)" />
+            <!-- 연속 이미지들: flex로 가로 배치 -->
+            <div v-else class="image-row">
+              <div
+                v-for="(img, k) in block.images"
+                :key="k"
+                class="image-wrap"
+                :style="{ width: img.widthPct + '%' }"
+              >
+                <img :src="img.url" class="post-image" @click="openLightbox(img.url)" />
+              </div>
             </div>
           </template>
         </div>
@@ -243,6 +251,7 @@ async function fetchPost() {
 }
 
 // content + images → 텍스트/이미지 블록 배열로 변환 (표시용)
+// 이미지 형식: [IMAGE:id] 또는 [IMAGE:id:widthPct]
 const renderedContent = computed(() => {
   if (!post.value) return []
   const imageMap = Object.fromEntries((post.value.images ?? []).map(img => [img.id, img.url]))
@@ -250,17 +259,34 @@ const renderedContent = computed(() => {
   const result = []
   let textBuffer = []
   for (const line of lines) {
-    const match = line.match(/^\[IMAGE:(\d+)\]$/)
+    const match = line.match(/^\[IMAGE:(\d+)(?::(\d+))?\]$/)
     if (match) {
       if (textBuffer.length) { result.push({ type: 'text', value: textBuffer.join('\n') }); textBuffer = [] }
       const url = imageMap[parseInt(match[1])]
-      if (url) result.push({ type: 'image', url })
+      const widthPct = match[2] ? parseInt(match[2]) : 100
+      if (url) result.push({ type: 'image', url, widthPct })
     } else {
       textBuffer.push(line)
     }
   }
   if (textBuffer.length) result.push({ type: 'text', value: textBuffer.join('\n') })
   return result
+})
+
+// 연속된 이미지 블록을 하나의 row로 묶어 가로 배치 지원
+const groupedContent = computed(() => {
+  const out = []
+  let imgs = []
+  for (const block of renderedContent.value) {
+    if (block.type === 'image') {
+      imgs.push(block)
+    } else {
+      if (imgs.length) { out.push({ type: 'image-row', images: [...imgs] }); imgs = [] }
+      out.push(block)
+    }
+  }
+  if (imgs.length) out.push({ type: 'image-row', images: imgs })
+  return out
 })
 
 // 라이트박스
@@ -318,24 +344,29 @@ async function submitEdit() {
     // 삭제 먼저
     await Promise.all(deleteIds.map(id => communityAPI.deleteImage(postId.value, id)))
 
-    // 새 이미지 업로드 + content 빌드
+    // 새 이미지 업로드 + content 빌드 (빈 텍스트 블록 스킵)
     const parts = []
     for (const block of blocks) {
       if (block.type === 'text') {
-        parts.push(block.value)
+        if (block.value.trim()) parts.push(block.value)
       } else {
         let imgId = block.existingId ?? null
         if (block.file) {
           const { data } = await communityAPI.uploadImages(postId.value, [block.file])
           imgId = data[0].id
         }
-        if (imgId) parts.push(`[IMAGE:${imgId}]`)
+        if (imgId) {
+          const wp = block.widthPct ?? 100
+          parts.push(wp < 100 ? `[IMAGE:${imgId}:${wp}]` : `[IMAGE:${imgId}]`)
+        }
       }
     }
 
+    const content = parts.join('\n') || ' ' // blank=False 통과를 위해 빈 경우 공백
+
     await communityAPI.updatePost(postId.value, {
       title: editForm.value.title.trim(),
-      content: parts.join('\n'),
+      content,
       category: editForm.value.category,
     })
 
@@ -849,21 +880,24 @@ onMounted(fetchPost)
 }
 .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
 
-/* 첨부 이미지 */
-.post-images {
+/* 이미지 행 (연속 이미지 가로 배치) */
+.image-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid #FFF0D6;
+  gap: 8px;
+  margin: 10px 0;
+  align-items: flex-start;
+}
+.image-wrap {
+  flex-shrink: 0;
+  box-sizing: border-box;
+  min-width: 60px;
 }
 .post-image {
-  max-width: 100%;
-  max-height: 480px;
-  border-radius: 10px;
-  border: 1px solid #D8C4A3;
-  object-fit: contain;
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
   cursor: zoom-in;
 }
 
@@ -886,8 +920,4 @@ onMounted(fetchPost)
   object-fit: contain;
 }
 
-/* 인라인 이미지 (표시) */
-.content-image-block {
-  margin: 12px 0;
-}
 </style>

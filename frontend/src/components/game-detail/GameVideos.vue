@@ -6,7 +6,7 @@
       </div>
     </div>
 
-    <div class="carousel">
+    <div v-if="videos.length" class="carousel">
       <div class="track" ref="trackEl">
         <a
           v-for="v in videos"
@@ -43,16 +43,6 @@
           </div>
         </a>
 
-        <!-- 더미 카드 (데이터 없을 때) -->
-        <template v-if="!videos.length">
-          <div v-for="i in 3" :key="i" class="video-card skeleton">
-            <div class="thumb thumb-placeholder-skeleton"></div>
-            <div class="video-meta">
-              <div class="sk-line w80"></div>
-              <div class="sk-line w50"></div>
-            </div>
-          </div>
-        </template>
       </div>
 
       <button class="arrow-right" @click="trackEl?.scrollBy({ left: 310, behavior: 'smooth' })" :class="{ hidden: !canRight }">
@@ -61,6 +51,8 @@
         </svg>
       </button>
     </div>
+
+    <p v-if="!videos.length" class="coming-soon">추후 업데이트 예정</p>
   </section>
 </template>
 
@@ -234,5 +226,12 @@ onBeforeUnmount(() => ro?.disconnect())
 @keyframes shimmer {
   0%   { background-position: 200% 0; }
   100% { background-position: -200% 0; }
+}
+
+.coming-soon {
+  font-size: 13px;
+  color: #9e9585;
+  font-style: italic;
+  margin: 18px 0 0;
 }
 </style>

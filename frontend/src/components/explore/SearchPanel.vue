@@ -190,8 +190,11 @@
 
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { gameAPI } from '@/api/services'
 import GameSuggestDropdown from '@/components/common/GameSuggestDropdown.vue'
+
+const router = useRouter()
 
 defineProps({
   isActive: { type: Boolean, default: false },
@@ -253,9 +256,8 @@ function onDocumentClick(e) {
 function onSuggestHover(i) { activeIdx.value = i }
 
 function onSuggestSelect(s) {
-  keyword.value = s.title_ko || s.title
   closeSuggestions()
-  handleSubmit()
+  router.push(`/games/${s.id}`)
 }
 
 function onSuggestKeydown(e) {

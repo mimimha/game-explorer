@@ -1,30 +1,19 @@
 <template>
   <div class="block-editor">
-    <template v-for="(block, i) in blocks" :key="block.id">
+    <div
+      ref="editorEl"
+      class="editor-content"
+      contenteditable="true"
+      data-placeholder="내용을 입력하세요"
+      @paste.prevent="onPaste"
+      @blur="saveRange"
+    />
 
-      <!-- 텍스트 블록 -->
-      <textarea
-        v-if="block.type === 'text'"
-        v-model="block.value"
-        class="block-textarea"
-        :placeholder="i === 0 ? '내용을 입력하세요' : '계속 작성하세요...'"
-        @input="e => autoResize(e.target)"
-        @focus="e => autoResize(e.target)"
-      />
-
-      <!-- 이미지 블록 -->
-      <div v-else class="image-block">
-        <img :src="block.preview || block.url" class="block-img" />
-        <button type="button" class="remove-img-btn" @click="removeImage(i)" title="이미지 삭제">×</button>
-      </div>
-
-    </template>
-
-    <!-- 사진 추가 버튼: 항상 하단에 하나만 -->
     <button
-      v-if="imageCount < MAX_IMAGES"
+      v-if="imgCount < MAX_IMAGES"
       type="button"
       class="add-photo-btn"
+      @mousedown.prevent
       @click="fileRef?.click()"
     >
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -38,110 +27,265 @@
 </template>
 
 <script setup>
-import { ref, computed, nextTick } from 'vue'
+import { ref } from 'vue'
 
 const MAX_IMAGES = 5
+const editorEl = ref(null)
+const fileRef  = ref(null)
+const imgCount = ref(0)
+const pendingFiles = ref([])
 
-// 항상 텍스트로 시작하고 텍스트로 끝나는 구조 유지
-// [text] or [text, img, text] or [text, img, text, img, text] ...
-const blocks = ref([{ id: uid(), type: 'text', value: '' }])
-const fileRef = ref(null)
+let lastRange = null
 
-const imageCount = computed(() => blocks.value.filter(b => b.type === 'image').length)
+function uid() { return Math.random().toString(36).slice(2) }
 
-function uid() {
-  return Math.random().toString(36).slice(2)
+// ── 커서 저장 ─────────────────────────────────────────────────
+
+function saveRange() {
+  const sel = window.getSelection()
+  if (sel && sel.rangeCount > 0 && editorEl.value?.contains(sel.anchorNode)) {
+    lastRange = sel.getRangeAt(0).cloneRange()
+  }
 }
 
-function autoResize(el) {
-  if (!el) return
-  el.style.height = 'auto'
-  el.style.height = el.scrollHeight + 'px'
-}
+// ── 파일 선택 ─────────────────────────────────────────────────
 
-// 파일 선택 시: 마지막 텍스트 블록 뒤에 이미지 + 새 텍스트 블록 추가
 function onFileChosen(e) {
   const file = e.target.files?.[0]
   e.target.value = ''
-  if (!file) return
+  if (!file || imgCount.value >= MAX_IMAGES) return
 
+  const fid = uid()
   const preview = URL.createObjectURL(file)
-  const imgBlock  = { id: uid(), type: 'image', file, preview, existingId: null, url: null }
-  const textBlock = { id: uid(), type: 'text', value: '' }
+  pendingFiles.value.push({ id: fid, file, preview })
 
-  // 마지막 블록이 텍스트임을 보장 (항상 그래야 함)
-  blocks.value.push(imgBlock, textBlock)
-
-  nextTick(() => {
-    // 새 텍스트 블록으로 포커스
-    const textareas = document.querySelectorAll('.block-textarea')
-    textareas[textareas.length - 1]?.focus()
-  })
+  const wrapper = makeImgEl(null, preview, fid, 100)
+  insertIntoEditor(wrapper)
+  imgCount.value++
 }
 
-// 이미지 제거 → 앞뒤 텍스트 병합
-function removeImage(imgIdx) {
-  const block = blocks.value[imgIdx]
-  if (block.preview) URL.revokeObjectURL(block.preview)
+function insertIntoEditor(node) {
+  const editor = editorEl.value
+  const sel = window.getSelection()
+  const br = document.createElement('br')
 
-  const before = blocks.value[imgIdx - 1]
-  const after  = blocks.value[imgIdx + 1]
-  const merged = [before?.value, after?.value].filter(v => v).join('\n')
+  const hasEditorCursor = sel && sel.rangeCount > 0 && editor.contains(sel.anchorNode)
+  const range = hasEditorCursor
+    ? sel.getRangeAt(0)
+    : (lastRange && editor.contains(lastRange.startContainer) ? lastRange : null)
 
-  // [text_before, image, text_after] → [text_merged]
-  blocks.value.splice(imgIdx - 1, 3, { id: uid(), type: 'text', value: merged })
+  const frag = document.createDocumentFragment()
+  frag.appendChild(node)
+  frag.appendChild(br)
 
-  nextTick(() => {
-    document.querySelectorAll('.block-textarea').forEach(autoResize)
-  })
+  if (range) {
+    range.collapse(false)
+    range.insertNode(frag)
+    const r = document.createRange()
+    r.setStartAfter(br)
+    r.collapse(true)
+    sel.removeAllRanges()
+    sel.addRange(r)
+  } else {
+    editor.appendChild(node)
+    editor.appendChild(br)
+    const r = document.createRange()
+    r.setStartAfter(br)
+    r.collapse(true)
+    sel?.removeAllRanges()
+    sel?.addRange(r)
+  }
+
+  editor.focus()
+  lastRange = null
 }
 
-// ── 공개 API ─────────────────────────────────────────────────
+// ── 이미지 DOM 생성 ───────────────────────────────────────────
 
-// 수정 모드 초기화: 기존 content + images 로 블록 복원
+function makeImgEl(existingId, src, newFileId, widthPct = 100) {
+  const div = document.createElement('div')
+  div.className = 'pbe-img-block'
+  div.contentEditable = 'false'
+  div.style.width = widthPct + '%'
+  div.dataset.widthPct = String(widthPct)
+  if (existingId != null) div.dataset.existingId = String(existingId)
+  if (newFileId) div.dataset.newFileId = newFileId
+
+  const img = document.createElement('img')
+  img.src = src
+  img.className = 'pbe-block-img'
+
+  // × 삭제 버튼
+  const delBtn = document.createElement('button')
+  delBtn.type = 'button'
+  delBtn.className = 'pbe-remove-btn'
+  delBtn.textContent = '×'
+  delBtn.addEventListener('click', () => {
+    if (newFileId) {
+      const idx = pendingFiles.value.findIndex(f => f.id === newFileId)
+      if (idx !== -1) {
+        URL.revokeObjectURL(pendingFiles.value[idx].preview)
+        pendingFiles.value.splice(idx, 1)
+      }
+    }
+    div.remove()
+    imgCount.value = Math.max(0, imgCount.value - 1)
+  })
+
+  // 리사이즈 핸들 (오른쪽 하단)
+  const handle = document.createElement('div')
+  handle.className = 'pbe-resize-handle'
+  handle.innerHTML = `<svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5">
+    <path d="M2 8 L8 2 M5 8 L8 5"/>
+  </svg>`
+
+  handle.addEventListener('mousedown', (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    const startX  = e.clientX
+    const startW  = div.offsetWidth
+
+    function onMove(ev) {
+      const editorContentW = (editorEl.value?.clientWidth ?? 600) - 28 // 패딩 14+14
+      const dx   = ev.clientX - startX
+      const newW = Math.max(80, Math.min(editorContentW, startW + dx))
+      const pct  = Math.round((newW / editorContentW) * 100)
+      div.style.width = pct + '%'
+      div.dataset.widthPct = String(pct)
+    }
+    function onUp() {
+      document.removeEventListener('mousemove', onMove)
+      document.removeEventListener('mouseup', onUp)
+    }
+    document.addEventListener('mousemove', onMove)
+    document.addEventListener('mouseup', onUp)
+  })
+
+  div.appendChild(img)
+  div.appendChild(delBtn)
+  div.appendChild(handle)
+  return div
+}
+
+// ── 직렬화 ────────────────────────────────────────────────────
+
+function getBlocks() {
+  const editor = editorEl.value
+  if (!editor) return [{ type: 'text', value: '' }]
+
+  const blocks = []
+  let buf = []
+
+  function flush() {
+    const val = buf.join('').replace(/^\n+|\n+$/g, '')
+    blocks.push({ type: 'text', value: val })
+    buf = []
+  }
+
+  function walk(node) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      buf.push(node.textContent)
+      return
+    }
+    if (node.nodeType !== Node.ELEMENT_NODE) return
+
+    const tag = node.nodeName
+
+    if (node.classList?.contains('pbe-img-block')) {
+      flush()
+      const existingId = node.dataset.existingId ? parseInt(node.dataset.existingId) : null
+      const newFileId  = node.dataset.newFileId  || null
+      const widthPct   = node.dataset.widthPct   ? parseInt(node.dataset.widthPct)   : 100
+      const file = newFileId ? (pendingFiles.value.find(f => f.id === newFileId)?.file ?? null) : null
+      blocks.push({ type: 'image', existingId, file, widthPct, preview: null, url: null })
+      return
+    }
+
+    if (tag === 'BR') {
+      if (node.previousSibling?.classList?.contains('pbe-img-block')) return
+      const parent = node.parentNode
+      const isOnlyChild = parent !== editor && parent.childNodes.length === 1
+      if (!isOnlyChild) buf.push('\n')
+      return
+    }
+
+    if (tag === 'DIV' || tag === 'P') {
+      if (buf.length > 0 || blocks.length > 0) buf.push('\n')
+      for (const c of node.childNodes) walk(c)
+      return
+    }
+
+    for (const c of node.childNodes) walk(c)
+  }
+
+  for (const c of editor.childNodes) walk(c)
+  flush()
+
+  return blocks
+}
+
+// ── 수정 모드 초기화 ──────────────────────────────────────────
+// content 형식: [IMAGE:id] 또는 [IMAGE:id:widthPct]
+
 function init(content, images = []) {
+  cleanup()
+  const editor = editorEl.value
+  if (!editor) return
+  editor.innerHTML = ''
+  imgCount.value = 0
+
   const imageMap = Object.fromEntries((images ?? []).map(img => [img.id, img.url]))
   const lines = (content ?? '').split('\n')
-  const result = []
-  let textBuf = []
 
-  for (const line of lines) {
-    const m = line.match(/^\[IMAGE:(\d+)\]$/)
+  lines.forEach((line, i) => {
+    const m = line.match(/^\[IMAGE:(\d+)(?::(\d+))?\]$/)
     if (m) {
-      result.push({ id: uid(), type: 'text', value: textBuf.join('\n') })
-      textBuf = []
-      const url = imageMap[parseInt(m[1])]
-      if (url) result.push({ id: uid(), type: 'image', file: null, preview: null, existingId: parseInt(m[1]), url })
+      const imgId    = parseInt(m[1])
+      const widthPct = m[2] ? parseInt(m[2]) : 100
+      const url      = imageMap[imgId]
+      if (url) {
+        editor.appendChild(makeImgEl(imgId, url, null, widthPct))
+        editor.appendChild(document.createElement('br'))
+        imgCount.value++
+      }
     } else {
-      textBuf.push(line)
+      editor.appendChild(document.createTextNode(line))
+      if (i < lines.length - 1) editor.appendChild(document.createElement('br'))
     }
-  }
-  result.push({ id: uid(), type: 'text', value: textBuf.join('\n') })
-
-  // 마지막이 텍스트가 아니면 추가
-  if (result[result.length - 1]?.type !== 'text') {
-    result.push({ id: uid(), type: 'text', value: '' })
-  }
-
-  blocks.value = result.length ? result : [{ id: uid(), type: 'text', value: '' }]
-
-  nextTick(() => document.querySelectorAll('.block-textarea').forEach(autoResize))
+  })
 }
 
-function getBlocks() { return blocks.value }
-
 function cleanup() {
-  blocks.value.forEach(b => { if (b.preview) URL.revokeObjectURL(b.preview) })
+  pendingFiles.value.forEach(f => URL.revokeObjectURL(f.preview))
+  pendingFiles.value = []
 }
 
 function reset() {
   cleanup()
-  blocks.value = [{ id: uid(), type: 'text', value: '' }]
+  const editor = editorEl.value
+  if (editor) editor.innerHTML = ''
+  imgCount.value = 0
+  lastRange = null
+}
+
+function onPaste(e) {
+  const text = e.clipboardData?.getData('text/plain') ?? ''
+  const sel = window.getSelection()
+  if (!sel?.rangeCount) return
+  const range = sel.getRangeAt(0)
+  range.deleteContents()
+  const textNode = document.createTextNode(text)
+  range.insertNode(textNode)
+  range.setStartAfter(textNode)
+  range.collapse(true)
+  sel.removeAllRanges()
+  sel.addRange(range)
 }
 
 defineExpose({ init, getBlocks, cleanup, reset })
 </script>
 
+<!-- 스코프 스타일: Vue 템플릿 요소 -->
 <style scoped>
 .block-editor {
   display: flex;
@@ -149,9 +293,8 @@ defineExpose({ init, getBlocks, cleanup, reset })
   gap: 8px;
 }
 
-.block-textarea {
-  width: 100%;
-  min-height: 80px;
+.editor-content {
+  min-height: 180px;
   border: 1px solid #D8C4A3;
   border-radius: 10px;
   padding: 12px 14px;
@@ -159,51 +302,21 @@ defineExpose({ init, getBlocks, cleanup, reset })
   color: #3A2410;
   font-family: inherit;
   line-height: 1.7;
-  resize: none;
   outline: none;
   background: #fff;
-  box-sizing: border-box;
-  transition: border-color 0.15s;
+  word-break: break-word;
   overflow: hidden;
+  transition: border-color 0.15s;
+  cursor: text;
+  box-sizing: border-box;
 }
-.block-textarea:focus { border-color: #D97706; }
+.editor-content:focus { border-color: #D97706; }
+.editor-content:empty::before {
+  content: attr(data-placeholder);
+  color: #c8c2b4;
+  pointer-events: none;
+}
 
-/* 이미지 블록 */
-.image-block {
-  position: relative;
-  align-self: flex-start;
-  max-width: 100%;
-}
-.block-img {
-  display: block;
-  max-width: 100%;
-  max-height: 320px;
-  border-radius: 10px;
-  border: 1px solid #D8C4A3;
-  object-fit: contain;
-}
-.remove-img-btn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: rgba(58, 36, 16, 0.65);
-  color: #fff;
-  border: none;
-  font-size: 16px;
-  line-height: 1;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(2px);
-  transition: background 0.15s;
-}
-.remove-img-btn:hover { background: rgba(155, 48, 48, 0.85); }
-
-/* 사진 추가 버튼 */
 .add-photo-btn {
   align-self: flex-start;
   display: inline-flex;
@@ -218,7 +331,6 @@ defineExpose({ init, getBlocks, cleanup, reset })
   font-family: inherit;
   cursor: pointer;
   transition: all 0.15s;
-  margin-top: 2px;
 }
 .add-photo-btn:hover {
   border-color: #D97706;
@@ -226,4 +338,72 @@ defineExpose({ init, getBlocks, cleanup, reset })
   background: #FFF0D6;
 }
 .add-photo-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+</style>
+
+<!-- 전역 스타일: JS로 생성되는 동적 요소 -->
+<style>
+.pbe-img-block {
+  display: block;
+  position: relative;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin: 8px 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.pbe-block-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  border-radius: 8px;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+/* × 삭제 버튼 */
+.pbe-remove-btn {
+  position: absolute;
+  top: 8px;
+  right: 36px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(58, 36, 16, 0.65);
+  color: #fff;
+  border: none;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(2px);
+  transition: background 0.15s;
+  opacity: 0;
+}
+.pbe-img-block:hover .pbe-remove-btn { opacity: 1; }
+.pbe-remove-btn:hover { background: rgba(155, 48, 48, 0.85); }
+
+/* 리사이즈 핸들 */
+.pbe-resize-handle {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  background: rgba(58, 36, 16, 0.6);
+  color: #fff;
+  cursor: se-resize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.15s, background 0.15s;
+}
+.pbe-img-block:hover .pbe-resize-handle { opacity: 1; }
+.pbe-resize-handle:hover { background: rgba(217, 119, 6, 0.85); }
+.pbe-resize-handle svg { width: 12px; height: 12px; stroke: #fff; }
 </style>

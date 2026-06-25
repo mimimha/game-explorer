@@ -1,7 +1,8 @@
 <template>
   <section class="desc-section">
     <h2 class="section-title">게임 소개</h2>
-    <p class="desc-text">{{ shown }}</p>
+    <p v-if="shown" class="desc-text">{{ shown }}</p>
+    <p v-else class="coming-soon">추후 업데이트 예정</p>
   </section>
 </template>
 
@@ -38,6 +39,12 @@ const shown = computed(() => props.descriptionKo || props.description)
   color: #3d3529;
   line-height: 1.85;
   white-space: pre-line;
+  margin: 0;
+}
+.coming-soon {
+  font-size: 13px;
+  color: #9e9585;
+  font-style: italic;
   margin: 0;
 }
 </style>

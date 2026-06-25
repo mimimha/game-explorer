@@ -15,27 +15,31 @@
 
     <!-- 가격 -->
     <div class="price-row">
-      <template v-if="game.discount_rate">
-        <span class="price-original">₩{{ formatPrice(game.initial_price) }}</span>
-        <span class="arrow-icon">→</span>
-        <span class="price-final">₩{{ formatPrice(game.final_price) }}</span>
-        <span class="discount-badge">-{{ game.discount_rate }}% 할인</span>
+      <template v-if="game.final_price != null">
+        <template v-if="game.discount_rate">
+          <span class="price-original">₩{{ formatPrice(game.initial_price) }}</span>
+          <span class="arrow-icon">→</span>
+          <span class="price-final">₩{{ formatPrice(game.final_price) }}</span>
+          <span class="discount-badge">-{{ game.discount_rate }}% 할인</span>
+        </template>
+        <span v-else class="price-final">₩{{ formatPrice(game.final_price) }}</span>
       </template>
-      <span v-else class="price-final">₩{{ formatPrice(game.final_price) }}</span>
+      <span v-else class="coming-soon">추후 업데이트 예정</span>
     </div>
 
     <!-- 메타크리틱 점수 + 별점 -->
     <div class="score-row">
-      <div class="stars">
-        <svg v-for="i in 5" :key="i"
-          viewBox="0 0 16 16" width="16" height="16"
-          :fill="i <= Math.round((game.metacritic_score || 0) / 20) ? '#f59e0b' : '#e8e4d9'">
-          <path d="M8 1l1.8 3.6L14 5.4l-3 2.9.7 4.1L8 10.4l-3.7 2 .7-4.1-3-2.9 4.2-.8z"/>
-        </svg>
-      </div>
-      <span v-if="game.metacritic_score" class="meta-score">
-        평점 {{ game.metacritic_score }}점
-      </span>
+      <template v-if="game.metacritic_score">
+        <div class="stars">
+          <svg v-for="i in 5" :key="i"
+            viewBox="0 0 16 16" width="16" height="16"
+            :fill="i <= Math.round(game.metacritic_score / 20) ? '#f59e0b' : '#e8e4d9'">
+            <path d="M8 1l1.8 3.6L14 5.4l-3 2.9.7 4.1L8 10.4l-3.7 2 .7-4.1-3-2.9 4.2-.8z"/>
+          </svg>
+        </div>
+        <span class="meta-score">평점 {{ game.metacritic_score }}점</span>
+      </template>
+      <span v-else class="coming-soon">추후 업데이트 예정</span>
     </div>
 
     <!-- 태그 칩들 -->
@@ -274,4 +278,11 @@ async function toggleWish() {
   transition: all 0.15s;
 }
 .genre-more:hover { border-color: #1e3a5f; color: #1e3a5f; }
+
+/* 추후 업데이트 예정 */
+.coming-soon {
+  font-size: 13px;
+  color: #9e9585;
+  font-style: italic;
+}
 </style>
