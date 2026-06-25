@@ -90,6 +90,11 @@ class Game(models.Model):
         Mood, through='GameMood', related_name='games', blank=True
     )
 
+    price_updated_at = models.DateTimeField(
+    null=True, blank=True, db_column='price_updated_at',
+    help_text='가격을 마지막으로 갱신한 시각. null=아직 한 번도 갱신 안 됨(최우선 대상).'
+)
+
     class Meta:
         db_table = 'game'
         ordering = ['-game_id']
@@ -213,3 +218,5 @@ class SearchLog(models.Model):
 
     def __str__(self):
         return f'{self.user} 검색: {self.keyword or "(필터)"}'
+    
+

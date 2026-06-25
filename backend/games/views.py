@@ -295,7 +295,7 @@ class RecommendedGamesView(APIView):
                     games, many=True, context={'request': request}).data
                 top = scored[0]['total'] or 1
                 for item, s in zip(data, scored):
-                    item['match'] = max(1, round(s['total'] / top * 100))  # 전체 관련도
+                    item['match'] = max(1, round(s['total'] / top * 95))   # 전체 관련도(최대 95%)
                     item['ai_sim'] = s['ai_sim']      # AI 검색 기록과 유사 %
                     item['wish_sim'] = s['wish_sim']  # 찜 목록과 유사 %
                 return Response(data)
@@ -361,8 +361,8 @@ class RecommendedGamesView(APIView):
         return [{
             'game': c['game'],
             'total': c['total'],
-            'ai_sim': round(c['ai_s'] / max_ai * 100) if c['ai_s'] else 0,
-            'wish_sim': round(c['wish_s'] / max_wish * 100) if c['wish_s'] else 0,
+            'ai_sim': round(c['ai_s'] / max_ai * 95) if c['ai_s'] else 0,    # 최대 95%
+            'wish_sim': round(c['wish_s'] / max_wish * 95) if c['wish_s'] else 0,  # 최대 95%
         } for c in top]
 
 

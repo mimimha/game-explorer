@@ -65,63 +65,31 @@ class GameAdmin(admin.ModelAdmin):
                 name='games_game_fill_videos',
             ),
             path(
-                'export-translations/',
-                self.admin_site.admin_view(self.export_translations_view),
-                name='games_game_export_translations',
-            ),
-            path(
-                'import-translations/',
-                self.admin_site.admin_view(self.import_translations_view),
-                name='games_game_import_translations',
+                'refresh-prices/',
+                self.admin_site.admin_view(self.refresh_prices_view),
+                name='games_game_refresh_prices',
             ),
         ]
         return custom + super().get_urls()
 
-    def export_translations_view(self, request):
-        """미번역 게임(id/title/description)을 JSON 파일로 다운로드한다."""
-        qs = (Game.objects.filter(translation_locked=False)
-              .filter(Q(title_ko='') | Q(description_ko=''))
-              .order_by('game_id'))
-        rows = [
-            {'id': g.game_id, 'title': g.title, 'description': g.description}
-            for g in qs
-        ]
-        payload = json.dumps(rows, ensure_ascii=False, indent=2)
-        resp = HttpResponse(payload, content_type='application/json; charset=utf-8')
-        resp['Content-Disposition'] = 'attachment; filename="to_translate.json"'
-        return resp
-
-    def import_translations_view(self, request):
-        """업로드한 번역 JSON 을 title_ko/description_ko 에 반영한다."""
-        if request.method == 'POST' and request.FILES.get('file'):
-            up = request.FILES['file']
-            with tempfile.NamedTemporaryFile(
-                'wb', suffix='.json', delete=False) as tmp:
-                for chunk in up.chunks():
-                    tmp.write(chunk)
-                path_ = tmp.name
-            out = io.StringIO()
-            try:
-                call_command('import_translations', path_, stdout=out)
-                last = out.getvalue().strip().splitlines()[-1] if out.getvalue().strip() else ''
-                self.message_user(
-                    request, f'번역 JSON 을 반영했습니다. {last}',
-                    level=messages.SUCCESS,
-                )
-            except Exception as e:
-                self.message_user(
-                    request, f'가져오기 실패: {e}', level=messages.ERROR)
-            finally:
-                os.remove(path_)
-            return redirect('admin:games_game_changelist')
-
-        # GET → 업로드 폼
-        context = {
-            **self.admin_site.each_context(request),
-            'title': '번역 JSON 가져오기',
-            'opts': self.model._meta,
-        }
-        return render(request, 'admin/games/game/import_translations.html', context)
+    def refresh_prices_view(self, request):
+        """Steam 가격을 다시 긁어 갱신(가격 변동·할인 반영). steam_id 있는 게임 중
+        랜덤 150개씩(Steam rate limit 보호). 전체 갱신은 터미널 `refresh_prices`.
+        """
+        out = io.StringIO()
+        try:
+            call_command('refresh_prices', limit=150, stdout=out)
+            last = out.getvalue().strip().splitlines()[-1] if out.getvalue().strip() else ''
+            self.message_user(
+                request,
+                f'Steam 가격을 갱신했습니다. {last} '
+                f'(전체 갱신은 터미널 `python manage.py refresh_prices`)',
+                level=messages.SUCCESS,
+            )
+        except Exception as e:
+            self.message_user(
+                request, f'가격 재수집 실패: {e}', level=messages.ERROR)
+        return redirect('admin:games_game_changelist')
 
     @admin.action(description='선택한 게임의 유튜브 영상 새로고침(리뉴얼)')
     def refresh_videos_action(self, request, queryset):

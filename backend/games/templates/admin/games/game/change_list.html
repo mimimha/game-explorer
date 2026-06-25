@@ -4,7 +4,7 @@
   <li>
     <a href="{% url 'admin:games_game_add_more' %}" class="addlink"
        onclick="return confirm('RAWG에서 게임 100개를 추가하고 설명(무료)·제목(GMS 크레딧 소량)을 자동 번역합니다. 2~3분 걸리고 그동안 페이지가 로딩 상태가 됩니다. 진행할까요?');">
-      게임 100개 더 받기
+      RAWG에서 게임 100개 더 받기
     </a>
   </li>
   <li>
@@ -13,13 +13,9 @@
     </a>
   </li>
   <li>
-    <a href="{% url 'admin:games_game_export_translations' %}" class="addlink">
-      번역할 게임 JSON 내보내기
-    </a>
-  </li>
-  <li>
-    <a href="{% url 'admin:games_game_import_translations' %}" class="addlink">
-      번역 JSON 가져오기
+    <a href="{% url 'admin:games_game_refresh_prices' %}" class="addlink"
+       onclick="return confirm('Steam 가격을 다시 긁어옵니다(랜덤 150개, 가격 변동·할인 반영). 1~2분 걸리고 그동안 페이지가 로딩 상태가 됩니다. 진행할까요?');">
+      Steam 가격 재수집
     </a>
   </li>
   {{ block.super }}
