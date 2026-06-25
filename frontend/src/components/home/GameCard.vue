@@ -31,7 +31,7 @@
       <!-- 취향 관련도 (취향 분석 섹션에서만) -->
       <div v-if="game.match != null" class="match-row">
         <div class="match-bar"><div class="match-fill" :style="{ width: game.match + '%' }"></div></div>
-        <span class="match-label">취향 {{ game.match }}%</span>
+        <span class="match-label">관련도 {{ game.match }}%</span>
       </div>
 
       <div v-if="showPrice" class="price-row">

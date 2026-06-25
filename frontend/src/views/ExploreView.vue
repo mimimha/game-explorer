@@ -104,6 +104,21 @@ const ORDERING = {
   price: 'final_price',
 }
 
+// AI 추천 응답(results: [{game, reason, match_score}]) → 카드 배열
+// 관련도 match%(최고점=100% 기준 백분율)를 카드에 부여 → GameCard가 표시
+function toRecGames(data) {
+  const results = data?.results ?? (Array.isArray(data) ? data : [])
+  const top = Math.max(1, ...results.map(r => (r && r.match_score) || 0))
+  return results.map(r => {
+    if (!r || !r.game) return r
+    return {
+      ...r.game,
+      reason: r.reason,
+      match: Math.max(1, Math.round((r.match_score || 0) / top * 100)),
+    }
+  })
+}
+
 onMounted(async () => {
   const saved = exploreStore.restore()
   if (saved) {
@@ -282,7 +297,7 @@ async function onAiSubmit({ prompt }) {
   try {
     const { data } = await recommendAPI.create({ prompt_input: prompt })
     // 추천 응답 results = [{game, reason, match_score}] → 카드용 game 으로 펴기
-    resultGames.value = (data.results ?? data.games ?? []).map(r => r.game ?? r)
+    resultGames.value = toRecGames(data)
     recentHistory.value.unshift({
       id: data.log_id ?? Date.now(),
       query: prompt,
@@ -330,7 +345,7 @@ async function onRestoreHistory(h) {
 
   try {
     const { data } = await recommendAPI.logDetail(h.id)
-    resultGames.value = (data.results ?? data.games ?? []).map(r => r.game ?? r)
+    resultGames.value = toRecGames(data)
   } catch {
     toastRef.value?.show('기록 불러오기 중 오류가 발생했어요.', 'error')
   } finally {
