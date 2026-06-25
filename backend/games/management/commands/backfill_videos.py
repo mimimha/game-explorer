@@ -1,6 +1,7 @@
 """
-영상(트레일러 1 + 공략 2)만 채운다. RAWG 상세/스팀/스크린샷은 호출하지 않아
+영상(트레일러 1 + 공략 3)만 채운다. RAWG 상세/스팀/스크린샷은 호출하지 않아
 YouTube 쿼터만 소비한다. (load_games 의 영상 단계만 떼어낸 것)
+공략은 한국 제작(조회수순) 우선 → 부족하면 해외(영어권 등) 영상으로 채운다.
 
 기본 대상: 공략(walkthrough)이 없는 게임.
   python manage.py backfill_videos --limit 10
@@ -8,7 +9,7 @@ YouTube 쿼터만 소비한다. (load_games 의 영상 단계만 떼어낸 것)
   python manage.py backfill_videos                   # 공략 없는 게임 전체
 
 키가 여러 개면(settings.YOUTUBE_DATA_API_KEYS) 한 키 소진 시 자동으로 다음 키 사용.
-게임당 YouTube 검색 2회(트레일러+공략). 일일 쿼터 10,000 units = 100검색/키.
+게임당 YouTube 검색 2~3회(트레일러 1 + 공략 1~2). 일일 쿼터 10,000 units = 100검색/키.
 """
 import time
 from django.core.management.base import BaseCommand
@@ -82,13 +83,12 @@ class Command(BaseCommand):
                 ]
             rows += [(v, GameVideo.TRAILER) for v in trailers[:1]]
 
-        # 공략 2개 (긴 영상) — trailer_only면 생략(쿼터 절약)
+        # 공략 3개 — 한국 제작(조회수순) 우선, 부족 시 해외 영상. trailer_only면 생략
         if not trailer_only:
-            walkthroughs = youtube.search_videos(
-                game.title, query_terms='공략 walkthrough',
-                max_results=2, video_duration='long',
+            walkthroughs = youtube.search_walkthroughs(
+                game.title, game.title_ko, n=3,
             )
-            rows += [(v, GameVideo.WALKTHROUGH) for v in walkthroughs[:2]]
+            rows += [(v, GameVideo.WALKTHROUGH) for v in walkthroughs[:3]]
 
         if rows:
             # walkthrough_only면 기존 영상(트레일러)을 지우지 않고 덧붙인다

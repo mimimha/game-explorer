@@ -207,13 +207,14 @@ STEAM_APP_DETAIL_URL = os.getenv('STEAM_APP_DETAIL_URL')
 
 YOUTUBE_DATA_API_KEY = os.getenv('YOUTUBE_DATA_API_KEY')
 # 여러 키 지원: 쿼터 소진 시 다음 키로 자동 전환.
-#   - YOUTUBE_DATA_API_KEYS=키1,키2  (콤마 구분, 먼저 쓸 키부터)  또는
-#   - YOUTUBE_DATA_API_KEY / YOUTUBE_DATA_API_KEY_2 두 개로 지정
+#   - YOUTUBE_DATA_API_KEYS=키1,키2,키3  (콤마 구분, 먼저 쓸 키부터)  또는
+#   - YOUTUBE_DATA_API_KEY / _KEY_2 / _KEY_3 번호식으로 지정
 YOUTUBE_DATA_API_KEYS = [
     k.strip() for k in os.getenv('YOUTUBE_DATA_API_KEYS', '').split(',') if k.strip()
 ] or [
     k for k in (os.getenv('YOUTUBE_DATA_API_KEY'),
-                os.getenv('YOUTUBE_DATA_API_KEY_2')) if k
+                os.getenv('YOUTUBE_DATA_API_KEY_2'),
+                os.getenv('YOUTUBE_DATA_API_KEY_3')) if k
 ]
 
 

@@ -123,7 +123,7 @@ class Command(BaseCommand):
                 Screenshot(game=game, image_url=url) for url in shots
             ])
 
-        # 6) 영상 — 트레일러 1개 + 공략(스트리밍) 2개
+        # 6) 영상 — 트레일러 1개 + 공략(스트리밍) 3개(한국 제작 조회수순 우선)
         #    이미 영상이 있으면 건너뛴다(쿼터 보호). 새 걸로 교체는 admin 리뉴얼 버튼.
         if not opts['no_youtube'] and not game.videos.exists():
             rows = []  # (video_dict, video_type)
@@ -139,12 +139,11 @@ class Command(BaseCommand):
                 ]
             rows += [(v, GameVideo.TRAILER) for v in trailers[:1]]
 
-            # 6-2) 공략 2개 (긴 영상 위주 → 트레일러/쇼츠 배제)
-            walkthroughs = youtube.search_videos(
-                game.title, query_terms='공략 walkthrough',
-                max_results=2, video_duration='long',
+            # 6-2) 공략 3개 — 한국 제작(조회수순) 우선, 부족 시 해외 영상
+            walkthroughs = youtube.search_walkthroughs(
+                game.title, game.title_ko, n=3,
             )
-            rows += [(v, GameVideo.WALKTHROUGH) for v in walkthroughs[:2]]
+            rows += [(v, GameVideo.WALKTHROUGH) for v in walkthroughs[:3]]
 
             if rows:
                 game.videos.all().delete()

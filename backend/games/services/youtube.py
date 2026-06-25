@@ -4,10 +4,14 @@
 소진하면(403 quotaExceeded / 429) 자동으로 다음 키로 넘어간다.
 """
 import html
+import re
 import requests
 from django.conf import settings
 
 SEARCH_URL = 'https://www.googleapis.com/youtube/v3/search'
+
+# 제목에 한글이 있으면 "한국 제작 영상"으로 본다(완벽하진 않지만 실용적 판별).
+_HANGUL = re.compile(r'[가-힣]')
 
 # 사용할 키 목록 + 현재 키 인덱스(소진된 키는 건너뜀). 프로세스 단위로 유지.
 _KEYS = list(getattr(settings, 'YOUTUBE_DATA_API_KEYS', None)
@@ -31,12 +35,16 @@ def _is_quota_error(resp):
 
 
 def search_videos(game_title, query_terms='gameplay trailer',
-                  max_results=3, video_duration=None):
+                  max_results=3, video_duration=None,
+                  order='relevance', region_code=None, relevance_language=None):
     """
     게임 제목으로 YouTube 검색 → 영상 리스트.
     - query_terms: 제목 뒤에 붙일 검색어 (트레일러 'gameplay trailer',
       공략 '공략 walkthrough' 등)
     - video_duration: None | 'short'(<4분) | 'medium'(4~20분) | 'long'(20분+)
+    - order: 'relevance'(기본) | 'viewCount'(조회수순) | 'date' 등
+    - region_code: 'KR' 등 ISO 국가코드(검색 결과를 해당 지역 기준으로 편향)
+    - relevance_language: 'ko' 등 ISO 언어코드(해당 언어 영상 우선)
     반환: [{'title','video_url','thumbnail','channel','published_at'}]
     키가 모두 소진되면 [] 반환.
     """
@@ -49,10 +57,14 @@ def search_videos(game_title, query_terms='gameplay trailer',
         'part': 'snippet',
         'type': 'video',
         'maxResults': max_results,
-        'order': 'relevance',
+        'order': order,
     }
     if video_duration:
         params['videoDuration'] = video_duration
+    if region_code:
+        params['regionCode'] = region_code
+    if relevance_language:
+        params['relevanceLanguage'] = relevance_language
 
     # 현재 키부터 시도, 소진되면 다음 키로 전환
     while _idx < len(_KEYS):
@@ -74,6 +86,57 @@ def search_videos(game_title, query_terms='gameplay trailer',
         return _parse(data)
 
     return []   # 모든 키 소진
+
+
+def _name_match(video_title, *names):
+    """영상 제목에 게임명(공백/대소문자 무시)이 들어있는지 — 엉뚱한 게임 영상 배제용."""
+    vt = video_title.replace(' ', '').lower()
+    return any(n and n.replace(' ', '').lower() in vt for n in names if n)
+
+
+def _take(out, seen, candidates, n):
+    """candidates(조회수순)에서 중복 제외하고 out 에 n 개까지 채운다."""
+    for v in candidates:
+        if v['video_url'] not in seen:
+            out.append(v)
+            seen.add(v['video_url'])
+            if len(out) >= n:
+                return True
+    return False
+
+
+def search_walkthroughs(title, title_ko=None, n=3):
+    """
+    공략(스트리밍/게임플레이) 영상 n개를 추출한다.
+    우선순위: ① 한국 제작(제목에 한글) 영상을 조회수 높은 순으로,
+             ② 부족하면 그 뒤에 해외(영어권 등) 영상을 조회수순으로 채운다.
+    각 단계에서 게임명이 제목에 들어간 영상을 먼저(조회수순 유지) → 엉뚱한 게임 배제.
+    검색 횟수: 한국 1회 (+부족 시 해외 1회) = 게임당 1~2회.
+    """
+    out, seen = [], set()
+
+    # ① 한국 영상: 한국어 제목으로(있으면) KR/ko + 조회수순 검색 → 한글 제목만
+    kr = [v for v in search_videos(
+        title_ko or title, query_terms='공략 게임플레이',
+        max_results=n + 6, video_duration='long',
+        order='viewCount', region_code='KR', relevance_language='ko',
+    ) if _HANGUL.search(v['title'])]
+    # 게임명 매칭되는 한국 영상 먼저(조회수순), 그다음 나머지 한국 영상
+    kr_named = [v for v in kr if _name_match(v['title'], title_ko, title)]
+    if not _take(out, seen, kr_named, n):
+        _take(out, seen, kr, n)
+
+    # ② 부족분: 해외 영상(영문 제목 검색) 조회수순으로 채움 (게임명 매칭 우선)
+    if len(out) < n:
+        intl = search_videos(
+            title, query_terms='walkthrough gameplay',
+            max_results=n + 6, video_duration='long', order='viewCount',
+        )
+        intl_named = [v for v in intl if _name_match(v['title'], title)]
+        if not _take(out, seen, intl_named, n):
+            _take(out, seen, intl, n)
+
+    return out[:n]
 
 
 def _parse(data):
