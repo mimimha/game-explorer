@@ -21,23 +21,25 @@
       </button>
 
       <div class="track" ref="trackEl" @scroll="onScroll">
-        <RouterLink
-          v-for="log in logs"
-          :key="log.log_id"
-          :to="`/explore?log=${log.log_id}`"
-          class="item"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="16" class="clock-icon">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-          </svg>
-          <div class="item-text">
-            <span class="query">"{{ log.prompt_input }}"</span>
-            <span class="meta">{{ formatDate(log.created_at) }} · 결과 {{ log.result_count ?? 0 }}개</span>
-          </div>
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="14" class="chevron">
-            <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/>
-          </svg>
-        </RouterLink>
+        <div v-for="log in logs" :key="log.log_id" class="item-wrap">
+          <RouterLink :to="`/explore?log=${log.log_id}`" class="item">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="16" class="clock-icon">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+            </svg>
+            <div class="item-text">
+              <span class="query">"{{ log.prompt_input }}"</span>
+              <span class="meta">{{ formatDate(log.created_at) }} · 결과 {{ log.result_count ?? 0 }}개</span>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="14" class="chevron">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/>
+            </svg>
+          </RouterLink>
+          <button class="delete-btn" @click="$emit('delete', log.log_id)" aria-label="삭제">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="10" height="10">
+              <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"/>
+            </svg>
+          </button>
+        </div>
       </div>
 
       <button
@@ -61,6 +63,8 @@ import { RouterLink } from 'vue-router'
 const props = defineProps({
   logs: { type: Array, default: () => [] },
 })
+
+const emit = defineEmits(['delete'])
 
 const trackEl = ref(null)
 const canScrollLeft = ref(false)
@@ -171,6 +175,31 @@ function formatDate(dt) {
 .arrow-left  { left: -16px; }
 .arrow-right { right: -16px; }
 
+.item-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.delete-btn {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #e53e3e;
+  border: 2px solid #fff;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.15s;
+  z-index: 1;
+}
+.delete-btn:hover { background: #c53030; }
+
 .item {
   display: flex;
   align-items: center;
@@ -181,7 +210,6 @@ function formatDate(dt) {
   padding: 14px 16px;
   cursor: pointer;
   text-align: left;
-  flex-shrink: 0;
   width: 220px;
   transition: border-color 0.15s, box-shadow 0.15s;
   text-decoration: none;

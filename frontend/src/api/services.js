@@ -68,6 +68,7 @@ export const recommendAPI = {
   create: (payload) => api.post(E.recommend.create, payload),  // {prompt_input}
   logs: () => api.get(E.recommend.logs),
   logDetail: (logId) => api.get(E.recommend.logDetail(logId)),
+  logDelete: (logId) => api.delete(E.recommend.logDelete(logId)),
 }
 
 // ── 알림 ──

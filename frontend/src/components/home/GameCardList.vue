@@ -20,9 +20,13 @@
     <!-- 취향 분석 섹션 -->
     <div v-else-if="type === 'recommendation'" class="card-grid">
       <div v-if="!authStore.isLoggedIn" class="login-nudge-card">
-        <img :src="cardOneImg" alt="1번 카드" class="nudge-card-img" />
-        <div class="nudge-overlay">
-          <p>로그인하고<br /><strong>나만의 취향</strong>을<br />분석받아보세요!</p>
+        <div class="nudge-thumb">
+          <img :src="cardOneImg" alt="1번 카드" class="nudge-card-img" />
+          <div class="nudge-overlay">
+            <p class="nudge-sub">로그인 하고</p>
+            <p class="nudge-main">나만의 게임 취향을</p>
+            <p class="nudge-sub">분석 받아보세요.</p>
+          </div>
         </div>
       </div>
 
@@ -39,22 +43,29 @@
     <!-- 할인 / 최신 섹션: 배너 + 2열 리스트 -->
     <div v-else class="banner-grid">
       <!-- 왼쪽 배너 -->
-      <div class="banner-left">
-        <div class="banner-image">
-          <span class="banner-placeholder">
-            {{ type === 'discount' ? '프로모션 배너 / 키아트' : '신작 스포트라이트 / 키아트' }}
-          </span>
+      <div class="banner-left" :class="{ 'banner-left--img': type === 'discount' || type === 'new' }">
+        <!-- 할인: 전체 이미지 -->
+        <img v-if="type === 'discount'" :src="card2Img" alt="할인 배너" class="banner-bg-img" />
+
+        <!-- 신작: 전체 이미지 -->
+        <img v-else-if="type === 'new'" :src="card3Img" alt="신작 배너" class="banner-bg-img" />
+
+        <!-- 그 외: 키아트 플레이스홀더 -->
+        <div v-else class="banner-image">
+          <span class="banner-placeholder">신작 스포트라이트 / 키아트</span>
         </div>
-        <h3 class="banner-title">
-          {{ type === 'discount' ? '이번 주 할인 모음' : '이번 주 신작' }}
-        </h3>
-        
-        <RouterLink
-          :to="type === 'discount' ? '/explore?filter=sale' : '/explore?filter=new'"
-          class="banner-more-btn"
-        >
-          더 보기
-        </RouterLink>
+
+        <div class="banner-bottom">
+          <h3 class="banner-title">
+            {{ type === 'discount' ? '이번 주 할인 모음' : '이번 주 신작' }}
+          </h3>
+          <RouterLink
+            :to="type === 'discount' ? '/explore?filter=sale' : '/explore?filter=new'"
+            class="banner-more-btn"
+          >
+            더 보기
+          </RouterLink>
+        </div>
       </div>
 
       <!-- 오른쪽 2열 3행 리스트 -->
@@ -79,6 +90,8 @@ import SectionHeader from './SectionHeader.vue'
 import { useAuthStore } from '@/stores/auth'
 import { fetchGames } from '@/services/api'
 import cardOneImg from '@/assets/1번 카드.png'
+import card2Img from '@/assets/2번 카드.png'
+import card3Img from '@/assets/3번 카드.png'
 
 const props = defineProps({
   num: { type: Number, required: true },
@@ -126,10 +139,18 @@ onMounted(async () => {
 }
 /* 로그인 유도 카드 */
 .login-nudge-card {
-  position: relative;
+  min-width: 0;
+  background: #fff;
+  border: 1px solid #e8e4d9;
   border-radius: 12px;
   overflow: hidden;
-  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.nudge-thumb {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
 }
 .nudge-card-img {
   display: block;
@@ -141,16 +162,26 @@ onMounted(async () => {
   position: absolute;
   inset: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  background: rgba(94, 94, 94, 0.35);
+  justify-content: flex-start;
+  padding-top: 20px;
   text-align: center;
-  font-size: 16px;
-  color: #fff;
-  line-height: 1.6;
 }
-.nudge-overlay strong { color: #fff; }
-.login-nudge-card strong { color: #1a1510; }
+.nudge-sub {
+  font-family: 'Jua', sans-serif;
+  font-size: 15px;
+  color: #3d2b1f;
+  margin: 0;
+  line-height: 1.3;
+}
+.nudge-main {
+  font-family: 'Jua', sans-serif;
+  font-size: 22px;
+  color: #3d2b1f;
+  margin: 2px 0;
+  line-height: 1.3;
+}
 /* 배너 그리드 (할인/최신) */
 .banner-grid {
   display: grid;
@@ -159,6 +190,7 @@ onMounted(async () => {
 }
 
 .banner-left {
+  position: relative;
   height: 340px;
   background: #f0ece3;
   border: 1px solid #e8e4d9;
@@ -168,6 +200,39 @@ onMounted(async () => {
   flex-direction: column;
   gap: 12px;
   box-sizing: border-box;
+  overflow: hidden;
+}
+.banner-left--img {
+  padding: 0;
+  border: none;
+  background: none;
+}
+.banner-bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+  z-index: 0;
+}
+.banner-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 20px 20px;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 100%);
+}
+.banner-left:not(.banner-left--img) .banner-bottom {
+  position: static;
+  background: none;
+  padding: 0;
+  gap: 12px;
 }
 .banner-image {
   flex: 1;
@@ -182,12 +247,33 @@ onMounted(async () => {
   font-size: 12px;
   color: #9e9585;
 }
-.banner-title {
+.banner-left--img .banner-title {
   font-size: 18px;
   font-weight: 700;
   color: #1a1510;
 }
-.banner-more-btn {
+.banner-left:not(.banner-left--img) .banner-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1510;
+}
+.banner-left--img .banner-more-btn {
+  display: block;
+  text-align: center;
+  padding: 10px;
+  border: 1px solid rgba(255,255,255,0.6);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+  transition: background 0.15s;
+  background: rgba(255,255,255,0.15);
+}
+.banner-left--img .banner-more-btn:hover {
+  background: rgba(255,255,255,0.3);
+}
+.banner-left:not(.banner-left--img) .banner-more-btn {
   display: block;
   text-align: center;
   padding: 10px;
@@ -199,7 +285,7 @@ onMounted(async () => {
   text-decoration: none;
   transition: background 0.15s;
 }
-.banner-more-btn:hover { background: #e8e2d5; }
+.banner-left:not(.banner-left--img) .banner-more-btn:hover { background: #e8e2d5; }
 
 .banner-right {
   display: grid;

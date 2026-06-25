@@ -51,7 +51,7 @@
 
       <WishlistSection :games="mypage.recent_wishlist" />
 
-      <AiHistorySection :logs="recentLogs" />
+      <AiHistorySection :logs="recentLogs" @delete="deleteLog" />
     </template>
 
     <!-- Confetti Canvas -->
@@ -385,6 +385,15 @@ function goToProfile(userId) {
 
 function showFollowers() { openFollowModal('followers') }
 function showFollowing() { openFollowModal('following') }
+
+async function deleteLog(logId) {
+  try {
+    await recommendAPI.logDelete(logId)
+    recentLogs.value = recentLogs.value.filter(l => l.log_id !== logId)
+  } catch {
+    // 삭제 실패 시 무시
+  }
+}
 
 onMounted(fetchAll)
 </script>

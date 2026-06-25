@@ -58,6 +58,7 @@ const ENDPOINTS = {
     create: '/recommend/',                 // POST   🔒       추천 받기
     logs: '/recommend/logs/',              // GET    🔒       최근 추천 기록
     logDetail: (logId) => `/recommend/logs/${logId}/`, // GET 🔒  추천 기록 상세
+    logDelete: (logId) => `/recommend/logs/${logId}/delete/`, // DELETE 🔒  추천 기록 삭제
   },
 
   // ── 알림 (notifications) ─────────────────────────────────────────

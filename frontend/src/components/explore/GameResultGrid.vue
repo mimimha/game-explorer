@@ -14,9 +14,6 @@
             <option value="rating">정렬: 평점순</option>
             <option value="price">정렬: 가격순</option>
           </select>
-          <button class="view-btn" :class="{ active: viewMode === 'grid' }" @click="viewMode = 'grid'">
-            <svg viewBox="0 0 16 16" fill="currentColor" width="14"><path d="M1 1h6v6H1zm8 0h6v6H9zM1 9h6v6H1zm8 0h6v6H9z"/></svg>
-          </button>
         </template>
         <RouterLink v-else to="/explore" class="more-link">전체 보기 ›</RouterLink>
       </div>

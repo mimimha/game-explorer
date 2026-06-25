@@ -23,6 +23,7 @@
             type="text"
             placeholder="게임 검색"
             autocomplete="off"
+            @input="suggestTrigger($event.target.value)"
             @keydown="(e) => suggestKeydown(e, onSelectSuggestion, onSearch)"
           />
           <GameSuggestDropdown
@@ -70,7 +71,7 @@ const authStore = useAuthStore()
 
 const navSearchRef = ref(null)
 const keyword = ref('')
-const { suggestions, activeIdx, onKeydown: suggestKeydown, clear: suggestClear } = useGameSuggest(keyword)
+const { suggestions, activeIdx, trigger: suggestTrigger, onKeydown: suggestKeydown, clear: suggestClear } = useGameSuggest()
 
 function onNavSuggestHover(i) { activeIdx.value = i }
 
@@ -120,27 +121,31 @@ onUnmounted(() => {
 <style scoped>
 .app {
   min-height: 100vh;
-  background: #fafaf8;
+  background: #FFF7E6;
+  font-family: 'Pretendard', sans-serif;
 }
 
 .nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 40px;
-  height: 64px;
-  background: #ffffff;
-  border-bottom: 1px solid #e8e4d9;
+  padding: 0 32px;
+  height: 80px;
+  background: #FFF7E6;
+  border-bottom: 1px solid #D8C4A3;
   position: sticky;
   top: 0;
   z-index: 100;
+  gap: 16px;
+  min-width: 0;
+  font-family: 'Pretendard', sans-serif;
 }
 
 .nav-left {
   display: flex;
   align-items: center;
-  gap: 28px;
-  margin-bottom: 10px;
+  gap: 40px;
+  flex-shrink: 0;
 }
 
 .logo-wrap {
@@ -149,61 +154,68 @@ onUnmounted(() => {
 }
 
 .logo {
-  width: 110px;
-  height: 110%;
+  height: 65px;
+  width: auto;
   object-fit: contain;
-  border-radius: 50%;
 }
 
 .nav-link {
   text-decoration: none;
-  color: #3d3529;
-  font-size: 19px;
+  color: #3A2410;
+  font-size: 16px;
   font-weight: 700;
+  white-space: nowrap;
   transition: color 0.15s;
+  font-family: 'Pretendard', sans-serif;
 }
 .nav-link:hover,
 .nav-link.router-link-active {
-  color: #1e3a5f;
+  color: #D97706;
 }
 
 .nav-search {
   position: relative;
   display: flex;
   align-items: center;
+  flex: 1;
+  min-width: 0;
+  max-width: 300px;
 }
 
 .search-icon {
   position: absolute;
   left: 14px;
   width: 16px;
-  color: #9e9585;
+  color: #6B5A45;
   pointer-events: none;
 }
 
 .nav-search input {
-  width: 300px;
+  width: 100%;
+  min-width: 120px;
   padding: 9px 16px 9px 38px;
   border-radius: 999px;
-  border: 1px solid #ddd8cc;
-  background: #f7f5f0;
+  border: 1px solid #D8C4A3;
+  background: #FFFDF7;
   font-size: 14px;
-  color: #3d3529;
+  color: #2F2418;
   outline: none;
   transition: border-color 0.15s, background 0.15s;
+  font-family: 'Pretendard', sans-serif;
 }
 .nav-search input:focus {
-  border-color: #1e3a5f;
+  border-color: #D97706;
   background: #fff;
 }
 .nav-search input::placeholder {
-  color: #9e9585;
+  color: #6B5A45;
 }
 
 .nav-right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
+  flex-shrink: 0;
 }
 
 .icon-btn {
@@ -212,7 +224,7 @@ onUnmounted(() => {
   border: none;
   cursor: pointer;
   padding: 4px;
-  color: #3d3529;
+  color: #3A2410;
   display: flex;
   align-items: center;
 }
@@ -247,11 +259,11 @@ onUnmounted(() => {
   height: 42px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #e8e4d9;
+  border: 2px solid #D8C4A3;
   transition: border-color 0.15s;
 }
 .profile-link:hover .nav-avatar {
-  border-color: #1e3a5f;
+  border-color: #D97706;
 }
 
 .btn {
@@ -263,21 +275,22 @@ onUnmounted(() => {
   cursor: pointer;
   border: none;
   transition: all 0.15s;
+  font-family: 'Pretendard', sans-serif;
 }
 .btn-outline {
-  border: 1px solid #c8c2b4;
-  color: #3d3529;
+  border: 1px solid #D8C4A3;
+  color: #3A2410;
   background: transparent;
 }
 .btn-outline:hover {
-  border-color: #1e3a5f;
-  color: #1e3a5f;
+  border-color: #D97706;
+  color: #D97706;
 }
 .btn-primary {
-  background: #1e3a5f;
-  color: white;
+  background: #3A2410;
+  color: #FFF7E6;
 }
 .btn-primary:hover {
-  background: #162d4a;
+  background: #5A3512;
 }
 </style>

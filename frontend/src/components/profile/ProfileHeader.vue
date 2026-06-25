@@ -1,5 +1,15 @@
 <template>
   <section class="profile-card">
+    <!-- 우상단: 본인=프로필 수정, 타인=팔로우/언팔로우 -->
+    <button v-if="isOwner" class="btn-edit" @click="$emit('editProfile')">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+        <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clip-rule="evenodd" />
+      </svg>
+      프로필 수정
+    </button>
+    <button v-else class="btn-follow" :class="{ following: isFollowing }" @click="$emit('followToggle')">
+      {{ isFollowing ? '언팔로우' : '팔로우' }}
+    </button>
     <div class="profile-main">
       <!-- Avatar -->
       <div class="avatar-wrap">
@@ -33,19 +43,6 @@
         </p>
 
         <div class="action-row">
-          <!-- 본인: 프로필 수정 -->
-          <button v-if="isOwner" class="btn-edit" @click="$emit('editProfile')">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-              <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clip-rule="evenodd" />
-            </svg>
-            프로필 수정
-          </button>
-
-          <!-- 타인: 팔로우/언팔로우 -->
-          <button v-else class="btn-follow" :class="{ following: isFollowing }" @click="$emit('followToggle')">
-            {{ isFollowing ? '언팔로우' : '팔로우' }}
-          </button>
-
           <button class="btn-follow-stat" @click="$emit('showFollowers')">
             <div class="stat-left">
               <span class="stat-count">{{ user.follower_count ?? 0 }}</span>
@@ -107,6 +104,7 @@ function onAvatarChange(e) {
 
 <style scoped>
 .profile-card {
+  position: relative;
   background: #fff;
   border: 1px solid #e8e4d9;
   border-radius: 16px;
@@ -179,6 +177,9 @@ function onAvatarChange(e) {
 }
 
 .btn-edit {
+  position: absolute;
+  top: 20px;
+  right: 24px;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -196,9 +197,12 @@ function onAvatarChange(e) {
 .btn-edit:hover { background: #f0ece3; }
 
 .btn-follow {
+  position: absolute;
+  top: 20px;
+  right: 24px;
   font-size: 13px;
   font-weight: 600;
-  padding: 6px 18px;
+  padding: 8px 16px;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.15s;
