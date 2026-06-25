@@ -13,7 +13,7 @@ import logging
 
 from django.conf import settings
 
-from games.models import Game, Genre
+from games.models import Game, Genre, Mood
 from . import gms
 
 logger = logging.getLogger(__name__)
@@ -54,15 +54,19 @@ def _llm_recommendations(prompt, limit=5):
 def _extract_intent(prompt):
     """① 자유 문장 → {genres, price_max, is_korean, platforms, keywords}."""
     genre_names = list(Genre.objects.values_list('genre_name', flat=True))
+    mood_names = list(Mood.objects.values_list('mood_name', flat=True))
     system = (
         '너는 게임 추천 시스템의 의도 분석기다. 사용자 문장에서 선호를 추출해 '
         'JSON 으로만 답한다. 키: '
-        'genres(배열, 반드시 아래 목록 중에서만), '
+        'genres(배열, 반드시 아래 장르 목록 중에서만), '
+        'moods(배열, 반드시 아래 무드 목록 중에서만 — 분위기·테마·감정), '
+        "player_modes(배열, 'single'/'multi'/'coop' 중에서만 — 싱글/멀티/협동), "
         'price_max(정수 KRW 또는 null), '
         'is_korean(불리언 또는 null), '
         'platforms(배열), '
         'keywords(제목 검색용 영어 단어 배열). '
-        f'사용 가능한 장르: {", ".join(genre_names) or "(없음)"}'
+        f'사용 가능한 장르: {", ".join(genre_names) or "(없음)"}. '
+        f'사용 가능한 무드: {", ".join(mood_names) or "(없음)"}'
     )
     data = gms.chat_json(
         [{'role': 'system', 'content': system},
@@ -71,6 +75,8 @@ def _extract_intent(prompt):
     )
     return {
         'genres': data.get('genres') or [],
+        'moods': data.get('moods') or [],
+        'player_modes': data.get('player_modes') or [],
         'price_max': data.get('price_max'),
         'is_korean': data.get('is_korean'),
         'platforms': data.get('platforms') or [],
@@ -83,7 +89,7 @@ def _filter_games(intent, limit=5):
     ② intent 로 Game 필터 + 장르/키워드 겹침으로 점수화.
     반환: [(game, match_score 0~100), ...]  (점수 내림차순, 상위 limit)
     """
-    qs = Game.objects.prefetch_related('genres').all()
+    qs = Game.objects.prefetch_related('genres', 'moods').all()
 
     # 하드 필터 (조건이 명시됐을 때만)
     if intent.get('price_max') is not None:
@@ -93,13 +99,25 @@ def _filter_games(intent, limit=5):
         qs = qs.filter(is_korean=True)
 
     want_genres = {g.lower() for g in intent.get('genres', [])}
+    want_moods = {m.lower() for m in intent.get('moods', [])}
+    want_modes = {m.lower() for m in intent.get('player_modes', [])}
     keywords = [k.lower() for k in intent.get('keywords', []) if k]
 
     scored = []
     for game in qs:
         gnames = {gn.lower() for gn in
                   game.genres.values_list('genre_name', flat=True)}
+        mnames = {mn.lower() for mn in
+                  game.moods.values_list('mood_name', flat=True)}
         score = 30 * len(want_genres & gnames)                 # 장르 일치
+        score += 25 * len(want_moods & mnames)                 # 무드 일치
+        # 플레이 인원 일치 (single/multi/coop) — 무드보다 살짝 낮게
+        if 'single' in want_modes and game.is_singleplayer:
+            score += 20
+        if 'multi' in want_modes and game.is_multiplayer:
+            score += 20
+        if 'coop' in want_modes and game.is_coop:
+            score += 20
         title = (game.title or '').lower()
         score += 10 * sum(1 for k in keywords if k in title)   # 제목 키워드
         if game.metacritic_score:                              # 평점 가산(0~5)
