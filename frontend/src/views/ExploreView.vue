@@ -105,16 +105,16 @@ const ORDERING = {
 }
 
 // AI 추천 응답(results: [{game, reason, match_score}]) → 카드 배열
-// 관련도 match%(최고점=100% 기준 백분율)를 카드에 부여 → GameCard가 표시
+// 관련도는 백엔드의 '실제 내용 일치 점수(0~100)'를 그대로 표시한다.
+// (예전엔 최고점=100%로 정규화해, 약하게 매칭돼도 1등이 100%로 부풀려지는 버그가 있었음)
 function toRecGames(data) {
   const results = data?.results ?? (Array.isArray(data) ? data : [])
-  const top = Math.max(1, ...results.map(r => (r && r.match_score) || 0))
   return results.map(r => {
     if (!r || !r.game) return r
     return {
       ...r.game,
       reason: r.reason,
-      match: Math.max(1, Math.round((r.match_score || 0) / top * 100)),
+      match: Math.min(100, Math.round(r.match_score || 0)),
     }
   })
 }

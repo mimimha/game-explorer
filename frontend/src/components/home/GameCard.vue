@@ -34,6 +34,12 @@
         <span class="match-label">관련도 {{ game.match }}%</span>
       </div>
 
+      <!-- 추천 근거: AI 검색·찜과의 유사도 -->
+      <div v-if="game.ai_sim != null || game.wish_sim != null" class="sim-row">
+        <span v-if="game.ai_sim != null" class="sim-tag ai">AI 추천 {{ game.ai_sim }}% 유사</span>
+        <span v-if="game.wish_sim != null" class="sim-tag wish">찜 {{ game.wish_sim }}% 유사</span>
+      </div>
+
       <div v-if="showPrice" class="price-row">
         <span v-if="discountRate" class="price-original">
           {{ formatPrice(game.initial_price) }}
@@ -263,4 +269,20 @@ function formatPrice(price) {
   color: #c96012;
   flex-shrink: 0;
 }
+
+/* 추천 근거: AI·찜 유사도 태그 */
+.sim-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0 0 8px;
+}
+.sim-tag {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 999px;
+}
+.sim-tag.ai { color: #c96012; background: #fdf0e0; }
+.sim-tag.wish { color: #c0392b; background: #fbe9e7; }
 </style>

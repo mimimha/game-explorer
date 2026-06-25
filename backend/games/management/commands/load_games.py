@@ -87,6 +87,10 @@ class Command(BaseCommand):
         detail = rawg.fetch_game_detail(rawg_id)
         fields = rawg.parse_game_fields(detail)
 
+        # 표지(capsule) 없는 게임은 적재하지 않는다 — 화면에 빈 표지 junk 로 뜨는 것 방지
+        if not fields.get('capsule_url'):
+            raise ValueError('표지 없음 — 스킵')
+
         # 2) 플레이 인원/모드 — RAWG tags 우선
         modes = rawg.extract_player_modes(detail)
 

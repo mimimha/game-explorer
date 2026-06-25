@@ -282,15 +282,16 @@ class RecommendedGamesView(APIView):
     def get(self, request):
         user = request.user
         if user.is_authenticated:
-            scored = self._taste_based(user)
+            scored = self._taste_based(user)   # [{game, total, ai_sim, wish_sim}, ...]
             if scored:
-                games = [g for g, _ in scored]
+                games = [s['game'] for s in scored]
                 data = GameCardSerializer(
                     games, many=True, context={'request': request}).data
-                # 관련도(%) — 최고 점수를 100%로 한 상대 지표
-                top = scored[0][1] or 1
-                for item, (_, sc) in zip(data, scored):
-                    item['match'] = max(1, round(sc / top * 100))
+                top = scored[0]['total'] or 1
+                for item, s in zip(data, scored):
+                    item['match'] = max(1, round(s['total'] / top * 100))  # 전체 관련도
+                    item['ai_sim'] = s['ai_sim']      # AI 검색 기록과 유사 %
+                    item['wish_sim'] = s['wish_sim']  # 찜 목록과 유사 %
                 return Response(data)
         # 폴백: 무작위 (오늘의 추천) — 관련도 표시 없음
         games = Game.objects.order_by('?')[:self.N]
@@ -298,53 +299,65 @@ class RecommendedGamesView(APIView):
             games, many=True, context={'request': request}).data)
 
     def _taste_based(self, user):
+        """AI 검색 기록(자주·최근 검색)과 찜 목록을 '각각' 프로파일로 만들어,
+        후보 게임이 각 소스와 얼마나 닮았는지(ai_sim/wish_sim)를 함께 반환한다.
+        - AI: 최근 검색일수록 가중 ↑(시간 감쇠) + 자주 나온 취향은 자연 누적(빈도).
+        - 반환: [{game, total, ai_sim%, wish_sim%}, ...]  (total 내림차순, 상위 N)
+        """
         from collections import defaultdict
+        from recommendations.models import RecommendationLog
 
-        from .models import SearchLog
-
-        ai_ids = list(Game.objects.filter(
-            recommendation_results__log__user=user
-        ).distinct().values_list('game_id', flat=True))
-        wish_ids = list(Game.objects.filter(
-            wishlisted_by__user=user
-        ).values_list('game_id', flat=True))
-        # 최근 라이브러리 검색 결과 게임들(상위 결과 id 모음)
-        search_ids = []
-        for log in (SearchLog.objects.filter(user=user)
-                    .order_by('-created_at')[:self.SEARCH_LOG_LIMIT]):
-            search_ids.extend(log.result_game_ids or [])
-
-        if not ai_ids and not wish_ids and not search_ids:
-            return []   # 시그널 없음 → 폴백
-
-        # 가중 무드/장르 프로파일 (무드 1.0, 장르 0.5 비중)
-        profile = defaultdict(float)
-
-        def accumulate(ids, weight):
-            qs = Game.objects.filter(game_id__in=ids).prefetch_related('moods', 'genres')
-            for g in qs:
+        def add_profile(profile, game_ids, weight):
+            for g in (Game.objects.filter(game_id__in=game_ids)
+                      .prefetch_related('moods', 'genres')):
                 for m in g.moods.all():
                     profile[('m', m.mood_id)] += weight
                 for ge in g.genres.all():
                     profile[('g', ge.tag_id)] += weight * 0.5
 
-        accumulate(ai_ids, self.AI_WEIGHT)
-        accumulate(wish_ids, self.WISH_WEIGHT)
-        accumulate(search_ids, self.SEARCH_WEIGHT)
-        if not profile:
-            return []
+        # ── ① AI 검색 프로파일: 최근 검색일수록 큰 가중(감쇠), 빈도는 자연 누적 ──
+        ai_profile = defaultdict(float)
+        ai_ids = set()
+        logs = (RecommendationLog.objects.filter(user=user)
+                .order_by('-created_at')[:self.SEARCH_LOG_LIMIT])
+        for i, log in enumerate(logs):
+            gids = list(log.results.values_list('game_id', flat=True))
+            ai_ids.update(gids)
+            add_profile(ai_profile, gids, 1.0 / (1 + i * 0.12))   # 최근=큰 가중
 
-        # 후보: 이미 본(추천받은·찜한) 게임 제외 → 새로운 발견 위주
-        seen = set(ai_ids) | set(wish_ids)
-        scored = []
+        # ── ② 찜 목록 프로파일 ──
+        wish_profile = defaultdict(float)
+        wish_ids = list(Game.objects.filter(wishlisted_by__user=user)
+                        .values_list('game_id', flat=True))
+        add_profile(wish_profile, wish_ids, 1.0)
+
+        if not ai_profile and not wish_profile:
+            return []   # 시그널 없음 → 폴백
+
+        # ── 후보 점수: AI/찜 각각 + 합산 (이미 추천받은·찜한 건 제외 → 새 발견) ──
+        seen = ai_ids | set(wish_ids)
+        cands = []
         for g in (Game.objects.exclude(game_id__in=seen)
                   .prefetch_related('moods', 'genres')):
-            score = sum(profile.get(('m', m.mood_id), 0) for m in g.moods.all())
-            score += sum(profile.get(('g', ge.tag_id), 0) for ge in g.genres.all())
-            if score > 0:
-                scored.append((g, score))
-        scored.sort(key=lambda x: x[1], reverse=True)
-        return scored[:self.N]   # [(game, score), ...] 점수 내림차순
+            keys = [('m', m.mood_id) for m in g.moods.all()]
+            keys += [('g', ge.tag_id) for ge in g.genres.all()]
+            ai_s = sum(ai_profile.get(k, 0) for k in keys)
+            wish_s = sum(wish_profile.get(k, 0) for k in keys)
+            total = ai_s * self.AI_WEIGHT + wish_s * self.WISH_WEIGHT
+            if total > 0:
+                cands.append({'game': g, 'ai_s': ai_s, 'wish_s': wish_s, 'total': total})
+        cands.sort(key=lambda c: c['total'], reverse=True)
+        top = cands[:self.N]
+
+        # 유사도 % — 각 소스의 후보 중 최고를 100%로 정규화
+        max_ai = max((c['ai_s'] for c in top), default=0) or 1
+        max_wish = max((c['wish_s'] for c in top), default=0) or 1
+        return [{
+            'game': c['game'],
+            'total': c['total'],
+            'ai_sim': round(c['ai_s'] / max_ai * 100) if c['ai_s'] else 0,
+            'wish_sim': round(c['wish_s'] / max_wish * 100) if c['wish_s'] else 0,
+        } for c in top]
 
 
 class OnSaleGamesView(APIView):
