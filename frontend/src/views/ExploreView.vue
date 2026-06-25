@@ -76,12 +76,13 @@ const recentHistory = ref([])
 
 // 페이지네이션 상태
 // 페이지네이션은 클라이언트 분할(백엔드가 전체 목록을 한 번에 내려줌)
-const AI_PAGE_SIZE = 5
 const LIB_PAGE_SIZE = 20
 const aiPage = ref(1)              // AI 결과 페이지
 const searchPage = ref(1)          // 검색 결과 페이지
 
-const pageSize = computed(() => resultMode.value === 'ai' ? AI_PAGE_SIZE : LIB_PAGE_SIZE)
+// AI 추천은 결과 전체를 한 화면에 표시(페이지네이션 없음) → pageSize=전체 개수
+const pageSize = computed(() =>
+  resultMode.value === 'ai' ? Math.max(1, resultGames.value.length) : LIB_PAGE_SIZE)
 const currentPage = computed(() => resultMode.value === 'ai' ? aiPage.value : searchPage.value)
 const totalCount = computed(() => resultGames.value.length)
 const totalPages = computed(() => Math.max(1, Math.ceil(totalCount.value / pageSize.value)))
