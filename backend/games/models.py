@@ -191,3 +191,21 @@ class GameVideo(models.Model):
 
     def __str__(self):
         return f'{self.game.title} - {self.title}'
+
+
+class SearchLog(models.Model):
+    """라이브러리 검색 기록 — 취향 분석 신호로 사용. 상위 결과 game_id 만 저장."""
+    user = models.ForeignKey(
+        'accounts.User', on_delete=models.CASCADE,
+        related_name='search_logs', db_column='user_id',
+    )
+    keyword = models.CharField(max_length=200, blank=True, default='')
+    result_game_ids = models.JSONField(default=list)   # 상위 결과 game_id 리스트
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'search_log'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.user} 검색: {self.keyword or "(필터)"}'

@@ -142,6 +142,38 @@ class GameListView(generics.ListAPIView):
             queryset = queryset.order_by('-discount_rate', 'title')
         return queryset
 
+    # 의도(키워드/필터)가 있는 검색만 취향 신호로 기록
+    INTENT_KEYS = [
+        'q', 'genre', 'mood', 'player_mode', 'platform', 'playtime_bucket',
+        'playtime_gte', 'playtime_lte', 'metacritic_gte', 'free', 'on_sale',
+        'price_lte', 'price_gte', 'is_korean', 'offline',
+    ]
+
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        try:
+            self._log_search(request, response)
+        except Exception:   # 로깅 실패가 검색을 막지 않도록
+            pass
+        return response
+
+    def _log_search(self, request, response):
+        user = request.user
+        if not user.is_authenticated:
+            return
+        p = request.query_params
+        if not any(p.getlist(k) for k in self.INTENT_KEYS):
+            return   # 의도 없는 '전체 목록'은 기록 안 함
+        data = response.data
+        items = data if isinstance(data, list) else data.get('results', [])
+        ids = [g['id'] for g in items[:12] if isinstance(g, dict) and 'id' in g]
+        if ids:
+            from .models import SearchLog
+            SearchLog.objects.create(
+                user=user, keyword=(p.get('q') or '').strip()[:200],
+                result_game_ids=ids,
+            )
+
 
 class GameDetailView(generics.RetrieveAPIView):
     """GET /games/{game_id}/"""
@@ -170,13 +202,82 @@ class GamePostsView(generics.ListAPIView):
 
 
 class RecommendedGamesView(APIView):
-    """GET /games/recommended/  오늘의 추천 (홈 01)"""
+    """
+    GET /games/recommended/  홈 01
+    로그인 + (AI 추천 기록 또는 찜)이 있으면 → 취향 분석 추천,
+    없으면(비로그인 등) → 무작위 '오늘의 추천'.
+
+    취향 분석: 사용자의 AI 추천 기록 게임 + 찜 게임의 무드·장르를
+    가중 집계(AI 0.8 : 찜 0.2)해 프로파일을 만들고, 아직 안 본 게임 중
+    그 프로파일에 가장 잘 맞는 것을 추천한다.
+    """
     permission_classes = [AllowAny]
+    N = 5
+    AI_WEIGHT = 0.5     # AI 추천 검색 기록 우선
+    WISH_WEIGHT = 0.5    # 찜 목록
+    SEARCH_WEIGHT = 0.4  # 라이브러리 검색 기록
+    SEARCH_LOG_LIMIT = 30  # 최근 검색 N개만 반영
 
     def get(self, request):
-        games = Game.objects.order_by('?')[:5]
+        user = request.user
+        if user.is_authenticated:
+            games = self._taste_based(user)
+            if games:
+                return Response(GameCardSerializer(
+                    games, many=True, context={'request': request}).data)
+        # 폴백: 무작위 (오늘의 추천)
+        games = Game.objects.order_by('?')[:self.N]
         return Response(GameCardSerializer(
             games, many=True, context={'request': request}).data)
+
+    def _taste_based(self, user):
+        from collections import defaultdict
+
+        from .models import SearchLog
+
+        ai_ids = list(Game.objects.filter(
+            recommendation_results__log__user=user
+        ).distinct().values_list('game_id', flat=True))
+        wish_ids = list(Game.objects.filter(
+            wishlisted_by__user=user
+        ).values_list('game_id', flat=True))
+        # 최근 라이브러리 검색 결과 게임들(상위 결과 id 모음)
+        search_ids = []
+        for log in (SearchLog.objects.filter(user=user)
+                    .order_by('-created_at')[:self.SEARCH_LOG_LIMIT]):
+            search_ids.extend(log.result_game_ids or [])
+
+        if not ai_ids and not wish_ids and not search_ids:
+            return []   # 시그널 없음 → 폴백
+
+        # 가중 무드/장르 프로파일 (무드 1.0, 장르 0.5 비중)
+        profile = defaultdict(float)
+
+        def accumulate(ids, weight):
+            qs = Game.objects.filter(game_id__in=ids).prefetch_related('moods', 'genres')
+            for g in qs:
+                for m in g.moods.all():
+                    profile[('m', m.mood_id)] += weight
+                for ge in g.genres.all():
+                    profile[('g', ge.tag_id)] += weight * 0.5
+
+        accumulate(ai_ids, self.AI_WEIGHT)
+        accumulate(wish_ids, self.WISH_WEIGHT)
+        accumulate(search_ids, self.SEARCH_WEIGHT)
+        if not profile:
+            return []
+
+        # 후보: 이미 본(추천받은·찜한) 게임 제외 → 새로운 발견 위주
+        seen = set(ai_ids) | set(wish_ids)
+        scored = []
+        for g in (Game.objects.exclude(game_id__in=seen)
+                  .prefetch_related('moods', 'genres')):
+            score = sum(profile.get(('m', m.mood_id), 0) for m in g.moods.all())
+            score += sum(profile.get(('g', ge.tag_id), 0) for ge in g.genres.all())
+            if score > 0:
+                scored.append((g, score))
+        scored.sort(key=lambda x: x[1], reverse=True)
+        return [g for g, _ in scored[:self.N]]
 
 
 class OnSaleGamesView(APIView):

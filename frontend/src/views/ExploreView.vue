@@ -71,27 +71,22 @@ const resultGames = ref([])        // 원본 목록 (검색: 서버 페이지 / 
 const recentHistory = ref([])
 
 // 페이지네이션 상태
+// 페이지네이션은 클라이언트 분할(백엔드가 전체 목록을 한 번에 내려줌)
 const AI_PAGE_SIZE = 5
-const LIB_PAGE_SIZE = 20           // 백엔드 PAGE_SIZE 와 일치
-const aiPage = ref(1)              // AI 결과 클라이언트 페이지
-const searchPage = ref(1)          // 검색 결과 서버 페이지
-const searchTotalPages = ref(1)
-const searchCount = ref(0)
+const LIB_PAGE_SIZE = 20
+const aiPage = ref(1)              // AI 결과 페이지
+const searchPage = ref(1)          // 검색 결과 페이지
 
-// 화면에 실제로 그릴 항목
-const pagedGames = computed(() => {
-  if (resultMode.value === 'ai') {
-    const start = (aiPage.value - 1) * AI_PAGE_SIZE
-    return resultGames.value.slice(start, start + AI_PAGE_SIZE)
-  }
-  return resultGames.value         // 검색: 서버가 이미 페이지 슬라이스를 줌
-})
+const pageSize = computed(() => resultMode.value === 'ai' ? AI_PAGE_SIZE : LIB_PAGE_SIZE)
 const currentPage = computed(() => resultMode.value === 'ai' ? aiPage.value : searchPage.value)
-const totalPages = computed(() => resultMode.value === 'ai'
-  ? Math.max(1, Math.ceil(resultGames.value.length / AI_PAGE_SIZE))
-  : searchTotalPages.value)
-const totalCount = computed(() => resultMode.value === 'ai'
-  ? resultGames.value.length : searchCount.value)
+const totalCount = computed(() => resultGames.value.length)
+const totalPages = computed(() => Math.max(1, Math.ceil(totalCount.value / pageSize.value)))
+
+// 화면에 실제로 그릴 항목 (현재 페이지만 잘라서)
+const pagedGames = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value
+  return resultGames.value.slice(start, start + pageSize.value)
+})
 
 // 검색 모드 상태 (키워드 + 정렬 + 필터)
 const searchKeyword = ref('')
@@ -161,7 +156,7 @@ async function applyQueryQ(q) {
 
 // 키워드 + 정렬 + 필터를 백엔드 list 파라미터로 합쳐 호출
 function buildParams() {
-  const params = { page: searchPage.value }
+  const params = {}
   if (searchKeyword.value.trim()) params.q = searchKeyword.value.trim()
 
   // 정렬 (할인순은 on_sale 필터 + 정가 내림차순)
@@ -189,19 +184,17 @@ function buildParams() {
   return params
 }
 
-async function runSearch(page = 1) {
+async function runSearch() {
   resultMode.value = 'search'
   submitted.value = true
   searchLoading.value = true
-  searchPage.value = page
+  searchPage.value = 1            // 새 검색 → 1페이지부터
   resultGames.value = []
   try {
     const res = await gameAPI.list(buildParams())
     const data = res.data
+    // 백엔드가 전체 목록을 한 번에 줌 → 페이지 분할은 클라이언트(pagedGames)에서
     resultGames.value = Array.isArray(data) ? data : (data.results ?? [])
-    searchCount.value = Array.isArray(data)
-      ? data.length : (data.count ?? resultGames.value.length)
-    searchTotalPages.value = Math.max(1, Math.ceil(searchCount.value / LIB_PAGE_SIZE))
   } catch {
     toastRef.value?.show('검색 중 오류가 발생했어요.', 'error')
   } finally {
@@ -209,16 +202,16 @@ async function runSearch(page = 1) {
   }
 }
 
-// 정렬 셀렉트 변경 시 1페이지부터 재조회
+// 정렬 변경 시 재조회(1페이지부터)
 function onSortChange(value) {
   searchSort.value = value
-  runSearch(1)
+  runSearch()
 }
 
-// 페이지네이션 — 검색은 서버 재조회, AI는 클라이언트 슬라이스
+// 페이지네이션 — 둘 다 클라이언트 슬라이스(재조회 없음)
 function onPageChange(page) {
   if (resultMode.value === 'search') {
-    runSearch(page)
+    searchPage.value = page
   } else {
     aiPage.value = page
   }
@@ -267,8 +260,6 @@ function onSearchReset() {
   searchFilters.value = null
   searchPage.value = 1
   aiPage.value = 1
-  searchTotalPages.value = 1
-  searchCount.value = 0
 }
 
 async function onRestoreHistory(h) {

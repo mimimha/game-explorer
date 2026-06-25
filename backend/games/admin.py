@@ -13,6 +13,7 @@ from django.urls import path
 
 from .models import (
     Game, Genre, Platform, Mood, GameTag, GamePlatform, Screenshot, GameVideo,
+    SearchLog,
 )
 
 
@@ -203,3 +204,15 @@ class MoodAdmin(admin.ModelAdmin):
 
 admin.site.register(Screenshot)
 admin.site.register(GameVideo)
+
+
+@admin.register(SearchLog)
+class SearchLogAdmin(admin.ModelAdmin):
+    list_display = ['id', 'user', 'keyword', 'result_count', 'created_at']
+    list_filter = ['created_at']
+    search_fields = ['user__username', 'keyword']
+    readonly_fields = ['user', 'keyword', 'result_game_ids', 'created_at']
+
+    @admin.display(description='결과 수')
+    def result_count(self, obj):
+        return len(obj.result_game_ids or [])
