@@ -6,9 +6,7 @@
 |---|---|---|
 | 🖥️ **프론트엔드** | [front_README](frontend/front_README.md) | Vue 3 · Pinia · Vue Router · Axios |
 | ⚙️ **백엔드** | [back_README](backend/back_README.md) | Django · DRF · GMS(AI) · SQLite |
-| 📋 **운영 가이드** | [CLAUDE.md](CLAUDE.md) | 데이터 파이프라인·마이그레이션 규칙 |
 
----
 
 ## 1. 프로젝트 개요
 * **서비스명**: 방구석 탐험대
@@ -128,4 +126,4 @@ npm install (또는 npm i)
 npm run dev
 ```
 
-> ⚠️ 팀원은 `git pull` 후 **반드시 `python manage.py migrate`** 를 실행한다. 데이터 파이프라인·환경 변수 등 자세한 내용은 [CLAUDE.md](CLAUDE.md)와 [백엔드 README](backend/back_README.md) 참고.
+> ⚠️ 팀원은 `git pull` 후 **반드시 `python manage.py migrate`** 를 실행한다. 데이터 파이프라인·환경 변수 등 자세한 내용은 [백엔드 README](backend/back_README.md) 참고.
