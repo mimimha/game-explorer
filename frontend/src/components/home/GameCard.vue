@@ -38,7 +38,7 @@
       </div>
 
       <div class="tags">
-        <span v-for="name in genreNames.slice(0, 2)" :key="name" class="tag">
+        <span v-for="name in genreNames.slice(0, 3)" :key="name" class="tag">
           {{ name }}
         </span>
         <span v-if="genreNames.length === 0">

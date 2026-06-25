@@ -76,4 +76,6 @@ class CustomRegisterSerializer(RegisterSerializer):
         user.nickname = self.cleaned_data.get('nickname')
         user.birth_date = self.cleaned_data.get('birth_date')
         user.save()
+        from .medal_service import award_medal
+        award_medal(user, '발자국 시작')
         return user

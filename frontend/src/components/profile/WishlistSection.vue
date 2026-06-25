@@ -68,11 +68,11 @@ function onScroll() {
 }
 
 function scrollRight() {
-  track.value?.scrollBy({ left: 200, behavior: 'smooth' })
+  track.value?.scrollBy({ left: 696, behavior: 'smooth' })
 }
 
 function scrollLeft() {
-  track.value?.scrollBy({ left: -200, behavior: 'smooth' })
+  track.value?.scrollBy({ left: -696, behavior: 'smooth' })
 }
 
 function formatDate(dt) {

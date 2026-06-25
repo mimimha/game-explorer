@@ -1,7 +1,8 @@
 <template>
   <div class="medal-badge" :class="{ locked: locked }">
     <div class="medal-icon">
-      <img v-if="!locked && medal?.icon_url" :src="medal.icon_url" :alt="medal.medal_name" />
+      <img v-if="!locked && medalImage" :src="medalImage" :alt="medal.medal_name" />
+      <img v-else-if="!locked && medal?.icon_url" :src="medal.icon_url" :alt="medal.medal_name" />
       <span v-else-if="locked" class="locked-mark">?</span>
       <svg v-else class="default-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <component :is="'path'" v-bind="iconPath" />
@@ -15,9 +16,32 @@
 <script setup>
 import { computed } from 'vue'
 
+import imgBaljaguk from '@/assets/발자국 시작.png'
+import imgFirstStep from '@/assets/첫 번째 발걸음.png'
+import imgExplorer from '@/assets/탐험대 일원.png'
+import imgFirstPost from '@/assets/첫 교신.png'
+import imgCollector from '@/assets/수집광.png'
+import imgComment from '@/assets/댓글 요정.png'
+import imgLegend from '@/assets/전설의 탐험가.png'
+
+const MEDAL_IMAGES = {
+  '발자국 시작': imgBaljaguk,
+  '첫 번째 발걸음': imgFirstStep,
+  '탐험대의 일원': imgExplorer,
+  '첫 교신': imgFirstPost,
+  '수집광': imgCollector,
+  '댓글 요정': imgComment,
+  '전설의 탐험가': imgLegend,
+}
+
 const props = defineProps({
   medal: { type: Object, default: null },
   locked: { type: Boolean, default: false },
+})
+
+const medalImage = computed(() => {
+  if (!props.medal) return null
+  return MEDAL_IMAGES[props.medal.medal_name] ?? null
 })
 
 const ICON_PATHS = {
@@ -63,8 +87,8 @@ const iconPath = computed(() => {
 }
 
 .medal-icon {
-  width: 44px;
-  height: 44px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   background: #e8e4d9;
   display: flex;
@@ -93,13 +117,18 @@ const iconPath = computed(() => {
   color: #1a1510;
   text-align: center;
   margin: 0;
-  white-space: nowrap;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  line-height: 1.3;
 }
 .medal-desc {
   font-size: 11px;
   color: #9e9585;
   text-align: center;
   margin: 0;
-  white-space: nowrap;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  line-height: 1.4;
+  text-wrap: balance;
 }
 </style>

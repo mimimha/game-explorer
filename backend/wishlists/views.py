@@ -29,7 +29,14 @@ class WishlistToggleView(APIView):
 
     def post(self, request, game_id):
         game = get_object_or_404(Game, pk=game_id)
-        Wishlist.objects.get_or_create(user=request.user, game=game)
+        _, created = Wishlist.objects.get_or_create(user=request.user, game=game)
+        if created:
+            from accounts.medal_service import award_medal
+            total = request.user.wishlists.count()
+            if total == 1:
+                award_medal(request.user, '첫 번째 발걸음')
+            if total >= 10:
+                award_medal(request.user, '수집광')
         return Response({
             'is_wishlisted': True,
             'wishlist_count': game.wishlisted_by.count(),

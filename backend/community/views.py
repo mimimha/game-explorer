@@ -44,6 +44,9 @@ class PostListCreateView(generics.ListCreateAPIView):
         write = self.get_serializer(data=request.data)
         write.is_valid(raise_exception=True)
         post = write.save(user=request.user)
+        if request.user.posts.count() == 1:
+            from accounts.medal_service import award_medal
+            award_medal(request.user, '첫 교신')
         from rest_framework.response import Response
         from rest_framework import status
         detail = PostDetailSerializer(post, context={'request': request})
@@ -100,6 +103,9 @@ class CommentListCreateView(generics.ListCreateAPIView):
         comment = write.save(
             user=request.user, post_id=self.kwargs['post_id']
         )
+        if request.user.comments.count() >= 20:
+            from accounts.medal_service import award_medal
+            award_medal(request.user, '댓글 요정')
         from rest_framework.response import Response
         from rest_framework import status
         out = CommentSerializer(comment, context={'request': request})

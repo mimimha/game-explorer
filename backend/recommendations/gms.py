@@ -24,16 +24,17 @@ def _endpoint():
     return f'{base}/chat/completions'
 
 
-def chat(messages, *, temperature=0.4, json_mode=False, timeout=20):
+def chat(messages, *, temperature=0.4, json_mode=False, timeout=20, model=None):
     """
     OpenAI 호환 chat/completions 호출 → 응답 본문 텍스트(content) 반환.
     messages: [{'role': 'system'|'user'|'assistant', 'content': str}, ...]
+    model: 지정 시 그 모델로(미지정이면 settings.GMS_MODEL). 작업별 모델 분리용.
     """
     if not settings.GMS_API_KEY:
         raise GMSError('GMS_API_KEY(SSAFY_GMS_KEY) 가 없습니다.')
 
     payload = {
-        'model': settings.GMS_MODEL,
+        'model': model or settings.GMS_MODEL,
         'messages': messages,
         'temperature': temperature,
     }

@@ -2,10 +2,8 @@
   <section class="videos-section">
     <div class="section-header">
       <div class="header-left">
-        <h2 class="section-title">공략 · 스트리밍 영상</h2>
-        <span class="game-id-label">GAME_VIDEO</span>
+        <h2 class="section-title">트레일러 / 공략 영상</h2>
       </div>
-      <p class="section-sub">유튜브 VOD · 라이브</p>
     </div>
 
     <div class="carousel">

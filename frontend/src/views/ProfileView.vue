@@ -68,7 +68,7 @@
             </div>
             <div class="form-field">
               <label>생년월일</label>
-              <input v-model="editForm.birth_date" type="date" />
+              <input v-model="editForm.birth_date" type="date" :max="new Date().toISOString().slice(0, 10)" />
             </div>
             <div class="modal-actions">
               <button type="button" class="btn-cancel" @click="closeEditModal">취소</button>
@@ -205,6 +205,8 @@ async function submitEdit() {
     })
     user.value = res.data
     authStore.setProfile(res.data)
+    const medalsRes = await accountAPI.getMyMedals()
+    mypage.medals = medalsRes.data?.results ?? medalsRes.data ?? []
     closeEditModal()
   } catch {
     alert('프로필 수정에 실패했어요.')

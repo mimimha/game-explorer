@@ -1,4 +1,4 @@
-from django.db.models import F, Count, Min, Max
+from django.db.models import F, Count, Min, Max, Case, When, BooleanField, FloatField, Value, ExpressionWrapper
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -23,6 +23,7 @@ class GameListView(generics.ListAPIView):
     filter_backends = [OrderingFilter]
     ordering_fields = ['metacritic_score', 'release_date', 'final_price', 'playtime']
     ordering = ['-game_id']
+    pagination_class = None
 
     # 플레이타임 버킷 경계(시간)
     PLAYTIME_BUCKETS = {
@@ -35,28 +36,26 @@ class GameListView(generics.ListAPIView):
         qs = Game.objects.prefetch_related('genres', 'platforms', 'moods').all()
         p = self.request.query_params
 
-        genres = p.getlist('genre')          # tag_id 기준 (다중 선택)
+        genres = p.getlist('genre')          # tag_id 기준 (다중 선택 → AND 교집합)
+        for genre in genres:
+            qs = qs.filter(genres__tag_id=genre)
         if genres:
-            qs = qs.filter(genres__tag_id__in=genres).distinct()
+            qs = qs.distinct()
 
-        moods = p.getlist('mood')            # mood_id 기준 (다중 선택)
+        moods = p.getlist('mood')            # mood_id 기준 (다중 선택 → AND 교집합)
+        for mood in moods:
+            qs = qs.filter(moods__mood_id=mood)
         if moods:
-            qs = qs.filter(moods__mood_id__in=moods).distinct()
+            qs = qs.distinct()
 
-        platforms = p.getlist('platform')    # platform_id 또는 이름 (다중 선택)
+        platforms = p.getlist('platform')    # platform_id 또는 이름 (다중 선택 → AND 교집합)
+        for platform in platforms:
+            if platform.isdigit():
+                qs = qs.filter(platforms__platform_id=platform)
+            else:
+                qs = qs.filter(platforms__platform_name=platform)
         if platforms:
-            ids = [v for v in platforms if v.isdigit()]
-            names = [v for v in platforms if not v.isdigit()]
-            cond = None
-            if ids:
-                from django.db.models import Q
-                cond = Q(platforms__platform_id__in=ids)
-            if names:
-                from django.db.models import Q
-                name_cond = Q(platforms__platform_name__in=names)
-                cond = name_cond if cond is None else cond | name_cond
-            if cond is not None:
-                qs = qs.filter(cond).distinct()
+            qs = qs.distinct()
 
         # 가격 구간
         price_gte = p.get('price_gte')
@@ -101,18 +100,15 @@ class GameListView(generics.ListAPIView):
         if p.get('playtime_lte'):
             qs = qs.filter(playtime__lte=p.get('playtime_lte'))
 
-        # 플레이 인원 — single/multi/coop (다중 선택 시 OR)
+        # 플레이 인원 — single/multi/coop (다중 선택 → AND 교집합)
         modes = p.getlist('player_mode')
         if modes:
-            from django.db.models import Q
-            cond = Q()
             if 'single' in modes:
-                cond |= Q(is_singleplayer=True)
+                qs = qs.filter(is_singleplayer=True)
             if 'multi' in modes:
-                cond |= Q(is_multiplayer=True)
+                qs = qs.filter(is_multiplayer=True)
             if 'coop' in modes:
-                cond |= Q(is_coop=True)
-            qs = qs.filter(cond)
+                qs = qs.filter(is_coop=True)
 
         q = p.get('q')
         if q:
@@ -120,7 +116,31 @@ class GameListView(generics.ListAPIView):
             # 영문 원제 + 한글 번역 제목 동시 검색
             qs = qs.filter(Q(title__icontains=q) | Q(title_ko__icontains=q))
 
+        # 할인순: 할인율 annotation 추가 (order_by는 filter_queryset 오버라이드에서 처리)
+        if p.get('ordering') == 'discount':
+            qs = qs.annotate(
+                discount_rate=Case(
+                    When(
+                        final_price__isnull=False,
+                        initial_price__gt=F('final_price'),
+                        then=ExpressionWrapper(
+                            (F('initial_price') - F('final_price')) * 1.0 / F('initial_price'),
+                            output_field=FloatField(),
+                        ),
+                    ),
+                    default=Value(0.0),
+                    output_field=FloatField(),
+                )
+            )
+
         return qs
+
+    def filter_queryset(self, queryset):
+        queryset = super().filter_queryset(queryset)
+        # OrderingFilter가 기본 정렬(-game_id)로 덮어쓴 뒤 여기서 재적용
+        if self.request.query_params.get('ordering') == 'discount':
+            queryset = queryset.order_by('-discount_rate', 'title')
+        return queryset
 
 
 class GameDetailView(generics.RetrieveAPIView):

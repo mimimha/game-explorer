@@ -7,7 +7,11 @@
     </div>
 
     <!-- 제목 -->
-    <h1 class="title">{{ game.title }}</h1>
+    <h1 class="title">
+      {{ game.title }}
+      <br>
+      <span v-if="game.title_ko" class="title-ko">({{ game.title_ko }})</span>
+    </h1>
 
     <!-- 가격 -->
     <div class="price-row">
@@ -30,7 +34,7 @@
         </svg>
       </div>
       <span v-if="game.metacritic_score" class="meta-score">
-        Metacritic {{ game.metacritic_score }}
+        평점 {{ game.metacritic_score }}점
       </span>
     </div>
 
@@ -39,7 +43,7 @@
       <span v-if="game.supports_korean" class="chip">한국어 지원</span>
       <span v-if="game.required_age"    class="chip">{{ game.required_age }}세 이상</span>
       <span v-if="!game.is_online"      class="chip">오프라인</span>
-      <span                              class="chip">{{ game.release_status }}</span>
+      <!-- <span                              class="chip">{{ game.release_status }}</span> -->
     </div>
 
     <!-- 찜하기 버튼 -->
@@ -152,6 +156,12 @@ async function toggleWish() {
   line-height: 1.3;
   letter-spacing: -0.02em;
   margin: 0;
+}
+.title-ko {
+  font-size: 16px;
+  font-weight: 600;
+  color: #6b6256;
+  letter-spacing: 0;
 }
 
 /* 가격 */

@@ -27,6 +27,8 @@ class MeView(generics.RetrieveUpdateDestroyAPIView):
 
     def patch(self, request, *args, **kwargs):
         super().patch(request, *args, **kwargs)
+        from .medal_service import award_medal
+        award_medal(request.user, '탐험대의 일원')
         return Response(UserSerializer(request.user, context={'request': request}).data)
 
 
@@ -49,7 +51,7 @@ class UserProfileView(APIView):
                                    .prefetch_related('comments')[:5]
         recent_wishlist = Wishlist.objects.filter(user=target) \
                                           .select_related('game') \
-                                          .prefetch_related('game__genres')[:5]
+                                          .prefetch_related('game__genres')
         recent_logs = RecommendationLog.objects.filter(user=target) \
                                                .prefetch_related('results')[:3]
 
@@ -140,7 +142,7 @@ class MyPageView(APIView):
         from wishlists.serializers import WishlistItemSerializer
         recent_wishlist = Wishlist.objects.filter(user=user)\
                                           .select_related('game')\
-                                          .prefetch_related('game__genres')[:5]
+                                          .prefetch_related('game__genres')
 
         data = {
             'nickname': user.nickname,
