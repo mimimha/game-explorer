@@ -1,0 +1,34 @@
+# 1. SSAFY GMS 설정 (AI 추천 / OpenAI 호환)
+# ⚠️ 아래 키 주석을 풀고 RECOMMEND_USE_LLM=True 로 바꾸기 전까지 토큰이 나가지 않음.
+SSAFY_GMS_KEY="S15P02CA11-aae07223-d4df-416d-b243-d8116c9d5252"
+GMS_BASE_URL=https://gms.ssafy.io/gmsapi/api.openai.com/v1
+GMS_MODEL=gpt 5.5 pro
+GMS_VISION_MODEL=gpt-4o
+RECOMMEND_USE_LLM=True
+
+# 2. STEAM API 설정
+STEAM_API_KEY=5C033817E3F292697351BE4B5E80F0E6
+STEAM_APP_LIST_URL=https://api.steampowered.com/ISteamApps/GetAppList/v2/
+STEAM_APP_DETAIL_URL=https://store.steampowered.com/api/appdetails
+
+# ============================================================================================
+
+# '''
+# - cc : 국가 코드 / &cc=kr → 한국의 가격 단위인 (원)으로 보여줌
+# - l : 언어, 설명, 항목을 해당 언어로 받음 / &l=korean
+# - filters : 원하는 필드만 받기 / &filters=price_overview → 가격 정보만 보여줌
+# '''
+
+# 3. YOUTUBE API 설정 (3개)
+YOUTUBE_DATA_API_KEY=AIzaSyAjWkDtM9WLwrWjm09nes-EgFF-3lgxURs
+YOUTUBE_DATA_API_KEY_2=AIzaSyCSwd3tfIVam8AwXPH8zpbxpN8KPK5hDu4
+YOUTUBE_DATA_API_KEY_3=AIzaSyBL1pk3TusRMRsyqbyxgQYGM2Rdvntg3Cc
+
+# 4. RAWG API 설정
+RAWG_API_KEY=639430fdde644e6f8022d817b747f730
+RAWG_API_URL=https://api.rawg.io/api/games
+
+# ============================================================================================
+
+# +) 출시일 기준 게임 정렬
+# https://api.rawg.io/api/games?key=RAWG_API_KEY&dates=2023-11-01,2023-11-30&ordering=-added
