@@ -1,0 +1,22 @@
+{% extends "admin/change_list.html" %}
+
+{% block object-tools-items %}
+  <li>
+    <a href="{% url 'admin:games_game_add_more' %}" class="addlink"
+       onclick="return confirm('RAWG에서 게임 100개를 추가하고 설명(무료)·제목(GMS 크레딧 소량)을 자동 번역합니다. 2~3분 걸리고 그동안 페이지가 로딩 상태가 됩니다. 진행할까요?');">
+      RAWG에서 게임 100개 더 받기
+    </a>
+  </li>
+  <li>
+    <a href="{% url 'admin:games_game_fill_videos' %}" class="addlink">
+      누락된 Youtube 영상 업데이트하기
+    </a>
+  </li>
+  <li>
+    <a href="{% url 'admin:games_game_refresh_prices' %}" class="addlink"
+       onclick="return confirm('Steam 가격을 다시 긁어옵니다(랜덤 150개, 가격 변동·할인 반영). 1~2분 걸리고 그동안 페이지가 로딩 상태가 됩니다. 진행할까요?');">
+      Steam 가격 재수집
+    </a>
+  </li>
+  {{ block.super }}
+{% endblock %}
