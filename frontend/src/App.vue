@@ -5,7 +5,7 @@
         <RouterLink :to="{ name: 'home' }" class="logo-wrap">
           <img src="@/assets/logo.png" alt="방구석 탐험대" class="logo" />
         </RouterLink>
-        <RouterLink :to="{ name: 'explore' }" class="nav-link">게임 라이브러리</RouterLink>
+        <a class="nav-link" :class="{ 'router-link-active': $route.name === 'explore' }" @click="handleExploreClick">게임 라이브러리</a>
         <RouterLink :to="{ name: 'community' }" class="nav-link">커뮤니티</RouterLink>
       </div>
 
@@ -58,8 +58,9 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useExploreStore } from '@/stores/explore'
 import { accountAPI } from '@/api/services'
 import defaultAvatar from '@/assets/profile.png'
 import { useGameSuggest } from '@/composables/useGameSuggest'
@@ -67,7 +68,16 @@ import GameSuggestDropdown from '@/components/common/GameSuggestDropdown.vue'
 import NotificationBubble from '@/components/common/NotificationBubble.vue'
 
 const router = useRouter()
+const route = useRoute()
 const authStore = useAuthStore()
+const exploreStore = useExploreStore()
+
+function handleExploreClick() {
+  exploreStore.requestReset()
+  if (route.name !== 'explore') {
+    router.push({ name: 'explore' })
+  }
+}
 
 const navSearchRef = ref(null)
 const keyword = ref('')

@@ -1,6 +1,18 @@
 from rest_framework import serializers
-from .models import Post, PostComment
+from .models import Post, PostComment, PostImage
 from games.models import Game
+
+
+class PostImageSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = PostImage
+        fields = ['id', 'url']
+
+    def get_url(self, obj):
+        request = self.context.get('request')
+        return request.build_absolute_uri(obj.image.url) if request else obj.image.url
 
 
 class AuthorSerializer(serializers.Serializer):
@@ -61,12 +73,13 @@ class PostDetailSerializer(serializers.ModelSerializer):
         source='comments.count', read_only=True
     )
     is_author = serializers.SerializerMethodField()
+    images = PostImageSerializer(many=True, read_only=True)
 
     class Meta:
         model = Post
         fields = [
             'id', 'title', 'content', 'category', 'author', 'game',
-            'comment_count', 'created_at', 'updated_at', 'is_author',
+            'comment_count', 'created_at', 'updated_at', 'is_author', 'images',
         ]
 
     def get_author(self, obj):

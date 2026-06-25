@@ -1,7 +1,7 @@
 <template>
   <div class="notif-wrap" ref="wrapRef">
     <!-- 종 버튼 -->
-    <button class="icon-btn" @click="toggle" aria-label="알림">
+    <button class="icon-btn" :class="{ active: isOpen }" @click="toggle" aria-label="알림">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
         stroke-width="1.5" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round"
@@ -201,18 +201,20 @@ onUnmounted(() => {
   position: relative;
 }
 
-/* 종 버튼은 App.vue .icon-btn 스타일 재사용, 여기선 badge만 */
 .icon-btn {
   position: relative;
   background: none;
   border: none;
   cursor: pointer;
   padding: 4px;
-  color: #3d3529;
+  color: #3A2410;
   display: flex;
   align-items: center;
+  transition: color 0.15s;
 }
 .icon-btn svg { width: 25px; }
+.icon-btn:hover { color: #D97706; }
+.icon-btn.active { color: #D97706; }
 
 .notif-badge {
   position: absolute;
@@ -238,10 +240,10 @@ onUnmounted(() => {
   top: calc(100% + 14px);
   right: -8px;
   width: 320px;
-  background: #fff;
-  border: 1px solid #e8e4d9;
+  background: #FFFDF7;
+  border: 1px solid #D8C4A3;
   border-radius: 14px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.13);
+  box-shadow: 0 8px 32px rgba(58,36,16,0.13);
   z-index: 300;
   overflow: hidden;
 }
@@ -253,9 +255,9 @@ onUnmounted(() => {
   right: 16px;
   width: 14px;
   height: 14px;
-  background: #fff;
-  border-left: 1px solid #e8e4d9;
-  border-top: 1px solid #e8e4d9;
+  background: #FFFDF7;
+  border-left: 1px solid #D8C4A3;
+  border-top: 1px solid #D8C4A3;
   transform: rotate(45deg);
   border-radius: 2px 0 0 0;
 }
@@ -265,18 +267,18 @@ onUnmounted(() => {
   align-items: center;
   justify-content: space-between;
   padding: 14px 16px 10px;
-  border-bottom: 1px solid #f0ece3;
+  border-bottom: 1px solid #FFF0D6;
 }
 .bubble-title {
   font-size: 14px;
   font-weight: 700;
-  color: #1a1510;
+  color: #3A2410;
 }
 .mark-all-btn {
   background: none;
   border: none;
   font-size: 12px;
-  color: #1e3a5f;
+  color: #D97706;
   cursor: pointer;
   font-family: inherit;
   font-weight: 600;
@@ -296,24 +298,24 @@ onUnmounted(() => {
   justify-content: center;
   gap: 8px;
   padding: 32px 16px;
-  color: #9e9585;
+  color: #6B5A45;
   font-size: 13px;
 }
-.empty-icon { width: 28px; color: #c8c2b4; }
+.empty-icon { width: 28px; color: #D8C4A3; }
 
 .notif-item {
   display: flex;
   align-items: flex-start;
   gap: 10px;
   padding: 11px 16px;
-  border-bottom: 1px solid #f7f5f0;
+  border-bottom: 1px solid #FFF0D6;
   cursor: pointer;
   transition: background 0.12s;
 }
 .notif-item:last-child { border-bottom: none; }
-.notif-item:hover { background: #f9f7f3; }
-.notif-item.unread { background: #f0f4fa; }
-.notif-item.unread:hover { background: #e8eef5; }
+.notif-item:hover { background: #FFF7E6; }
+.notif-item.unread { background: #FFF0D6; }
+.notif-item.unread:hover { background: #ffe4b0; }
 
 .notif-type-icon {
   font-size: 18px;
@@ -325,14 +327,14 @@ onUnmounted(() => {
 .notif-content { flex: 1; min-width: 0; }
 .notif-msg {
   font-size: 13px;
-  color: #1a1510;
+  color: #3A2410;
   line-height: 1.45;
   margin: 0 0 3px;
   word-break: keep-all;
 }
 .notif-time {
   font-size: 11px;
-  color: #9e9585;
+  color: #6B5A45;
 }
 
 /* 페이지네이션 */
@@ -342,25 +344,25 @@ onUnmounted(() => {
   justify-content: center;
   gap: 12px;
   padding: 10px 16px;
-  border-top: 1px solid #f0ece3;
+  border-top: 1px solid #FFF0D6;
 }
 .page-arrow {
   background: none;
-  border: 1px solid #e8e4d9;
+  border: 1px solid #D8C4A3;
   border-radius: 6px;
   width: 28px;
   height: 28px;
   font-size: 16px;
   cursor: pointer;
-  color: #3d3529;
+  color: #3A2410;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.12s;
 }
-.page-arrow:hover:not(:disabled) { border-color: #1e3a5f; color: #1e3a5f; }
+.page-arrow:hover:not(:disabled) { border-color: #D97706; color: #D97706; }
 .page-arrow:disabled { color: #c8c2b4; cursor: default; }
-.page-label { font-size: 12px; color: #6b6256; font-weight: 600; }
+.page-label { font-size: 12px; color: #6B5A45; font-weight: 600; }
 
 /* 말풍선 등장 애니메이션 */
 .bubble-enter-active { transition: opacity 0.15s, transform 0.15s; }

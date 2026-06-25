@@ -61,6 +61,12 @@ export const communityAPI = {
   createComment: (postId, payload) => api.post(E.community.comments(postId), payload), // {content}
   updateComment: (commentId, payload) => api.patch(E.community.commentDetail(commentId), payload),
   deleteComment: (commentId) => api.delete(E.community.commentDetail(commentId)),
+  uploadImages: (postId, files) => {
+    const fd = new FormData()
+    files.forEach(f => fd.append('images', f))
+    return api.post(E.community.postImages(postId), fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+  },
+  deleteImage: (postId, imageId) => api.delete(E.community.postImageDetail(postId, imageId)),
 }
 
 // ── AI 추천 ──

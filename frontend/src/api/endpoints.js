@@ -51,6 +51,8 @@ const ENDPOINTS = {
     postDetail: (postId) => `/posts/${postId}/`,        // GET / PATCH·DELETE 🔒 글 상세·수정·삭제
     comments: (postId) => `/posts/${postId}/comments/`, // GET / POST 🔒  댓글 목록·작성
     commentDetail: (commentId) => `/comments/${commentId}/`, // PATCH·DELETE 🔒 댓글 수정·삭제
+    postImages: (postId) => `/posts/${postId}/images/`,      // POST 🔒  이미지 업로드
+    postImageDetail: (postId, imageId) => `/posts/${postId}/images/${imageId}/`, // DELETE 🔒  이미지 삭제
   },
 
   // ── AI 추천 (recommendations) ────────────────────────────────────

@@ -49,7 +49,9 @@
 <script setup>
 import { ref, computed, nextTick, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { onBeforeRouteLeave } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useExploreStore } from '@/stores/explore'
 import { gameAPI, recommendAPI } from '@/api/services'
 import AiRecommendPanel from '@/components/explore/AiRecommendPanel.vue'
 import SearchPanel from '@/components/explore/SearchPanel.vue'
@@ -58,6 +60,7 @@ import GameResultGrid from '@/components/explore/GameResultGrid.vue'
 import ToastAlert from '@/components/common/ToastAlert.vue'
 
 const authStore = useAuthStore()
+const exploreStore = useExploreStore()
 const route = useRoute()
 const toastRef = ref(null)
 const searchPanelRef = ref(null)
@@ -97,6 +100,21 @@ function toGames(data) {
 }
 
 onMounted(async () => {
+  const saved = exploreStore.restore()
+  if (saved) {
+    resultMode.value = saved.resultMode
+    resultGames.value = saved.resultGames
+    searchKeyword.value = saved.searchKeyword
+    searchSort.value = saved.searchSort
+    searchFilters.value = saved.searchFilters
+    submitted.value = saved.submitted
+    currentPage.value = saved.currentPage
+    activePanel.value = saved.activePanel
+    await nextTick()
+    if (saved.searchKeyword) searchPanelRef.value?.setKeyword(saved.searchKeyword)
+    return
+  }
+
   if (authStore.isLoggedIn) {
     try {
       const { data } = await recommendAPI.logs()
@@ -114,6 +132,35 @@ onMounted(async () => {
   applyQueryFilter()
   if (route.query.q) applyQueryQ(route.query.q)
   if (route.query.log) applyQueryLog(route.query.log)
+})
+
+onBeforeRouteLeave((to) => {
+  if (to.name === 'game-detail') {
+    exploreStore.save({
+      resultMode: resultMode.value,
+      resultGames: resultGames.value,
+      searchKeyword: searchKeyword.value,
+      searchSort: searchSort.value,
+      searchFilters: searchFilters.value,
+      submitted: submitted.value,
+      currentPage: currentPage.value,
+      activePanel: activePanel.value,
+    })
+  } else {
+    exploreStore.clear()
+  }
+})
+
+watch(() => exploreStore.resetSignal, () => {
+  submitted.value = false
+  resultGames.value = []
+  searchKeyword.value = ''
+  searchFilters.value = null
+  resultMode.value = 'ai'
+  currentPage.value = 1
+  activePanel.value = 'ai'
+  searchSort.value = 'recent'
+  searchPanelRef.value?.reset?.()
 })
 
 // 홈·Nav 검색 → ?q=keyword, 홈 카드 → ?filter=sale|new 로 진입 시 자동 검색

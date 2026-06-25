@@ -542,9 +542,9 @@ onUnmounted(() => {
   flex-shrink: 0;
   width: 72px;
   white-space: nowrap;
-  font-size: 13px;
-  font-weight: 600;
-  color: #6b6256;
+  font-size: 14px;
+  font-weight: 800;
+  color: #c96012;
   padding-top: 7px;
 }
 .chips {
