@@ -13,7 +13,8 @@
 - **공유(내보내기)**: `PYTHONUTF8=1 python manage.py dumpdata games --exclude games.SearchLog --indent 2 -o games/fixtures/games.json` 로 내보내 커밋.
   - **`PYTHONUTF8=1` 필수** — 없으면 Windows cp949로 한글이 깨진다.
   - **`--exclude games.SearchLog` 필수** — SearchLog는 사용자 종속(검색 기록)이라, fixture에 섞이면 팀원 DB에 없는 user FK를 참조해 `loaddata`가 깨진다.
-- **받기**: `git pull` → `python manage.py migrate` → `python manage.py loaddata games`.
+- **메달 카탈로그 공유**: `PYTHONUTF8=1 python manage.py dumpdata accounts.Medal --indent 2 -o accounts/fixtures/medals.json` 로 내보내 커밋. **`accounts.Medal`(정의)만** 뽑고 `accounts.UserMedal`(사용자별 획득 기록·user FK)은 절대 넣지 않는다(SearchLog와 같은 이유). 메달은 마이그레이션 `0002_seed_medals`로도 시드되지만, admin에서 메달을 추가/수정했다면 이 fixture로 공유한다.
+- **받기**: `git pull` → `python manage.py migrate` → `python manage.py loaddata games` → `python manage.py loaddata medals`.
 
 ### ⚠️ DB·마이그레이션 주의
 
@@ -43,9 +44,9 @@ RAWG의 `tags` 배열은 무드·장르·기술·시점을 한데 섞은 **평�
 
 ## YouTube 영상 수집 (토큰 사용처)
 
-YouTube Data API를 **실제로 호출하는 유일한 모듈은 `backend/games/services/youtube.py`** 다. 다중 키를 지원해 한 키가 일일 쿼터(10,000 units = 100 검색/키)를 소진하면(403 quotaExceeded / 429) 자동으로 다음 키로 넘어간다. 키는 `.env`의 `YOUTUBE_DATA_API_KEYS=키1,키2`(먼저 쓸 키부터) 또는 `YOUTUBE_DATA_API_KEY` + `YOUTUBE_DATA_API_KEY_2`로 설정.
+YouTube Data API를 **실제로 호출하는 유일한 모듈은 `backend/games/services/youtube.py`** 다. 다중 키를 지원해 한 키가 일일 쿼터(10,000 units = 100 검색/키)를 소진하면(403 quotaExceeded / 429) 자동으로 다음 키로 넘어간다. 키는 `.env`의 `YOUTUBE_DATA_API_KEYS=키1,키2,키3`(먼저 쓸 키부터) 또는 `YOUTUBE_DATA_API_KEY` + `_KEY_2` + `_KEY_3` 번호식으로 설정.
 
-이 서비스를 부르는 정식 수집 커맨드는 `load_games`(전체 적재 시 영상 포함)와 `backfill_videos`(영상만, RAWG/스팀/스크린샷 미호출 → YouTube 쿼터만 사용). 게임당 검색 2회(트레일러 1 + 공략 2). 한 번 수집하면 `GameVideo` → fixture(`games.json`)에 저장되어, 조회·재생·`loaddata`는 토큰을 쓰지 않는다(토큰은 '새 수집' 때만).
+이 서비스를 부르는 정식 수집 커맨드는 `load_games`(전체 적재 시 영상 포함)와 `backfill_videos`(영상만, RAWG/스팀/스크린샷 미호출 → YouTube 쿼터만 사용). **게임당 영상 4개 = 트레일러 1 + 공략 3.** 공략은 `youtube.search_walkthroughs()`가 **한국 제작 영상(제목에 한글, 조회수순)을 우선** 채우고 부족하면 해외(영어권 등) 영상으로 보충한다(`order=viewCount` + `regionCode=KR`/`relevanceLanguage=ko`, 게임명 매칭으로 엉뚱한 게임 배제). 검색 횟수는 게임당 2~3회(트레일러 1 + 공략 1~2). 이 로직은 **admin "누락된 Youtube 영상 업데이트하기" 버튼·영상 리뉴얼 액션에도 동일 적용**된다(둘 다 `backfill_videos` 경유). 한 번 수집하면 `GameVideo` → fixture(`games.json`)에 저장되어, 조회·재생·`loaddata`는 토큰을 쓰지 않는다(토큰은 '새 수집' 때만).
 
 ## 임시 스크립트 (커밋 금지)
 
