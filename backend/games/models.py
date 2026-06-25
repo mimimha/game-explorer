@@ -65,6 +65,10 @@ class Game(models.Model):
     # 평균 플레이타임(시간) — RAWG playtime. 정보 없으면 null.
     playtime = models.IntegerField(null=True, blank=True)
 
+    # 표지(썸네일) 비전 분석으로 뽑은 시각 소재 태그 목록 (예: ['동물','풍경']).
+    # 비어있으면 아직 분석 안 함.
+    thumbnail_subjects = models.JSONField(default=list, blank=True)
+
     # 플레이 인원/모드 — RAWG tags 우선, 없으면 Steam categories 폴백.
     # 둘 다 정보가 없으면 null (= 알 수 없음, False 와 구분).
     is_singleplayer = models.BooleanField(null=True, blank=True, default=None)

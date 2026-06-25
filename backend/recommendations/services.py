@@ -53,6 +53,7 @@ def _llm_recommendations(prompt, limit=5):
 
 def _extract_intent(prompt):
     """① 자유 문장 → {genres, price_max, is_korean, platforms, keywords}."""
+    from games.services.vision import SUBJECT_VOCAB
     genre_names = list(Genre.objects.values_list('genre_name', flat=True))
     mood_names = list(Mood.objects.values_list('mood_name', flat=True))
     system = (
@@ -70,12 +71,15 @@ def _extract_intent(prompt):
         'moods(배열, 반드시 아래 무드 목록 중에서만 — 분위기·테마·감정), '
         'exclude_moods(배열, 배제할 무드 — 반드시 아래 무드 목록 중에서만), '
         "player_modes(배열, 'single'/'multi'/'coop' 중에서만 — 싱글/멀티/협동), "
+        'subjects(배열, 표지에 보이길 원하는 시각 소재 — 반드시 아래 소재 목록 중에서만, '
+        '예: "동물 나오는 게임"→["동물"]), '
         'price_max(정수 KRW 또는 null), '
         'is_korean(불리언 또는 null), '
         'platforms(배열), '
         'keywords(제목 검색용 영어 단어 배열). '
         f'사용 가능한 장르: {", ".join(genre_names) or "(없음)"}. '
-        f'사용 가능한 무드: {", ".join(mood_names) or "(없음)"}'
+        f'사용 가능한 무드: {", ".join(mood_names) or "(없음)"}. '
+        f'사용 가능한 소재: {", ".join(SUBJECT_VOCAB)}'
     )
     data = gms.chat_json(
         [{'role': 'system', 'content': system},
@@ -87,6 +91,7 @@ def _extract_intent(prompt):
         'moods': data.get('moods') or [],
         'exclude_moods': data.get('exclude_moods') or [],
         'player_modes': data.get('player_modes') or [],
+        'subjects': data.get('subjects') or [],
         'price_max': data.get('price_max'),
         'is_korean': data.get('is_korean'),
         'platforms': data.get('platforms') or [],
@@ -135,6 +140,7 @@ def _filter_games(intent, limit=5):
     exclude_moods = {m.lower() for m in intent.get('exclude_moods', [])}
     exclude_moods |= {m.lower() for m in _implied_excludes(intent.get('moods', []))}
     want_modes = {m.lower() for m in intent.get('player_modes', [])}
+    want_subjects = set(intent.get('subjects', []))   # 표지 시각 소재(한국어)
     keywords = [k.lower() for k in intent.get('keywords', []) if k]
 
     scored = []
@@ -149,6 +155,8 @@ def _filter_games(intent, limit=5):
             continue
         # 실제 속성 일치 점수 — 분위기(무드) 최우선 > 장르 > 인원 > 키워드
         content = 40 * len(want_moods & mnames)                # 무드 일치 (최우선)
+        # 표지에 해당 소재가 보이면 강한 가산 (예: "동물" → 표지에 동물)
+        content += 35 * len(want_subjects & set(game.thumbnail_subjects or []))
         content += 25 * len(want_genres & gnames)              # 장르 일치
         if 'single' in want_modes and game.is_singleplayer:    # 인원 일치
             content += 20
@@ -158,6 +166,8 @@ def _filter_games(intent, limit=5):
             content += 20
         title = (game.title or '').lower()
         content += 10 * sum(1 for k in keywords if k in title)  # 제목 키워드
+        desc = (game.description or '').lower()
+        content += 4 * sum(1 for k in keywords if k in desc)    # 설명 키워드(약하게)
 
         # 속성 일치가 전혀 없으면 후보에서 제외 (평점만 높은 무관 게임 배제)
         if content <= 0:
