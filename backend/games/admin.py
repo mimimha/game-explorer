@@ -1,13 +1,19 @@
 # games/admin.py
 import io
+import json
+import os
+import tempfile
 
 from django.contrib import admin, messages
 from django.core.management import call_command
-from django.shortcuts import redirect
+from django.db.models import Q
+from django.http import HttpResponse
+from django.shortcuts import redirect, render
 from django.urls import path
 
 from .models import (
     Game, Genre, Platform, Mood, GameTag, GamePlatform, Screenshot, GameVideo,
+    SearchLog,
 )
 
 
@@ -43,17 +49,113 @@ class GameAdmin(admin.ModelAdmin):
                ScreenshotInline, GameVideoInline]
     # 목록 상단에 "RAWG 신작 가져오기" 버튼을 추가한 템플릿
     change_list_template = 'admin/games/game/change_list.html'
+    actions = ['refresh_videos_action']
 
     def get_urls(self):
-        """기본 admin URL 에 신작 적재용 커스텀 URL 을 끼워넣는다."""
+        """기본 admin URL 에 신작 적재·영상 채우기 커스텀 URL 을 끼워넣는다."""
         custom = [
             path(
                 'fetch-new/',
                 self.admin_site.admin_view(self.fetch_new_games),
                 name='games_game_fetch_new',
             ),
+            path(
+                'fill-videos/',
+                self.admin_site.admin_view(self.fill_missing_videos),
+                name='games_game_fill_videos',
+            ),
+            path(
+                'export-translations/',
+                self.admin_site.admin_view(self.export_translations_view),
+                name='games_game_export_translations',
+            ),
+            path(
+                'import-translations/',
+                self.admin_site.admin_view(self.import_translations_view),
+                name='games_game_import_translations',
+            ),
         ]
         return custom + super().get_urls()
+
+    def export_translations_view(self, request):
+        """미번역 게임(id/title/description)을 JSON 파일로 다운로드한다."""
+        qs = (Game.objects.filter(translation_locked=False)
+              .filter(Q(title_ko='') | Q(description_ko=''))
+              .order_by('game_id'))
+        rows = [
+            {'id': g.game_id, 'title': g.title, 'description': g.description}
+            for g in qs
+        ]
+        payload = json.dumps(rows, ensure_ascii=False, indent=2)
+        resp = HttpResponse(payload, content_type='application/json; charset=utf-8')
+        resp['Content-Disposition'] = 'attachment; filename="to_translate.json"'
+        return resp
+
+    def import_translations_view(self, request):
+        """업로드한 번역 JSON 을 title_ko/description_ko 에 반영한다."""
+        if request.method == 'POST' and request.FILES.get('file'):
+            up = request.FILES['file']
+            with tempfile.NamedTemporaryFile(
+                'wb', suffix='.json', delete=False) as tmp:
+                for chunk in up.chunks():
+                    tmp.write(chunk)
+                path_ = tmp.name
+            out = io.StringIO()
+            try:
+                call_command('import_translations', path_, stdout=out)
+                last = out.getvalue().strip().splitlines()[-1] if out.getvalue().strip() else ''
+                self.message_user(
+                    request, f'번역 JSON 을 반영했습니다. {last}',
+                    level=messages.SUCCESS,
+                )
+            except Exception as e:
+                self.message_user(
+                    request, f'가져오기 실패: {e}', level=messages.ERROR)
+            finally:
+                os.remove(path_)
+            return redirect('admin:games_game_changelist')
+
+        # GET → 업로드 폼
+        context = {
+            **self.admin_site.each_context(request),
+            'title': '번역 JSON 가져오기',
+            'opts': self.model._meta,
+        }
+        return render(request, 'admin/games/game/import_translations.html', context)
+
+    @admin.action(description='선택한 게임의 유튜브 영상 새로고침(리뉴얼)')
+    def refresh_videos_action(self, request, queryset):
+        """선택한 게임들의 영상을 새 것으로 교체한다(관리자 리뉴얼)."""
+        ids = ','.join(str(g.game_id) for g in queryset)
+        out = io.StringIO()
+        try:
+            call_command('backfill_videos', ids=ids, stdout=out)
+            self.message_user(
+                request, f'{queryset.count()}개 게임의 유튜브 영상을 새로 받았습니다.',
+                level=messages.SUCCESS,
+            )
+        except Exception as e:
+            self.message_user(
+                request, f'영상 갱신 실패: {e}', level=messages.ERROR,
+            )
+
+    def fill_missing_videos(self, request):
+        """영상이 없는(새로 추가된) 게임에만 영상을 채운다. 한 번에 최대 25개."""
+        out = io.StringIO()
+        try:
+            call_command('backfill_videos', only_empty=True, limit=25, stdout=out)
+            from django.db.models import Count
+            remaining = (Game.objects.annotate(v=Count('videos'))
+                         .filter(v=0).count())
+            msg = '빠진 영상을 채웠습니다.'
+            if remaining:
+                msg += f' 아직 영상 없는 게임 {remaining}개 — 더 채우려면 다시 클릭하세요.'
+            self.message_user(request, msg, level=messages.SUCCESS)
+        except Exception as e:
+            self.message_user(
+                request, f'영상 채우기 실패: {e}', level=messages.ERROR,
+            )
+        return redirect('admin:games_game_changelist')
 
     def fetch_new_games(self, request):
         """
@@ -102,3 +204,15 @@ class MoodAdmin(admin.ModelAdmin):
 
 admin.site.register(Screenshot)
 admin.site.register(GameVideo)
+
+
+@admin.register(SearchLog)
+class SearchLogAdmin(admin.ModelAdmin):
+    list_display = ['id', 'user', 'keyword', 'result_count', 'created_at']
+    list_filter = ['created_at']
+    search_fields = ['user__username', 'keyword']
+    readonly_fields = ['user', 'keyword', 'result_game_ids', 'created_at']
+
+    @admin.display(description='결과 수')
+    def result_count(self, obj):
+        return len(obj.result_game_ids or [])

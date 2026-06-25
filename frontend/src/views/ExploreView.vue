@@ -26,17 +26,17 @@
 
       <GameResultGrid
         :type="resultMode"
-        :games="resultMode === 'search' ? pagedGames : resultGames"
+        :games="pagedGames"
         :loading="aiLoading || searchLoading"
         :restore-loading="restoreLoading"
         :submitted="submitted"
         :sort="searchSort"
-        :total-count="totalCount"
         :current-page="currentPage"
         :total-pages="totalPages"
+        :total-count="totalCount"
         @update:sort="onSortChange"
-        @update:page="onPageChange"
         @reset="onSearchReset"
+        @page-change="onPageChange"
       />
 
     </div>
@@ -71,17 +71,26 @@ const submitted = ref(false)
 const aiLoading = ref(false)
 const searchLoading = ref(false)
 const restoreLoading = ref(false)
-const resultGames = ref([])
+const resultGames = ref([])        // 원본 목록 (검색: 서버 페이지 / AI: 전체 ≤10)
 const recentHistory = ref([])
 
-// 프론트엔드 페이지네이션
-const PAGE_SIZE = 20
-const currentPage = ref(1)
+// 페이지네이션 상태
+// 페이지네이션은 클라이언트 분할(백엔드가 전체 목록을 한 번에 내려줌)
+const AI_PAGE_SIZE = 5
+const LIB_PAGE_SIZE = 20
+const aiPage = ref(1)              // AI 결과 페이지
+const searchPage = ref(1)          // 검색 결과 페이지
+
+const pageSize = computed(() => resultMode.value === 'ai' ? AI_PAGE_SIZE : LIB_PAGE_SIZE)
+const currentPage = computed(() => resultMode.value === 'ai' ? aiPage.value : searchPage.value)
 const totalCount = computed(() => resultGames.value.length)
-const totalPages = computed(() => Math.ceil(totalCount.value / PAGE_SIZE))
-const pagedGames = computed(() =>
-  resultGames.value.slice((currentPage.value - 1) * PAGE_SIZE, currentPage.value * PAGE_SIZE)
-)
+const totalPages = computed(() => Math.max(1, Math.ceil(totalCount.value / pageSize.value)))
+
+// 화면에 실제로 그릴 항목 (현재 페이지만 잘라서)
+const pagedGames = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value
+  return resultGames.value.slice(start, start + pageSize.value)
+})
 
 // 검색 모드 상태 (키워드 + 정렬 + 필터)
 const searchKeyword = ref('')
@@ -95,10 +104,6 @@ const ORDERING = {
   price: 'final_price',
 }
 
-function toGames(data) {
-  return Array.isArray(data) ? data : (data.results ?? [])
-}
-
 onMounted(async () => {
   const saved = exploreStore.restore()
   if (saved) {
@@ -108,7 +113,8 @@ onMounted(async () => {
     searchSort.value = saved.searchSort
     searchFilters.value = saved.searchFilters
     submitted.value = saved.submitted
-    currentPage.value = saved.currentPage
+    if (saved.resultMode === 'ai') aiPage.value = saved.currentPage || 1
+    else searchPage.value = saved.currentPage || 1
     activePanel.value = saved.activePanel
     await nextTick()
     if (saved.searchKeyword) searchPanelRef.value?.setKeyword(saved.searchKeyword)
@@ -129,9 +135,16 @@ onMounted(async () => {
       recentHistory.value = []
     }
   }
-  applyQueryFilter()
-  if (route.query.q) applyQueryQ(route.query.q)
-  if (route.query.log) applyQueryLog(route.query.log)
+  // 진입 쿼리에 따라: ?filter=sale|new → 해당 검색, ?q= → 키워드 검색,
+  // 아무것도 없으면 기본으로 전체 게임 목록을 바로 보여준다.
+  if (route.query.filter) {
+    applyQueryFilter()
+  } else if (route.query.q) {
+    applyQueryQ(route.query.q)
+  } else {
+    activePanel.value = 'search'
+    runSearch()
+  }
 })
 
 onBeforeRouteLeave((to) => {
@@ -157,7 +170,8 @@ watch(() => exploreStore.resetSignal, () => {
   searchKeyword.value = ''
   searchFilters.value = null
   resultMode.value = 'ai'
-  currentPage.value = 1
+  aiPage.value = 1
+  searchPage.value = 1
   activePanel.value = 'ai'
   searchSort.value = 'recent'
   searchPanelRef.value?.reset?.()
@@ -166,7 +180,6 @@ watch(() => exploreStore.resetSignal, () => {
 // 홈·Nav 검색 → ?q=keyword, 홈 카드 → ?filter=sale|new 로 진입 시 자동 검색
 watch(() => route.query.filter, applyQueryFilter)
 watch(() => route.query.q, applyQueryQ)
-watch(() => route.query.log, v => { if (v) applyQueryLog(v) })
 
 function applyQueryFilter() {
   const f = route.query.filter
@@ -191,20 +204,15 @@ async function applyQueryQ(q) {
   runSearch()
 }
 
-async function applyQueryLog(logId) {
-  if (!logId || !authStore.isLoggedIn) return
-  activePanel.value = 'ai'
-  await onRestoreHistory({ id: logId })
-}
-
 // 키워드 + 정렬 + 필터를 백엔드 list 파라미터로 합쳐 호출
 function buildParams() {
   const params = {}
   if (searchKeyword.value.trim()) params.q = searchKeyword.value.trim()
 
-  // 정렬
+  // 정렬 (할인순은 on_sale 필터 + 정가 내림차순)
   if (searchSort.value === 'discount') {
-    params.ordering = 'discount'   // 백엔드에서 할인 우선 + 이름순 처리
+    params.on_sale = true
+    params.ordering = '-initial_price'
   } else {
     params.ordering = ORDERING[searchSort.value] ?? '-release_date'
   }
@@ -230,11 +238,13 @@ async function runSearch() {
   resultMode.value = 'search'
   submitted.value = true
   searchLoading.value = true
-  currentPage.value = 1
+  searchPage.value = 1            // 새 검색 → 1페이지부터
   resultGames.value = []
   try {
     const res = await gameAPI.list(buildParams())
-    resultGames.value = toGames(res.data)
+    const data = res.data
+    // 백엔드가 전체 목록을 한 번에 줌 → 페이지 분할은 클라이언트(pagedGames)에서
+    resultGames.value = Array.isArray(data) ? data : (data.results ?? [])
   } catch {
     toastRef.value?.show('검색 중 오류가 발생했어요.', 'error')
   } finally {
@@ -242,15 +252,19 @@ async function runSearch() {
   }
 }
 
-function onPageChange(page) {
-  currentPage.value = page
-  window.scrollTo({ top: 0, behavior: 'smooth' })
-}
-
-// 정렬 셀렉트 변경 시 재조회
+// 정렬 변경 시 재조회(1페이지부터)
 function onSortChange(value) {
   searchSort.value = value
   runSearch()
+}
+
+// 페이지네이션 — 둘 다 클라이언트 슬라이스(재조회 없음)
+function onPageChange(page) {
+  if (resultMode.value === 'search') {
+    searchPage.value = page
+  } else {
+    aiPage.value = page
+  }
 }
 
 async function onAiSubmit({ prompt }) {
@@ -262,11 +276,13 @@ async function onAiSubmit({ prompt }) {
   resultMode.value = 'ai'
   submitted.value = true
   aiLoading.value = true
+  aiPage.value = 1
   resultGames.value = []
 
   try {
     const { data } = await recommendAPI.create({ prompt_input: prompt })
-    resultGames.value = toGames(data.games ?? data)
+    // 추천 응답 results = [{game, reason, match_score}] → 카드용 game 으로 펴기
+    resultGames.value = (data.results ?? data.games ?? []).map(r => r.game ?? r)
     recentHistory.value.unshift({
       id: data.log_id ?? Date.now(),
       query: prompt,
@@ -292,6 +308,8 @@ function onSearchReset() {
   resultGames.value = []
   searchKeyword.value = ''
   searchFilters.value = null
+  searchPage.value = 1
+  aiPage.value = 1
 }
 
 async function onDeleteHistory(h) {
@@ -307,11 +325,12 @@ async function onRestoreHistory(h) {
   resultMode.value = 'ai'
   submitted.value = true
   restoreLoading.value = true
+  aiPage.value = 1
   resultGames.value = []
 
   try {
     const { data } = await recommendAPI.logDetail(h.id)
-    resultGames.value = toGames(data.games ?? data)
+    resultGames.value = (data.results ?? data.games ?? []).map(r => r.game ?? r)
   } catch {
     toastRef.value?.show('기록 불러오기 중 오류가 발생했어요.', 'error')
   } finally {

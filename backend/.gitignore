@@ -200,7 +200,7 @@ cover/
 
 # Django stuff:
 local_settings.py
-db.sqlite3
+# db.sqlite3  ← 팀 공유를 위해 추적함(로그인 정보·번역 포함). DB 담당자 1명만 갱신·커밋할 것.
 db.sqlite3-journal
 
 # Flask stuff:

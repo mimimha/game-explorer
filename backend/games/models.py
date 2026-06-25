@@ -65,6 +65,10 @@ class Game(models.Model):
     # 평균 플레이타임(시간) — RAWG playtime. 정보 없으면 null.
     playtime = models.IntegerField(null=True, blank=True)
 
+    # 표지(썸네일) 비전 분석으로 뽑은 시각 소재 태그 목록 (예: ['동물','풍경']).
+    # 비어있으면 아직 분석 안 함.
+    thumbnail_subjects = models.JSONField(default=list, blank=True)
+
     # 플레이 인원/모드 — RAWG tags 우선, 없으면 Steam categories 폴백.
     # 둘 다 정보가 없으면 null (= 알 수 없음, False 와 구분).
     is_singleplayer = models.BooleanField(null=True, blank=True, default=None)
@@ -191,3 +195,21 @@ class GameVideo(models.Model):
 
     def __str__(self):
         return f'{self.game.title} - {self.title}'
+
+
+class SearchLog(models.Model):
+    """라이브러리 검색 기록 — 취향 분석 신호로 사용. 상위 결과 game_id 만 저장."""
+    user = models.ForeignKey(
+        'accounts.User', on_delete=models.CASCADE,
+        related_name='search_logs', db_column='user_id',
+    )
+    keyword = models.CharField(max_length=200, blank=True, default='')
+    result_game_ids = models.JSONField(default=list)   # 상위 결과 game_id 리스트
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'search_log'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.user} 검색: {self.keyword or "(필터)"}'

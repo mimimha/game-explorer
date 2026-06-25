@@ -27,6 +27,10 @@ class Command(BaseCommand):
         parser.add_argument('--ordering', type=str, default='-added')
         parser.add_argument('--dates', type=str, default=None,
                             help="출시일 범위 예: 2023-01-01,2023-12-31")
+        parser.add_argument('--genres', type=str, default=None,
+                            help="RAWG 장르 슬러그(콤마). 예: indie")
+        parser.add_argument('--tags', type=str, default=None,
+                            help="RAWG 태그 슬러그(콤마). 예: cute,cozy — 특정 스타일만")
         parser.add_argument('--no-steam', action='store_true',
                             help='Steam 가격 수집 생략')
         parser.add_argument('--no-youtube', action='store_true',
@@ -42,6 +46,7 @@ class Command(BaseCommand):
                 games = rawg.fetch_game_list(
                     page=page, page_size=opts['page_size'],
                     ordering=opts['ordering'], dates=opts['dates'],
+                    genres=opts['genres'], tags=opts['tags'],
                 )
             except Exception as e:
                 self.stderr.write(self.style.ERROR(f'목록 호출 실패: {e}'))
@@ -119,7 +124,8 @@ class Command(BaseCommand):
             ])
 
         # 6) 영상 — 트레일러 1개 + 공략(스트리밍) 2개
-        if not opts['no_youtube']:
+        #    이미 영상이 있으면 건너뛴다(쿼터 보호). 새 걸로 교체는 admin 리뉴얼 버튼.
+        if not opts['no_youtube'] and not game.videos.exists():
             rows = []  # (video_dict, video_type)
 
             # 6-1) 트레일러 1개 (없으면 RAWG 트레일러 폴백)

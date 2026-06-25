@@ -17,11 +17,20 @@ def _get(url, params=None):
     return resp.json()
 
 
-def fetch_game_list(page=1, page_size=20, ordering='-added', dates=None):
-    """게임 목록 한 페이지. results 배열 반환."""
+def fetch_game_list(page=1, page_size=20, ordering='-added',
+                    dates=None, genres=None, tags=None):
+    """게임 목록 한 페이지. results 배열 반환.
+
+    genres: RAWG 장르 슬러그(예: 'indie', 'action'). 콤마로 다중.
+    tags:   RAWG 태그 슬러그(예: 'cute,cozy', 'pixel-graphics'). 콤마로 다중 — 특정 스타일.
+    """
     params = {'page': page, 'page_size': page_size, 'ordering': ordering}
     if dates:
         params['dates'] = dates       # 예: '2023-01-01,2023-12-31'
+    if genres:
+        params['genres'] = genres
+    if tags:
+        params['tags'] = tags         # 예: 'cute' → 귀여운 스타일 게임만
     data = _get(BASE, params)
     return data.get('results', [])
 
@@ -123,6 +132,62 @@ MOOD_TAG_MAP = {
     'Dystopian': '디스토피아',
     'Survival Horror': '생존 공포',
     'Futuristic': '미래적인',
+    'Pixel Graphics': '픽셀 그래픽',   # 픽셀/도트 스타일
+    # 전체 태그 전수 분류로 일괄 추가 — 세팅/테마
+    'Sci-fi': 'SF',
+    'Fantasy': '판타지',
+    'Cyberpunk': '사이버펑크',
+    'Steampunk': '스팀펑크',
+    'Space': '우주',
+    'Medieval': '중세',
+    'Historical': '역사',
+    'War': '전쟁',
+    'Military': '밀리터리',
+    'Western': '서부극',
+    'Gothic': '고딕',
+    'Noir': '누아르',
+    'Mythology': '신화',
+    'Supernatural': '초자연',
+    'Lovecraftian': '러브크래프트풍',
+    'Zombies': '좀비',
+    'Aliens': '외계인',
+    'Robots': '로봇',
+    'Dinosaurs': '공룡',
+    'Dragons': '용',
+    'Ninja': '닌자',
+    'Pirates': '해적',
+    'Superhero': '슈퍼히어로',
+    'Crime': '범죄',
+    'Detective': '탐정',
+    'Conspiracy': '음모',
+    'Political': '정치',
+    'Time Travel': '시간여행',
+    'Underwater': '수중',
+    'Alternate History': '대체역사',
+    'Cold War': '냉전',
+    # 미감(비주얼)
+    '2D': '2D 그래픽',
+    'Hand-drawn': '손그림',
+    'Anime': '애니메이션풍',
+    'Cartoony': '만화풍',
+    'Cartoon': '만화풍',
+    'Realistic': '사실적',
+    'Photorealistic': '사실적',
+    'Psychedelic': '사이키델릭',
+    'Abstract': '추상적',
+    'Comic Book': '코믹북풍',
+    # 톤/감성
+    'Dark Humor': '블랙코미디',
+    'Memes': '밈',
+    'Satire': '풍자',
+    'Drama': '드라마',
+    'Romance': '로맨스',
+    'Thriller': '스릴러',
+    'Psychological': '심리적',
+    'Masterpiece': '명작',
+    'Family Friendly': '가족친화',
+    'Fast-Paced': '빠른 전개',
+    'Lore-Rich': '풍부한 세계관',
 }
 
 # 플레이 인원/모드 판정용 RAWG 태그 (소문자 비교).

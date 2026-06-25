@@ -25,12 +25,25 @@ class Command(BaseCommand):
         parser.add_argument('--limit', type=int, default=None)
         parser.add_argument('--only-empty', action='store_true',
                             help='영상이 아예 없는 게임만 대상')
+        parser.add_argument('--refresh', action='store_true',
+                            help='이미 영상이 있어도 새로 받아 교체 (관리자 리뉴얼용)')
+        parser.add_argument('--ids', type=str, default=None,
+                            help='특정 game_id 만 갱신 (콤마, 예: 12,45,77)')
+        parser.add_argument('--trailer-only', action='store_true',
+                            help='트레일러만(공략 생략) → 게임당 YouTube 검색 1회로 쿼터 절반')
+        parser.add_argument('--walkthrough-only', action='store_true',
+                            help='기존 영상(트레일러) 보존 + 공략만 덧붙임 → 검색 1회/게임')
         parser.add_argument('--sleep', type=float, default=0.3)
 
     def handle(self, *args, **opts):
-        if opts['only_empty']:
+        if opts['ids']:                       # 특정 게임만 교체
+            id_list = [int(x) for x in opts['ids'].split(',') if x.strip().isdigit()]
+            qs = Game.objects.filter(game_id__in=id_list)
+        elif opts['refresh']:                 # 전체를 새 영상으로 교체 (리뉴얼)
+            qs = Game.objects.all()
+        elif opts['only_empty']:              # 영상이 아예 없는 게임만
             qs = Game.objects.annotate(v=Count('videos')).filter(v=0)
-        else:
+        else:                                 # (기본) 공략이 없는 게임만
             qs = Game.objects.annotate(
                 w=Count('videos', filter=Q(videos__video_type='walkthrough'))
             ).filter(w=0)
@@ -44,7 +57,8 @@ class Command(BaseCommand):
         for g in games:
             total += 1
             try:
-                n = self._fill_one(g)
+                n = self._fill_one(g, trailer_only=opts['trailer_only'],
+                                   walkthrough_only=opts['walkthrough_only'])
                 ok += 1
                 self.stdout.write(f'  ✓ {g.title[:40]:40} 영상 {n}개')
             except Exception as e:
@@ -53,29 +67,33 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS(f'\n완료: {ok}/{total}'))
 
-    def _fill_one(self, game):
+    def _fill_one(self, game, trailer_only=False, walkthrough_only=False):
         rows = []  # (video_dict, video_type)
 
-        # 트레일러 1개 (없으면 RAWG 트레일러 폴백)
-        trailers = youtube.search_videos(
-            game.title, query_terms='gameplay trailer', max_results=1,
-        )
-        if not trailers:
-            trailers = [
-                {'title': m['name'], 'video_url': m['url'], 'thumbnail': ''}
-                for m in rawg.fetch_movies(game.rawg_id)[:1]
-            ]
-        rows += [(v, GameVideo.TRAILER) for v in trailers[:1]]
+        # 트레일러 1개 (없으면 RAWG 트레일러 폴백) — walkthrough_only면 생략(기존 보존)
+        if not walkthrough_only:
+            trailers = youtube.search_videos(
+                game.title, query_terms='gameplay trailer', max_results=1,
+            )
+            if not trailers:
+                trailers = [
+                    {'title': m['name'], 'video_url': m['url'], 'thumbnail': ''}
+                    for m in rawg.fetch_movies(game.rawg_id)[:1]
+                ]
+            rows += [(v, GameVideo.TRAILER) for v in trailers[:1]]
 
-        # 공략 2개 (긴 영상)
-        walkthroughs = youtube.search_videos(
-            game.title, query_terms='공략 walkthrough',
-            max_results=2, video_duration='long',
-        )
-        rows += [(v, GameVideo.WALKTHROUGH) for v in walkthroughs[:2]]
+        # 공략 2개 (긴 영상) — trailer_only면 생략(쿼터 절약)
+        if not trailer_only:
+            walkthroughs = youtube.search_videos(
+                game.title, query_terms='공략 walkthrough',
+                max_results=2, video_duration='long',
+            )
+            rows += [(v, GameVideo.WALKTHROUGH) for v in walkthroughs[:2]]
 
         if rows:
-            game.videos.all().delete()
+            # walkthrough_only면 기존 영상(트레일러)을 지우지 않고 덧붙인다
+            if not walkthrough_only:
+                game.videos.all().delete()
             GameVideo.objects.bulk_create([
                 GameVideo(
                     game=game, video_type=vtype, title=v['title'],
