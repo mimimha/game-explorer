@@ -78,7 +78,7 @@ function formatDate(dt) {
   color: #6b6256;
   text-decoration: none;
 }
-.view-all:hover { color: #1e3a5f; }
+.view-all:hover { color: #c96012; }
 
 .empty {
   font-size: 14px;
@@ -107,7 +107,7 @@ function formatDate(dt) {
   transition: background 0.1s;
 }
 .post-link:hover .post-title {
-  color: #1e3a5f;
+  color: #c96012;
 }
 
 .category-badge {
@@ -118,7 +118,7 @@ function formatDate(dt) {
   white-space: nowrap;
   flex-shrink: 0;
 }
-.badge-guide  { background: #e8f0fe; color: #1e3a5f; }
+.badge-guide  { background: #fef0d9; color: #c96012; }
 .badge-free   { background: #f0ece3; color: #6b6256; }
 .badge-party  { background: #fef3e2; color: #92400e; }
 

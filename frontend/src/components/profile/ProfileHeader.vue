@@ -135,7 +135,7 @@ function onAvatarChange(e) {
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background: #1e3a5f;
+  background: #c96012;
   color: #fff;
   display: flex;
   align-items: center;
@@ -206,13 +206,13 @@ function onAvatarChange(e) {
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.15s;
-  border: 1px solid #1e3a5f;
-  background: #1e3a5f;
+  border: 1px solid #c96012;
+  background: #c96012;
   color: #fff;
 }
 .btn-follow.following {
   background: #fff;
-  color: #1e3a5f;
+  color: #c96012;
 }
 .btn-follow:hover { opacity: 0.85; }
 
@@ -232,7 +232,7 @@ function onAvatarChange(e) {
 }
 .btn-follow-stat:hover { background: #ede9e0; }
 .btn-follow-stat .stat-left { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
-.btn-follow-stat .stat-count { font-size: 18px; font-weight: 700; color: #3a6b4a; line-height: 1; }
+.btn-follow-stat .stat-count { font-size: 18px; font-weight: 700; color: #c96012; line-height: 1; }
 .btn-follow-stat .stat-label { font-size: 11px; color: #6b6256; }
 .btn-follow-stat .stat-icon { width: 22px; height: 22px; color: #c8c2b4; flex-shrink: 0; }
 
@@ -246,8 +246,8 @@ function onAvatarChange(e) {
   padding: 3px 10px;
   border-radius: 20px;
 }
-.rank-beginner { background: #e8f5e9; color: #2e7d32; }
-.rank-skilled  { background: #e3f0ff; color: #1e4e8c; }
+.rank-beginner { background: #f5f0e8; color: #6b6256; }
+.rank-skilled  { background: #fef0d9; color: #c96012; }
 .rank-master   { background: #fff8e1; color: #b8860b; }
 
 /* Birthday card */

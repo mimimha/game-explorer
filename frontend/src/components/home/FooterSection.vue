@@ -10,8 +10,9 @@
     <div class="footer-center">
       <h4>탐험대 바로가기</h4>
       <ul>
-        <li><a href="#">게임 라이브러리</a></li>
-        <li><a href="#">커뮤니티</a></li>
+        <li><RouterLink to="/explore">게임 라이브러리</RouterLink></li>
+        <li><RouterLink to="/community">커뮤니티</RouterLink></li>
+        <li><RouterLink to="/profile">마이페이지</RouterLink></li>
       </ul>
     </div>
 
@@ -21,7 +22,7 @@
       <div class="social-links">
         <a href="https://lab.ssafy.com/als2612/13-pjt" target="_blank">GitHub Repository</a>
       </div>
-      <p class="api-credit">Data powered by RAWG API, STEAM API</p>
+      <p class="api-credit">Data powered by RAWG API, STEAM API, Youtube API</p>
     </div>
     </div>
     </footer>

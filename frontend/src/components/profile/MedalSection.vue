@@ -91,7 +91,7 @@ onMounted(() => {
   text-decoration: none;
 }
 .view-all:hover {
-  color: #1e3a5f;
+  color: #c96012;
 }
 
 .scroll-wrapper {

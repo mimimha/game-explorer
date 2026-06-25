@@ -416,7 +416,7 @@ onMounted(fetchAll)
   color: #9e9585;
 }
 .breadcrumb a { color: #9e9585; text-decoration: none; }
-.breadcrumb a:hover { color: #1e3a5f; }
+.breadcrumb a:hover { color: #c96012; }
 .sep { font-size: 12px; }
 
 .page-header { margin-bottom: 4px; }
@@ -443,14 +443,14 @@ onMounted(fetchAll)
   width: 32px;
   height: 32px;
   border: 3px solid #e8e4d9;
-  border-top-color: #1e3a5f;
+  border-top-color: #c96012;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 .error-state button {
   padding: 8px 20px;
-  background: #1e3a5f;
+  background: #c96012;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -496,7 +496,7 @@ onMounted(fetchAll)
   outline: none;
   transition: border-color 0.15s;
 }
-.form-field input:focus { border-color: #1e3a5f; }
+.form-field input:focus { border-color: #c96012; }
 .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 8px; }
 .btn-cancel {
   padding: 9px 20px;
@@ -511,7 +511,7 @@ onMounted(fetchAll)
   padding: 9px 20px;
   border: none;
   border-radius: 8px;
-  background: #1e3a5f;
+  background: #c96012;
   color: #fff;
   font-size: 14px;
   font-weight: 600;

@@ -21,7 +21,6 @@
             <svg viewBox="0 0 16 16" fill="currentColor" width="14"><path d="M1 3h14v2H1zm0 4h14v2H1zm0 4h14v2H1z"/></svg>
           </button>
         </template>
-        <RouterLink v-else to="/explore" class="more-link">전체 보기 ›</RouterLink>
       </div>
     </div>
 
@@ -66,6 +65,7 @@
         <GameCard v-for="g in games" :key="g.id" :game="g" />
       </div>
       <Pagination
+        v-if="type === 'search'"
         :current-page="currentPage"
         :total-pages="totalPages"
         @change="$emit('page-change', $event)"
@@ -76,7 +76,6 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { RouterLink } from 'vue-router'
 import GameCard from '../home/GameCard.vue'
 import EmptyState from './EmptyState.vue'
 import Pagination from '../common/Pagination.vue'
