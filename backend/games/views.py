@@ -1,3 +1,4 @@
+import logging
 from datetime import date
 
 from django.db.models import F, Count, Min, Max, Case, When, BooleanField, FloatField, Value, ExpressionWrapper
@@ -11,6 +12,8 @@ from .models import Game, Genre, Platform, Mood
 from .serializers import (
     GameCardSerializer, GameDetailSerializer, GenreSerializer,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def _calc_age(birth_date):
@@ -209,6 +212,20 @@ class GameDetailView(generics.RetrieveAPIView):
     queryset = Game.objects.prefetch_related(
         'genres', 'platforms', 'moods', 'screenshots', 'videos'
     )
+
+    def get_object(self):
+        game = super().get_object()
+        # lazy 로딩: 영상이 없는 게임이면 이 순간 YouTube 에서 가져와 저장한다.
+        # (다음 조회부터는 DB 에 있으므로 호출 0 → 안 본 게임은 영영 호출 안 함)
+        if not game.videos.all():
+            try:
+                from .services.videos import fetch_videos_for
+                if fetch_videos_for(game):
+                    # prefetch 캐시가 비어 있으니, 새로 저장한 영상이 보이도록 재조회
+                    game = self.get_queryset().get(game_id=game.game_id)
+            except Exception as e:   # 외부 API 실패가 상세 페이지를 깨지 않게
+                logger.warning('lazy 영상 로드 실패 game=%s: %s', game.game_id, e)
+        return game
 
 
 class GamePostsView(generics.ListAPIView):

@@ -83,12 +83,13 @@ class Command(BaseCommand):
                 ]
             rows += [(v, GameVideo.TRAILER) for v in trailers[:1]]
 
-        # 공략 3개 — 한국 제작(조회수순) 우선, 부족 시 해외 영상. trailer_only면 생략
+        # 공략 4개 — 한국 제작(조회수순) 우선, 부족 시 해외 영상. trailer_only면 생략
+        # (트레일러 1 + 공략 4 = 게임당 영상 5개)
         if not trailer_only:
             walkthroughs = youtube.search_walkthroughs(
-                game.title, game.title_ko, n=3,
+                game.title, game.title_ko, n=4,
             )
-            rows += [(v, GameVideo.WALKTHROUGH) for v in walkthroughs[:3]]
+            rows += [(v, GameVideo.WALKTHROUGH) for v in walkthroughs[:4]]
 
         if rows:
             # walkthrough_only면 기존 영상(트레일러)을 지우지 않고 덧붙인다
