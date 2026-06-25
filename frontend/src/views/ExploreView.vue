@@ -75,24 +75,22 @@ const resultGames = ref([])        // 원본 목록 (검색: 서버 페이지 / 
 const recentHistory = ref([])
 
 // 페이지네이션 상태
-// 페이지네이션은 클라이언트 분할(백엔드가 전체 목록을 한 번에 내려줌)
+// 검색(라이브러리)은 '서버 페이지네이션'(20개/페이지) → 게임이 늘어도 응답 일정.
+// AI 추천은 결과 전체(≤10)를 한 화면에 표시(페이지네이션 없음).
 const LIB_PAGE_SIZE = 20
-const aiPage = ref(1)              // AI 결과 페이지
-const searchPage = ref(1)          // 검색 결과 페이지
+const aiPage = ref(1)              // AI 결과 페이지(사실상 1)
+const searchPage = ref(1)          // 검색 결과 페이지(서버에 요청)
+const searchTotalCount = ref(0)    // 검색 전체 결과 수(서버 count)
 
-// AI 추천은 결과 전체를 한 화면에 표시(페이지네이션 없음) → pageSize=전체 개수
 const pageSize = computed(() =>
   resultMode.value === 'ai' ? Math.max(1, resultGames.value.length) : LIB_PAGE_SIZE)
 const currentPage = computed(() => resultMode.value === 'ai' ? aiPage.value : searchPage.value)
-const totalCount = computed(() => resultGames.value.length)
+const totalCount = computed(() =>
+  resultMode.value === 'ai' ? resultGames.value.length : searchTotalCount.value)
 const totalPages = computed(() => Math.max(1, Math.ceil(totalCount.value / pageSize.value)))
 
-// 화면에 실제로 그릴 항목 (AI는 전체, 검색은 현재 페이지만)
-const pagedGames = computed(() => {
-  if (resultMode.value === 'ai') return resultGames.value
-  const start = (currentPage.value - 1) * pageSize.value
-  return resultGames.value.slice(start, start + pageSize.value)
-})
+// 서버가 이미 현재 페이지만 내려줌(검색) / AI는 전체 → resultGames 를 그대로 그린다
+const pagedGames = computed(() => resultGames.value)
 
 // 검색 모드 상태 (키워드 + 정렬 + 필터)
 const searchKeyword = ref('')
@@ -121,37 +119,54 @@ function toRecGames(data) {
   })
 }
 
+// 추천 기록(과거 질의 목록) 로드 — 로그인 상태에서만
+async function loadRecentHistory() {
+  if (!authStore.isLoggedIn) return
+  try {
+    const { data } = await recommendAPI.logs()
+    const logs = Array.isArray(data) ? data : (data.results ?? [])
+    recentHistory.value = logs.map(l => ({
+      id: l.log_id,
+      query: l.prompt_input,
+      date: new Date(l.created_at).toLocaleDateString('ko-KR').replace(/\. /g, '.').slice(0, -1),
+      count: l.result_count ?? 0,
+    }))
+  } catch {
+    recentHistory.value = []
+  }
+}
+
 onMounted(async () => {
+  // 추천 기록은 복원 여부와 무관하게 항상 로드 → 상세 갔다 뒤로가기 해도 기록 유지
+  await loadRecentHistory()
+
   const saved = exploreStore.restore()
   if (saved) {
-    resultMode.value = saved.resultMode
-    resultGames.value = saved.resultGames
+    if (saved.resultMode === 'ai') {
+      // AI 추천 결과에서 상세로 갔다 뒤로가기 → 그리드는 '전체 게임 목록'을 보여준다.
+      // 추천 기록 태그는 유지되며(위에서 로드), 태그를 누르면(onRestoreHistory)
+      // 그 추천에 해당하는 AI 게임들만 다시 보인다.
+      activePanel.value = saved.activePanel || 'ai'
+      searchKeyword.value = ''
+      searchFilters.value = null
+      searchSort.value = 'recent'
+      runSearch()                 // 키워드·필터 없음 → 전체 게임
+      return
+    }
+    // 검색 모드: 검색 조건 복원 후 그 페이지를 서버에서 재조회(페이지네이션 일관성).
+    // (서버 분할이라 캐시된 한 페이지만으론 count 가 없어 페이지바가 깨짐 → 재조회)
+    resultMode.value = 'search'
     searchKeyword.value = saved.searchKeyword
     searchSort.value = saved.searchSort
     searchFilters.value = saved.searchFilters
-    submitted.value = saved.submitted
-    if (saved.resultMode === 'ai') aiPage.value = saved.currentPage || 1
-    else searchPage.value = saved.currentPage || 1
+    searchPage.value = saved.currentPage || 1
     activePanel.value = saved.activePanel
     await nextTick()
     if (saved.searchKeyword) searchPanelRef.value?.setKeyword(saved.searchKeyword)
+    runSearch(false)            // 저장된 페이지 그대로 재조회 → 결과·count 복원
     return
   }
 
-  if (authStore.isLoggedIn) {
-    try {
-      const { data } = await recommendAPI.logs()
-      const logs = Array.isArray(data) ? data : (data.results ?? [])
-      recentHistory.value = logs.map(l => ({
-        id: l.log_id,
-        query: l.prompt_input,
-        date: new Date(l.created_at).toLocaleDateString('ko-KR').replace(/\. /g, '.').slice(0, -1),
-        count: l.result_count ?? 0,
-      }))
-    } catch {
-      recentHistory.value = []
-    }
-  }
   // 진입 쿼리에 따라: ?filter=sale|new → 해당 검색, ?q= → 키워드 검색,
   // 아무것도 없으면 기본으로 전체 게임 목록을 바로 보여준다.
   if (route.query.filter) {
@@ -251,17 +266,26 @@ function buildParams() {
   return params
 }
 
-async function runSearch() {
+async function runSearch(resetPage = true) {
   resultMode.value = 'search'
   submitted.value = true
   searchLoading.value = true
-  searchPage.value = 1            // 새 검색 → 1페이지부터
+  if (resetPage) searchPage.value = 1   // 새 검색/정렬 → 1페이지부터
   resultGames.value = []
   try {
-    const res = await gameAPI.list(buildParams())
+    const params = buildParams()
+    params.page = searchPage.value       // 서버에 페이지 요청
+    params.page_size = LIB_PAGE_SIZE
+    const res = await gameAPI.list(params)
     const data = res.data
-    // 백엔드가 전체 목록을 한 번에 줌 → 페이지 분할은 클라이언트(pagedGames)에서
-    resultGames.value = Array.isArray(data) ? data : (data.results ?? [])
+    // 서버 페이지네이션 응답 {count, results}. (혹시 배열이면 그대로 호환)
+    if (Array.isArray(data)) {
+      resultGames.value = data
+      searchTotalCount.value = data.length
+    } else {
+      resultGames.value = data.results ?? []
+      searchTotalCount.value = data.count ?? resultGames.value.length
+    }
   } catch {
     toastRef.value?.show('검색 중 오류가 발생했어요.', 'error')
   } finally {
@@ -275,10 +299,11 @@ function onSortChange(value) {
   runSearch()
 }
 
-// 페이지네이션 — 둘 다 클라이언트 슬라이스(재조회 없음)
+// 페이지네이션 — 검색은 해당 페이지를 서버에서 재조회, AI는 전체라 페이지 의미 없음
 function onPageChange(page) {
   if (resultMode.value === 'search') {
     searchPage.value = page
+    runSearch(false)                     // 페이지 리셋 없이 그 페이지만 재조회
   } else {
     aiPage.value = page
   }

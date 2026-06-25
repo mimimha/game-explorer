@@ -34,6 +34,7 @@ export const gameAPI = {
   // params: { genre, platform, price_lte, is_korean, offline, ordering, q, page }
   list: (params) => api.get(E.games.list, { params }),
   detail: (gameId) => api.get(E.games.detail(gameId)),
+  videos: (gameId) => api.get(E.games.videos(gameId)),
   posts: (gameId) => api.get(E.games.posts(gameId)),
   recommended: () => api.get(E.games.recommended),
   onSale: () => api.get(E.games.onSale),

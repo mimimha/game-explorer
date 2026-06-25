@@ -17,6 +17,8 @@ urlpatterns = [
          views.GameSuggestView.as_view(), name='game-suggest'),
     path('games/<int:game_id>/',
          views.GameDetailView.as_view(), name='game-detail'),
+    path('games/<int:game_id>/videos/',
+         views.GameVideosView.as_view(), name='game-videos'),
     path('games/<int:game_id>/posts/',
          views.GamePostsView.as_view(), name='game-posts'),
     path('genres/', views.GenreListView.as_view(), name='genre-list'),

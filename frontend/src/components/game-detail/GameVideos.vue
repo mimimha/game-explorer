@@ -7,7 +7,13 @@
     </div>
 
     <div v-if="videos.length" class="carousel">
-      <div class="track" ref="trackEl">
+      <button class="arrow-left" @click="trackEl?.scrollBy({ left: -310, behavior: 'smooth' })" :class="{ hidden: !canLeft }">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" width="14">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m15.75 19.5-7.5-7.5 7.5-7.5"/>
+        </svg>
+      </button>
+
+      <div class="track" ref="trackEl" @scroll="onScroll">
         <a
           v-for="v in videos"
           :key="v.id"
@@ -52,16 +58,20 @@
       </button>
     </div>
 
-    <p v-if="!videos.length" class="coming-soon">추후 업데이트 예정</p>
+    <p v-if="loading && !videos.length" class="coming-soon">
+      <span class="spinner" /> 영상 불러오는 중…
+    </p>
+    <p v-else-if="!videos.length" class="coming-soon">추후 업데이트 예정</p>
   </section>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { ref, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 
-defineProps({
+const props = defineProps({
   gameId: { type: [String, Number], default: null },
   videos: { type: Array, default: () => [] },
+  loading: { type: Boolean, default: false },   // 영상 비동기 로딩 중 여부
 })
 
 // 채널 · 조회수 · 날짜 중 있는 것만 표시 (YouTube 검색엔 조회수 없음)
@@ -71,16 +81,27 @@ function videoInfo(v) {
 }
 
 const trackEl = ref(null)
+const canLeft = ref(false)
 const canRight = ref(false)
 
 function onScroll() {
   const el = trackEl.value
   if (!el) return
+  canLeft.value = el.scrollLeft > 4
   canRight.value = el.scrollLeft + el.clientWidth < el.scrollWidth - 4
 }
 
 const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => nextTick(onScroll)) : null
-onMounted(() => { nextTick(onScroll); if (ro && trackEl.value) ro.observe(trackEl.value) })
+
+function setupArrows() {
+  nextTick(() => {
+    onScroll()
+    if (ro && trackEl.value) ro.observe(trackEl.value)
+  })
+}
+onMounted(setupArrows)
+// 영상이 비동기(lazy)로 늦게 도착해도 화살표가 다시 계산되도록
+watch(() => props.videos.length, setupArrows)
 onBeforeUnmount(() => ro?.disconnect())
 </script>
 
@@ -185,6 +206,28 @@ onBeforeUnmount(() => ro?.disconnect())
 }
 .video-info { font-size: 11px; color: #9e9585; margin: 0; }
 
+/* 왼쪽 화살표 */
+.arrow-left {
+  position: absolute;
+  top: 50%;
+  left: -14px;
+  transform: translateY(-60%);
+  width: 32px; height: 32px;
+  background: #fff;
+  border: 1.5px solid #ddd8cc;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #3d3529;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: all 0.15s;
+  z-index: 2;
+}
+.arrow-left:hover { border-color: #1e3a5f; color: #1e3a5f; }
+.arrow-left.hidden { opacity: 0; pointer-events: none; }
+
 /* 오른쪽 화살표 */
 .arrow-right {
   position: absolute;
@@ -234,4 +277,14 @@ onBeforeUnmount(() => ro?.disconnect())
   font-style: italic;
   margin: 18px 0 0;
 }
+.coming-soon .spinner {
+  display: inline-block;
+  width: 12px; height: 12px;
+  border: 2px solid #d8d2c4;
+  border-top-color: #1e3a5f;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  vertical-align: -1px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
 </style>

@@ -1,3 +1,4 @@
+import logging
 from datetime import date
 
 from django.db.models import F, Count, Min, Max, Case, When, BooleanField, FloatField, Value, ExpressionWrapper
@@ -6,11 +7,24 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import AllowAny
+from rest_framework.pagination import PageNumberPagination
+
+
+class GameListPagination(PageNumberPagination):
+    """목록을 20개씩 페이지로 나눠 응답({count, next, previous, results}).
+    게임 수가 늘어도 응답 크기·시간이 일정하게 유지된다(전체 일괄 전송 방지)."""
+    page_size = 20
+    page_size_query_param = 'page_size'
+    max_page_size = 100
 
 from .models import Game, Genre, Platform, Mood
+from django.shortcuts import get_object_or_404
+
 from .serializers import (
-    GameCardSerializer, GameDetailSerializer, GenreSerializer,
+    GameCardSerializer, GameDetailSerializer, GenreSerializer, GameVideoSerializer,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def _calc_age(birth_date):
@@ -42,7 +56,7 @@ class GameListView(generics.ListAPIView):
     filter_backends = [OrderingFilter]
     ordering_fields = ['metacritic_score', 'release_date', 'final_price', 'playtime']
     ordering = ['-game_id']
-    pagination_class = None
+    pagination_class = GameListPagination
 
     # 플레이타임 버킷 경계(시간)
     PLAYTIME_BUCKETS = {
@@ -215,6 +229,28 @@ class GameDetailView(generics.RetrieveAPIView):
     queryset = Game.objects.prefetch_related(
         'genres', 'platforms', 'moods', 'screenshots', 'videos'
     )
+    # 영상 lazy fetch 는 여기(상세 요청)서 하지 않는다 — 하면 YouTube 호출만큼
+    # 상세 응답이 느려진다. 대신 분리된 GameVideosView 가 그 lazy fetch 를 맡고,
+    # 프런트가 그쪽을 따로 호출해 영상 영역만 나중에 채운다(상세는 즉시 응답).
+
+
+class GameVideosView(APIView):
+    """GET /games/{game_id}/videos/  — 영상만 반환(상세와 분리된 lazy 경로).
+
+    DB 에 영상이 있으면 그대로, 없으면 '그 순간' YouTube 에서 lazy 로 가져와 저장 후 반환.
+    (lazy 동작은 그대로 — 단지 상세 응답을 막지 않도록 별도 요청으로 떼어낸 것.)
+    """
+    permission_classes = [AllowAny]
+
+    def get(self, request, game_id):
+        game = get_object_or_404(Game, game_id=game_id)
+        if not game.videos.exists():
+            try:
+                from .services.videos import fetch_videos_for
+                fetch_videos_for(game)
+            except Exception as e:   # 외부 API 실패가 영상 영역만 비게 하고 끝나도록
+                logger.warning('lazy 영상 로드 실패 game=%s: %s', game_id, e)
+        return Response(GameVideoSerializer(game.videos.all(), many=True).data)
 
 
 class GamePostsView(generics.ListAPIView):

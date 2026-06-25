@@ -9,12 +9,23 @@ KEY = settings.RAWG_API_KEY
 
 
 def _get(url, params=None):
-    """RAWG GET 공통. key 자동 주입 + 가벼운 에러 처리."""
+    """RAWG GET 공통. key 자동 주입 + 일시적 5xx/타임아웃은 재시도(최대 3회)."""
     params = params or {}
     params['key'] = KEY
-    resp = requests.get(url, params=params, timeout=15)
-    resp.raise_for_status()
-    return resp.json()
+    last = None
+    for attempt in range(3):
+        try:
+            resp = requests.get(url, params=params, timeout=15)
+            if resp.status_code >= 500:        # 502/503 등 RAWG 일시 장애 → 재시도
+                last = requests.HTTPError(f'{resp.status_code} Server Error: {url}')
+                time.sleep(1.5 * (attempt + 1))
+                continue
+            resp.raise_for_status()
+            return resp.json()
+        except (requests.Timeout, requests.ConnectionError) as e:
+            last = e
+            time.sleep(1.5 * (attempt + 1))
+    raise last
 
 
 def fetch_game_list(page=1, page_size=20, ordering='-added',
@@ -75,7 +86,10 @@ def fetch_movies(rawg_id):
     for m in data.get('results', []):
         url = (m.get('data') or {}).get('max') or (m.get('data') or {}).get('480')
         if url:
-            movies.append({'name': m.get('name', ''), 'url': url})
+            movies.append({
+                'name': m.get('name', ''), 'url': url,
+                'preview': m.get('preview', ''),   # 미리보기 썸네일 이미지
+            })
     return movies
 
 

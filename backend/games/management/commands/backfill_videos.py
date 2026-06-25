@@ -16,7 +16,7 @@ from django.core.management.base import BaseCommand
 from django.db.models import Count, Q
 
 from games.models import Game, GameVideo
-from games.services import rawg, youtube
+from games.services import youtube
 
 
 class Command(BaseCommand):
@@ -71,24 +71,20 @@ class Command(BaseCommand):
     def _fill_one(self, game, trailer_only=False, walkthrough_only=False):
         rows = []  # (video_dict, video_type)
 
-        # 트레일러 1개 (없으면 RAWG 트레일러 폴백) — walkthrough_only면 생략(기존 보존)
+        # 트레일러 1개 — YouTube 만 사용(RAWG/Steam 폴백 미사용). walkthrough_only면 생략
         if not walkthrough_only:
             trailers = youtube.search_videos(
                 game.title, query_terms='gameplay trailer', max_results=1,
             )
-            if not trailers:
-                trailers = [
-                    {'title': m['name'], 'video_url': m['url'], 'thumbnail': ''}
-                    for m in rawg.fetch_movies(game.rawg_id)[:1]
-                ]
             rows += [(v, GameVideo.TRAILER) for v in trailers[:1]]
 
-        # 공략 3개 — 한국 제작(조회수순) 우선, 부족 시 해외 영상. trailer_only면 생략
+        # 공략 4개 — 한국 제작(조회수순) 우선, 부족 시 해외 영상. trailer_only면 생략
+        # (트레일러 1 + 공략 4 = 게임당 영상 5개)
         if not trailer_only:
             walkthroughs = youtube.search_walkthroughs(
-                game.title, game.title_ko, n=3,
+                game.title, game.title_ko, n=4,
             )
-            rows += [(v, GameVideo.WALKTHROUGH) for v in walkthroughs[:3]]
+            rows += [(v, GameVideo.WALKTHROUGH) for v in walkthroughs[:4]]
 
         if rows:
             # walkthrough_only면 기존 영상(트레일러)을 지우지 않고 덧붙인다

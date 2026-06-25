@@ -11,6 +11,11 @@ class User(AbstractUser):
     birth_date = models.DateField()
     profile_img = models.ImageField(upload_to='profiles/', blank=True, null=True)
 
+    # createsuperuser 가 username·password 외에 이 필드들도 입력받게 한다.
+    # (DB 컬럼이 아니라 '입력 받을 목록'이라 마이그레이션 불필요 — 기존 DB 그대로)
+    # email·nickname·birth_date 가 모두 NOT NULL 이라, 빠지면 IntegrityError 가 난다.
+    REQUIRED_FIELDS = ['email', 'nickname', 'birth_date']
+
     class Meta:
         db_table = 'user'
 

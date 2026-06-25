@@ -115,9 +115,11 @@ def search_walkthroughs(title, title_ko=None, n=3):
     """
     out, seen = [], set()
 
-    # ① 한국 영상: 한국어 제목으로(있으면) KR/ko + 조회수순 검색 → 한글 제목만
+    # ① 한국 영상: '영문 제목'으로 KR/ko + 조회수순 검색 → 한글 제목만
+    #    (한글 음차로 검색하면 흔한 단어와 충돌. 예: GRIS의 "그리스"로 검색하면
+    #     게임이 아니라 국가 Greece 영상이 잡힘 → 영문 제목으로 검색해 풀을 깨끗하게)
     kr = [v for v in search_videos(
-        title_ko or title, query_terms='공략 게임플레이',
+        title, query_terms='공략 게임플레이',
         max_results=n + 6, video_duration='long',
         order='viewCount', region_code='KR', relevance_language='ko',
     ) if _HANGUL.search(v['title'])]

@@ -55,9 +55,9 @@ class GameAdmin(admin.ModelAdmin):
         """기본 admin URL 에 신작 적재·영상 채우기 커스텀 URL 을 끼워넣는다."""
         custom = [
             path(
-                'fetch-new/',
-                self.admin_site.admin_view(self.fetch_new_games),
-                name='games_game_fetch_new',
+                'add-games/',
+                self.admin_site.admin_view(self.add_more_games),
+                name='games_game_add_more',
             ),
             path(
                 'fill-videos/',
@@ -157,29 +157,37 @@ class GameAdmin(admin.ModelAdmin):
             )
         return redirect('admin:games_game_changelist')
 
-    def fetch_new_games(self, request):
+    def add_more_games(self, request):
+        """RAWG 인기순(-added)에서 '다음 100개'를 이어받아 DB 에 추가한다.
+
+        현재 DB 게임 수로 시작 페이지를 계산하므로, 누를 때마다 새 100개가 들어온다.
+        (요청 안에서 동기 실행 → 100개면 1~2분 걸릴 수 있다. 그동안 페이지는 로딩 상태.
+         YouTube 영상은 수집하지 않고, 각 게임을 처음 열 때 lazy 로 채워진다.)
         """
-        RAWG 에서 신작(출시일 최신순)을 받아 DB 에 upsert.
-        load_games 관리 명령을 그대로 재사용한다.
-        (요청 안에서 동기 실행되므로 데모용으로 소량만 가져온다.)
-        """
+        PAGE_SIZE = 20
+        PAGES = 5                                  # 20 × 5 = 100개
+        before = Game.objects.count()
+        start_page = before // PAGE_SIZE + 1       # 이미 받은 만큼 건너뛰고 다음부터
         out = io.StringIO()
         try:
             call_command(
                 'load_games',
-                pages=1, page_size=6,
-                ordering='-released', no_youtube=True,
+                pages=PAGES, page_size=PAGE_SIZE, start_page=start_page,
+                ordering='-added', no_youtube=True,
                 stdout=out,
             )
+            # 새 게임 자동 번역: 설명=무료 Google, 제목=GMS 음차(--titles).
+            call_command('translate_games', titles=True, stdout=out)
+            added = Game.objects.count() - before
             self.message_user(
                 request,
-                f'RAWG 신작을 가져왔습니다. 현재 DB 게임 수: {Game.objects.count()}개',
+                f'게임 {added}개 추가 + 설명·제목 자동 번역 완료. (현재 총 {Game.objects.count()}개) '
+                f'영상은 각 게임을 처음 열 때 자동으로 채워집니다.',
                 level=messages.SUCCESS,
             )
-        except Exception as e:  # 네트워크·rate limit 등 실패 시 메시지로 표시
+        except Exception as e:
             self.message_user(
-                request, f'적재 중 오류가 발생했습니다: {e}',
-                level=messages.ERROR,
+                request, f'적재 중 오류가 발생했습니다: {e}', level=messages.ERROR,
             )
         return redirect('admin:games_game_changelist')
 

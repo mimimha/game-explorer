@@ -31,7 +31,7 @@
         <GameDescription :description-ko="game.description_ko" :description="game.description" />
 
         <!-- ── 공략·스트리밍 영상 ── -->
-        <GameVideos :game-id="game.id" :videos="game.videos" />
+        <GameVideos :game-id="game.id" :videos="game.videos" :loading="videosLoading" />
 
         <!-- ── 관련 커뮤니티 글 ── -->
         <!-- <GameCommunityPosts :game-id="game.id" :posts="game.posts" /> -->
@@ -57,6 +57,7 @@ const route = useRoute()
 const router = useRouter()
 const exploreStore = useExploreStore()
 const loading = ref(true)
+const videosLoading = ref(false)
 const game = ref({})
 
 onBeforeRouteLeave((to) => {
@@ -105,8 +106,27 @@ onMounted(async () => {
     game.value = mapGame(data)
   } catch (e) {
     router.replace({ name: 'error' })
+    return
   } finally {
     loading.value = false
+  }
+
+  // 영상은 상세와 분리해 '비동기'로 불러온다 → 상세 화면은 위에서 이미 즉시 표시됨.
+  // 상세 응답에 영상이 이미 있으면(DB에 있던 게임) 추가 호출하지 않는다.
+  if (!game.value.videos?.length) {
+    videosLoading.value = true
+    try {
+      const { data } = await gameAPI.videos(gameId)   // 없으면 백엔드가 lazy로 채워 반환
+      game.value.videos = (data || []).map(v => ({
+        ...v,
+        thumbnail_url: v.thumbnail || '',
+        uploaded_at: v.published_at || '',
+      }))
+    } catch {
+      // 실패 시 영상 없음 상태 유지(상세 페이지는 정상)
+    } finally {
+      videosLoading.value = false
+    }
   }
 })
 </script>
