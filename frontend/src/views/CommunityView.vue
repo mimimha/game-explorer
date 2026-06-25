@@ -304,22 +304,39 @@ async function submitPost() {
   }
   submitting.value = true
   try {
-    // 1. 글 먼저 생성 (이미지 없는 버전)
-    const { data } = await communityAPI.createPost({
-      title: postForm.value.title.trim(),
-      content: '',
-      category: postForm.value.category,
-    })
-    const postId = data.id
+    const hasNewImages = blocks.some(b => b.type === 'image' && b.file)
 
-    // 2. 이미지 블록 순서대로 업로드 → ID 획득
-    const finalContent = await uploadAndBuildContent(blocks, postId)
-
-    // 3. 최종 content로 업데이트
-    await communityAPI.updatePost(postId, { content: finalContent })
-
-    closeModal()
-    router.push({ name: 'post-detail', params: { postId } })
+    if (!hasNewImages) {
+      // 이미지 없음: 완성된 내용으로 바로 POST
+      const content = blocks
+        .filter(b => b.type === 'text' && b.value.trim())
+        .map(b => b.value)
+        .join('\n')
+      const { data } = await communityAPI.createPost({
+        title: postForm.value.title.trim(),
+        content,
+        category: postForm.value.category,
+      })
+      closeModal()
+      router.push({ name: 'post-detail', params: { postId: data.id } })
+    } else {
+      // 이미지 있음: 텍스트 먼저 POST → 이미지 업로드 → 최종 내용 PATCH
+      // (content='' 는 blank=False 모델이 거부하므로 텍스트 부분을 먼저 보냄)
+      const textOnlyContent = blocks
+        .filter(b => b.type === 'text' && b.value.trim())
+        .map(b => b.value)
+        .join('\n') || ' '
+      const { data } = await communityAPI.createPost({
+        title: postForm.value.title.trim(),
+        content: textOnlyContent,
+        category: postForm.value.category,
+      })
+      const postId = data.id
+      const finalContent = await uploadAndBuildContent(blocks, postId)
+      await communityAPI.updatePost(postId, { content: finalContent })
+      closeModal()
+      router.push({ name: 'post-detail', params: { postId } })
+    }
   } catch (e) {
     const d = e?.response?.data
     const first = d && Object.values(d)[0]
@@ -334,14 +351,17 @@ async function uploadAndBuildContent(blocks, postId) {
   const parts = []
   for (const block of blocks) {
     if (block.type === 'text') {
-      parts.push(block.value)
+      if (block.value.trim()) parts.push(block.value) // 빈 텍스트 블록 스킵
     } else {
       let imgId = block.existingId ?? null
       if (block.file) {
         const { data } = await communityAPI.uploadImages(postId, [block.file])
         imgId = data[0].id
       }
-      if (imgId) parts.push(`[IMAGE:${imgId}]`)
+      if (imgId) {
+        const wp = block.widthPct ?? 100
+        parts.push(wp < 100 ? `[IMAGE:${imgId}:${wp}]` : `[IMAGE:${imgId}]`)
+      }
     }
   }
   return parts.join('\n')

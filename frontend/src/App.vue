@@ -1,5 +1,12 @@
 <template>
   <div class="app">
+    <img
+      v-show="compassVisible"
+      :src="compassImg"
+      class="compass-follower"
+      :style="{ left: compassX + 'px', top: compassY + 'px' }"
+      alt=""
+    />
     <nav class="nav">
       <div class="nav-left">
         <RouterLink :to="{ name: 'home' }" class="logo-wrap">
@@ -66,11 +73,23 @@ import defaultAvatar from '@/assets/profile.png'
 import { useGameSuggest } from '@/composables/useGameSuggest'
 import GameSuggestDropdown from '@/components/common/GameSuggestDropdown.vue'
 import NotificationBubble from '@/components/common/NotificationBubble.vue'
+import compassImg from '@/assets/나침반.png'
+import mouseImg from '@/assets/마우스.png'
 
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
 const exploreStore = useExploreStore()
+
+const compassX = ref(0)
+const compassY = ref(0)
+const compassVisible = ref(false)
+
+function onMouseMove(e) {
+  compassX.value = e.clientX + 39
+  compassY.value = e.clientY + 28
+  compassVisible.value = true
+}
 
 function handleExploreClick() {
   exploreStore.requestReset()
@@ -99,7 +118,7 @@ function handleLogout() {
 function onSelectSuggestion(s) {
   keyword.value = ''
   suggestClear()
-  router.push({ name: 'explore', query: { q: s.title_ko || s.title } })
+  router.push({ name: 'game-detail', params: { id: s.game_id } })
 }
 
 function onSearch() {
@@ -113,6 +132,11 @@ function onSearch() {
 // 새로고침 후 profile_img 복원
 onMounted(async () => {
   document.addEventListener('mousedown', onNavDocumentClick)
+  document.addEventListener('mousemove', onMouseMove)
+  const cursorStyle = document.createElement('style')
+  cursorStyle.id = 'custom-cursor-style'
+  cursorStyle.textContent = `* { cursor: url(${mouseImg}) 0 0, auto !important; }`
+  document.head.appendChild(cursorStyle)
   if (authStore.isLoggedIn && !authStore.user?.profile_img) {
     try {
       const { data } = await accountAPI.getMe()
@@ -125,6 +149,8 @@ onMounted(async () => {
 
 onUnmounted(() => {
   document.removeEventListener('mousedown', onNavDocumentClick)
+  document.removeEventListener('mousemove', onMouseMove)
+  document.getElementById('custom-cursor-style')?.remove()
 })
 </script>
 
@@ -133,6 +159,16 @@ onUnmounted(() => {
   min-height: 100vh;
   background: #FFF7E6;
   font-family: 'Pretendard', sans-serif;
+}
+
+.compass-follower {
+  position: fixed;
+  width: 48px;
+  height: 48px;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  user-select: none;
 }
 
 .nav {
