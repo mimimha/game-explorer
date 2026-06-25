@@ -2,7 +2,6 @@
   <section class="section-card">
     <div class="section-header">
       <h3 class="section-title">획득 메달</h3>
-      <RouterLink to="/profile/medals" class="view-all">전체 보기 &rsaquo;</RouterLink>
     </div>
     <div class="medal-grid">
       <MedalBadge
@@ -17,7 +16,6 @@
 
 <script setup>
 import { computed } from 'vue'
-import { RouterLink } from 'vue-router'
 import MedalBadge from './MedalBadge.vue'
 
 const MAX_DISPLAY = 6

@@ -25,12 +25,21 @@ class Command(BaseCommand):
         parser.add_argument('--limit', type=int, default=None)
         parser.add_argument('--only-empty', action='store_true',
                             help='영상이 아예 없는 게임만 대상')
+        parser.add_argument('--refresh', action='store_true',
+                            help='이미 영상이 있어도 새로 받아 교체 (관리자 리뉴얼용)')
+        parser.add_argument('--ids', type=str, default=None,
+                            help='특정 game_id 만 갱신 (콤마, 예: 12,45,77)')
         parser.add_argument('--sleep', type=float, default=0.3)
 
     def handle(self, *args, **opts):
-        if opts['only_empty']:
+        if opts['ids']:                       # 특정 게임만 교체
+            id_list = [int(x) for x in opts['ids'].split(',') if x.strip().isdigit()]
+            qs = Game.objects.filter(game_id__in=id_list)
+        elif opts['refresh']:                 # 전체를 새 영상으로 교체 (리뉴얼)
+            qs = Game.objects.all()
+        elif opts['only_empty']:              # 영상이 아예 없는 게임만
             qs = Game.objects.annotate(v=Count('videos')).filter(v=0)
-        else:
+        else:                                 # (기본) 공략이 없는 게임만
             qs = Game.objects.annotate(
                 w=Count('videos', filter=Q(videos__video_type='walkthrough'))
             ).filter(w=0)

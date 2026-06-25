@@ -60,27 +60,17 @@
       @reset="$emit('reset')"
     />
 
-    <!-- 5. AI 추천 결과 — 캐러셀 -->
-    <div v-else-if="type === 'ai'" class="carousel-wrap">
-      <button class="carousel-btn" @click="scroll(-1)">
-        <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="14">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/>
-        </svg>
-      </button>
-      <div class="grid" ref="carouselEl">
+    <!-- 5. 결과 그리드 (AI/검색 공통) + 페이지네이션 -->
+    <template v-else>
+      <div class="grid">
         <GameCard v-for="g in games" :key="g.id" :game="g" />
       </div>
-      <button class="carousel-btn" @click="scroll(1)">
-        <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="14">
-          <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/>
-        </svg>
-      </button>
-    </div>
-
-    <!-- 6. 검색 결과 — 그리드 -->
-    <div v-else class="grid">
-      <GameCard v-for="g in games" :key="g.id" :game="g" />
-    </div>
+      <Pagination
+        :current-page="currentPage"
+        :total-pages="totalPages"
+        @change="$emit('page-change', $event)"
+      />
+    </template>
   </section>
 </template>
 
@@ -89,30 +79,29 @@ import { ref, computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import GameCard from '../home/GameCard.vue'
 import EmptyState from './EmptyState.vue'
+import Pagination from '../common/Pagination.vue'
 
 const props = defineProps({
   type:           { type: String,  default: 'ai' },
-  games:          { type: Array,   default: () => [] },
+  games:          { type: Array,   default: () => [] },     // 현재 페이지 항목
   loading:        { type: Boolean, default: false },
   restoreLoading: { type: Boolean, default: false },  // 히스토리 복원 전용
   submitted:      { type: Boolean, default: false },
   sort:           { type: String,  default: 'recent' },
+  currentPage:    { type: Number,  default: 1 },
+  totalPages:     { type: Number,  default: 1 },
+  totalCount:     { type: Number,  default: 0 },     // 전체 결과 수(검색)
 })
-defineEmits(['reset', 'update:sort'])
+defineEmits(['reset', 'update:sort', 'page-change'])
 
 const viewMode = ref('grid')
-const carouselEl = ref(null)
 
 const sectionTitle = computed(() => props.type === 'ai' ? '추천 결과' : '검색 결과')
 const subtitle = computed(() => {
   if (props.restoreLoading || props.loading) return ''
   if (props.type === 'ai') return 'AI 추천 결과입니다.'
-  return `총 ${props.games.length}개의 게임`
+  return `총 ${props.totalCount}개의 게임`
 })
-
-function scroll(dir) {
-  carouselEl.value?.scrollBy({ left: dir * 220, behavior: 'smooth' })
-}
 </script>
 
 <style scoped>
@@ -181,30 +170,11 @@ function scroll(dir) {
   40%           { opacity: 1;   transform: scale(1); }
 }
 
-/* 캐러셀 */
-.carousel-wrap { display: flex; align-items: center; gap: 8px; }
-.carousel-btn {
-  width: 36px; height: 36px;
-  flex-shrink: 0;
-  background: #fff;
-  border: 1px solid #e8e4d9;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: #3d3529;
-  transition: all 0.15s;
-}
-.carousel-btn:hover { border-color: #1e3a5f; color: #1e3a5f; }
-
-/* 그리드 */
+/* 그리드 (AI/검색 공통: 한 줄 5개) */
 .grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 14px;
-  flex: 1;
-  overflow: hidden;
 }
 
 /* 스켈레톤 */

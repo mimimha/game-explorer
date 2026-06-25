@@ -1,0 +1,19 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<div>
+  <p>번역된 JSON 파일을 업로드하면 <code>title_ko</code> / <code>description_ko</code> 에 반영됩니다.</p>
+  <p style="color:#666; font-size:13px;">
+    형식: <code>[{"id": 1, "title_ko": "...", "description_ko": "..."}, ...]</code><br>
+    잠금(translation_locked)된 게임은 건너뜁니다.
+  </p>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <p><input type="file" name="file" accept=".json,application/json" required></p>
+    <p>
+      <button type="submit" class="default">가져오기</button>
+      <a href="{% url 'admin:games_game_changelist' %}" class="button" style="margin-left:8px;">취소</a>
+    </p>
+  </form>
+</div>
+{% endblock %}
