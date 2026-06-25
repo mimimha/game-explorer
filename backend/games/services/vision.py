@@ -1,4 +1,6 @@
-"""표지(썸네일) 이미지 → 주요 시각 소재 태그. GMS 비전 모델(gpt-4.1-mini)."""
+"""표지(썸네일) 이미지 → 주요 시각 소재 태그. 비전 모델은 settings.GMS_VISION_MODEL(.env)."""
+from django.conf import settings
+
 from recommendations import gms
 
 # 허용 소재 어휘 (검색·추천에 쓰일 한국어 태그). 목록 밖 응답은 버린다.
@@ -31,6 +33,7 @@ def analyze_subjects(image_url, timeout=30):
             [{'role': 'system', 'content': SYSTEM},
              {'role': 'user', 'content': user_content}],
             temperature=0.0, timeout=timeout,
+            model=settings.GMS_VISION_MODEL,   # 비전 전용 모델(.env)
         )
     except gms.GMSError:
         return []

@@ -218,11 +218,15 @@ YOUTUBE_DATA_API_KEYS = [
 
 
 # ── AI 추천 (GMS 게이트웨이, OpenAI 호환 가정) ──────────────────────
-# GMS_MODEL 만 바꾸면 gpt / gemini / claude 모델을 교체할 수 있다.
+# GMS_MODEL(텍스트: 추천·의도)과 GMS_VISION_MODEL(이미지: 썸네일 태깅)을
+# .env 에서 각각 지정 → 모델 교체는 .env 만 수정하면 된다.
 GMS_BASE_URL = os.getenv('GMS_BASE_URL', '')   # 예: https://.../v1 (끝에 /chat/completions 자동 부착)
 # 기존 .env 의 SSAFY_GMS_KEY 를 우선 사용, 없으면 GMS_API_KEY
 GMS_API_KEY = os.getenv('SSAFY_GMS_KEY') or os.getenv('GMS_API_KEY', '')
-GMS_MODEL = os.getenv('GMS_MODEL', 'gpt-4o-mini')
+GMS_MODEL = os.getenv('GMS_MODEL', 'gpt-4o-mini')                 # 텍스트(추천/의도 추출)
+# 비전(표지 이미지 이해)용 모델. 미지정 시 텍스트 모델을 그대로 사용.
+# ⚠️ 반드시 이미지 입력(멀티모달)을 지원하는 모델이어야 한다(gpt-4o 등). 이미지 '생성' 모델 X.
+GMS_VISION_MODEL = os.getenv('GMS_VISION_MODEL') or GMS_MODEL
 
 # ⚠️ True 로 바꾸기 전까지 LLM 을 호출하지 않는다 (토큰 0).
 #    False 이면 추천은 기존 랜덤 placeholder 로 동작한다.
