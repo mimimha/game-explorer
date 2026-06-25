@@ -81,7 +81,7 @@
               </svg>
             </li>
           </ul>
-          <p v-else class="follow-empty">아직 {{ followModalTitle }}가 없어요.</p>
+          <p v-else class="follow-empty">{{ followEmptyText }}</p>
         </div>
       </div>
     </Teleport>
@@ -91,7 +91,7 @@
       <div v-if="editModalOpen" class="modal-overlay" @click.self="closeEditModal">
         <div class="modal">
           <div class="modal-header">
-            <h2>프로필 수정</h2>
+            <h2>닉네임 수정</h2>
             <button class="modal-close" @click="closeEditModal">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
@@ -100,12 +100,7 @@
           </div>
           <form class="modal-form" @submit.prevent="submitEdit">
             <div class="form-field">
-              <label>닉네임</label>
               <input v-model="editForm.nickname" type="text" placeholder="닉네임" maxlength="50" />
-            </div>
-            <div class="form-field">
-              <label>생년월일</label>
-              <input v-model="editForm.birth_date" type="date" :max="new Date().toISOString().slice(0, 10)" />
             </div>
             <div class="modal-actions">
               <button type="button" class="btn-cancel" @click="closeEditModal">취소</button>
@@ -154,6 +149,14 @@ const isFollowing = ref(false)
 
 const followModalOpen = ref(false)
 const followModalTitle = ref('')
+// 받침 있으면 '이', 없으면 '가' (팔로잉→팔로잉이 / 팔로워→팔로워가)
+const followEmptyText = computed(() => {
+  const w = followModalTitle.value
+  if (!w) return '아직 없어요.'
+  const code = w.charCodeAt(w.length - 1)
+  const josa = (code >= 0xAC00 && code <= 0xD7A3 && (code - 0xAC00) % 28 !== 0) ? '이' : '가'
+  return `아직 ${w}${josa} 없어요.`
+})
 const followList = ref([])
 const followListLoading = ref(false)
 
@@ -336,7 +339,6 @@ async function submitEdit() {
   try {
     const res = await accountAPI.updateMe({
       nickname: editForm.nickname,
-      birth_date: editForm.birth_date || null,
     })
     user.value = res.data
     authStore.setProfile(res.data)
@@ -345,7 +347,7 @@ async function submitEdit() {
     mypage.medals = medalsRes.data?.results ?? medalsRes.data ?? []
     closeEditModal()
   } catch {
-    alert('프로필 수정에 실패했어요.')
+    alert('닉네임 수정에 실패했어요.')
   } finally {
     saving.value = false
   }
