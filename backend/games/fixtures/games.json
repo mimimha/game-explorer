@@ -843,6 +843,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 74,
+    "thumbnail_subjects": [
+      "사람",
+      "무기"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -868,6 +872,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 43,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -893,6 +902,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 11,
+    "thumbnail_subjects": [
+      "로봇",
+      "메카",
+      "건물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -918,6 +932,10 @@
     "required_age": 0,
     "offline": false,
     "playtime": 64,
+    "thumbnail_subjects": [
+      "사람",
+      "무기"
+    ],
     "is_singleplayer": false,
     "is_multiplayer": true,
     "is_coop": true,
@@ -943,6 +961,13 @@
     "required_age": 0,
     "offline": true,
     "playtime": 10,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "풍경",
+      "바다",
+      "건물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": false,
@@ -968,6 +993,9 @@
     "required_age": 0,
     "offline": true,
     "playtime": 4,
+    "thumbnail_subjects": [
+      "사람"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -993,6 +1021,9 @@
     "required_age": 0,
     "offline": true,
     "playtime": 9,
+    "thumbnail_subjects": [
+      "사람"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -1018,6 +1049,12 @@
     "required_age": 0,
     "offline": true,
     "playtime": 21,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "동물",
+      "풍경"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -1043,6 +1080,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 46,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -1068,6 +1110,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 7,
+    "thumbnail_subjects": [
+      "사람",
+      "건물",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": false,
@@ -1093,6 +1140,12 @@
     "required_age": 0,
     "offline": true,
     "playtime": 12,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "차량",
+      "건물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -1118,6 +1171,12 @@
     "required_age": 0,
     "offline": true,
     "playtime": 11,
+    "thumbnail_subjects": [
+      "사람",
+      "로봇",
+      "무기",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -1143,6 +1202,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 6,
+    "thumbnail_subjects": [
+      "사람",
+      "풍경",
+      "건물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -1168,6 +1232,12 @@
     "required_age": 0,
     "offline": true,
     "playtime": 3,
+    "thumbnail_subjects": [
+      "사람",
+      "로봇",
+      "건물",
+      "풍경"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -1193,6 +1263,13 @@
     "required_age": 0,
     "offline": true,
     "playtime": 15,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "풍경",
+      "캐릭터",
+      "바다"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -1218,6 +1295,14 @@
     "required_age": 0,
     "offline": true,
     "playtime": 6,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "로봇",
+      "차량",
+      "우주",
+      "판타지 생물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -1243,6 +1328,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 38,
+    "thumbnail_subjects": [
+      "로봇",
+      "메카"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -1268,6 +1357,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 3,
+    "thumbnail_subjects": [
+      "동물",
+      "사람",
+      "풍경"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -1293,6 +1387,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 9,
+    "thumbnail_subjects": [
+      "사람",
+      "무기"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -1318,6 +1416,11 @@
     "required_age": 0,
     "offline": false,
     "playtime": 8,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "캐릭터"
+    ],
     "is_singleplayer": false,
     "is_multiplayer": true,
     "is_coop": true,
@@ -1343,6 +1446,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 10,
+    "thumbnail_subjects": [
+      "무기",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -1368,6 +1475,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 29,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "도시"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -1393,6 +1505,13 @@
     "required_age": 0,
     "offline": true,
     "playtime": 15,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "풍경",
+      "판타지 생물",
+      "식물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -1418,6 +1537,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 10,
+    "thumbnail_subjects": [
+      "사람",
+      "건물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -1443,6 +1566,13 @@
     "required_age": 0,
     "offline": false,
     "playtime": 14,
+    "thumbnail_subjects": [
+      "사람",
+      "괴물",
+      "판타지 생물",
+      "캐릭터",
+      "풍경"
+    ],
     "is_singleplayer": false,
     "is_multiplayer": true,
     "is_coop": true,
@@ -1468,6 +1598,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 8,
+    "thumbnail_subjects": [
+      "로봇",
+      "무기",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -1493,6 +1628,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 21,
+    "thumbnail_subjects": [
+      "차량",
+      "건물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -1518,6 +1657,12 @@
     "required_age": 0,
     "offline": true,
     "playtime": 11,
+    "thumbnail_subjects": [
+      "사람",
+      "로봇",
+      "풍경",
+      "식물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -1543,6 +1688,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 2,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "도시"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -1568,6 +1718,12 @@
     "required_age": 0,
     "offline": true,
     "playtime": 14,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "풍경",
+      "건물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -1593,6 +1749,13 @@
     "required_age": 0,
     "offline": true,
     "playtime": 19,
+    "thumbnail_subjects": [
+      "사람",
+      "차량",
+      "도시",
+      "건물",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -1618,6 +1781,9 @@
     "required_age": 0,
     "offline": true,
     "playtime": 22,
+    "thumbnail_subjects": [
+      "사람"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": false,
@@ -1643,6 +1809,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 2,
+    "thumbnail_subjects": [
+      "사람",
+      "풍경",
+      "건물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": false,
@@ -1668,6 +1839,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 7,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "건물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -1693,6 +1869,13 @@
     "required_age": 0,
     "offline": false,
     "playtime": 5,
+    "thumbnail_subjects": [
+      "동물",
+      "사람",
+      "로봇",
+      "무기",
+      "캐릭터"
+    ],
     "is_singleplayer": false,
     "is_multiplayer": true,
     "is_coop": true,
@@ -1718,6 +1901,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 5,
+    "thumbnail_subjects": [
+      "사람",
+      "괴물",
+      "무기"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -1743,6 +1931,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 7,
+    "thumbnail_subjects": [
+      "판타지 생물",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -1768,6 +1960,12 @@
     "required_age": 0,
     "offline": true,
     "playtime": 13,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "괴물",
+      "풍경"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -1793,6 +1991,14 @@
     "required_age": 0,
     "offline": true,
     "playtime": 1,
+    "thumbnail_subjects": [
+      "사람",
+      "차량",
+      "풍경",
+      "도시",
+      "건물",
+      "바다"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": false,
@@ -1818,6 +2024,14 @@
     "required_age": 0,
     "offline": true,
     "playtime": 8,
+    "thumbnail_subjects": [
+      "사람",
+      "괴물",
+      "무기",
+      "건물",
+      "도시",
+      "풍경"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -1843,6 +2057,12 @@
     "required_age": 0,
     "offline": true,
     "playtime": 3,
+    "thumbnail_subjects": [
+      "사람",
+      "괴물",
+      "건물",
+      "무기"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -1868,6 +2088,13 @@
     "required_age": 0,
     "offline": true,
     "playtime": 3,
+    "thumbnail_subjects": [
+      "사람",
+      "로봇",
+      "무기",
+      "바다",
+      "건물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": false,
@@ -1893,6 +2120,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 3,
+    "thumbnail_subjects": [
+      "사람",
+      "무기"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": false,
@@ -1918,6 +2149,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 4,
+    "thumbnail_subjects": [
+      "사람",
+      "무기"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -1943,6 +2178,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 5,
+    "thumbnail_subjects": [
+      "사람",
+      "로봇",
+      "풍경"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": false,
@@ -1968,6 +2208,12 @@
     "required_age": 0,
     "offline": true,
     "playtime": 29,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "풍경",
+      "건물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -1993,6 +2239,11 @@
     "required_age": 0,
     "offline": false,
     "playtime": 1,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "건물"
+    ],
     "is_singleplayer": false,
     "is_multiplayer": true,
     "is_coop": true,
@@ -2018,6 +2269,13 @@
     "required_age": 0,
     "offline": true,
     "playtime": 13,
+    "thumbnail_subjects": [
+      "동물",
+      "사람",
+      "건물",
+      "풍경",
+      "식물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -2043,6 +2301,13 @@
     "required_age": 0,
     "offline": true,
     "playtime": 4,
+    "thumbnail_subjects": [
+      "사람",
+      "로봇",
+      "무기",
+      "바다",
+      "건물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -2068,6 +2333,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 3,
+    "thumbnail_subjects": [
+      "사람",
+      "도시"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -2093,6 +2362,12 @@
     "required_age": 0,
     "offline": true,
     "playtime": 5,
+    "thumbnail_subjects": [
+      "동물",
+      "사람",
+      "무기",
+      "도시"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -2118,6 +2393,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 7,
+    "thumbnail_subjects": [
+      "사람",
+      "차량",
+      "건물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -2143,6 +2423,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 3,
+    "thumbnail_subjects": [
+      "사람",
+      "건물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -2168,6 +2452,13 @@
     "required_age": 0,
     "offline": true,
     "playtime": 16,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "풍경",
+      "바다",
+      "식물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -2193,6 +2484,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 7,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "로봇"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -2218,6 +2514,12 @@
     "required_age": 0,
     "offline": false,
     "playtime": 29,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "차량",
+      "건물"
+    ],
     "is_singleplayer": false,
     "is_multiplayer": true,
     "is_coop": true,
@@ -2243,6 +2545,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 6,
+    "thumbnail_subjects": [
+      "사람",
+      "무기"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -2268,6 +2574,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 6,
+    "thumbnail_subjects": [
+      "사람",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -2293,6 +2603,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 5,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "풍경"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -2318,6 +2633,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 12,
+    "thumbnail_subjects": [
+      "사람",
+      "무기"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": false,
@@ -2343,6 +2662,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 10,
+    "thumbnail_subjects": [
+      "사람",
+      "도시",
+      "건물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -2368,6 +2692,15 @@
     "required_age": 0,
     "offline": true,
     "playtime": 14,
+    "thumbnail_subjects": [
+      "사람",
+      "로봇",
+      "무기",
+      "차량",
+      "도시",
+      "건물",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -2393,6 +2726,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 2,
+    "thumbnail_subjects": [
+      "식물",
+      "풍경"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -2418,6 +2755,12 @@
     "required_age": 0,
     "offline": true,
     "playtime": 5,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "도시",
+      "차량"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -2443,6 +2786,10 @@
     "required_age": 0,
     "offline": false,
     "playtime": 1,
+    "thumbnail_subjects": [
+      "사람",
+      "무기"
+    ],
     "is_singleplayer": false,
     "is_multiplayer": true,
     "is_coop": false,
@@ -2468,6 +2815,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 14,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "도시"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -2493,6 +2845,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 12,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "풍경"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -2518,6 +2875,12 @@
     "required_age": 0,
     "offline": true,
     "playtime": 10,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "우주",
+      "괴물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -2543,6 +2906,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 10,
+    "thumbnail_subjects": [
+      "사람",
+      "차량",
+      "무기"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -2568,6 +2936,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 9,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "풍경"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -2593,6 +2966,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 12,
+    "thumbnail_subjects": [
+      "사람",
+      "로봇"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -2618,6 +2995,14 @@
     "required_age": 0,
     "offline": true,
     "playtime": 9,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "도시",
+      "건물",
+      "풍경",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -2643,6 +3028,13 @@
     "required_age": 0,
     "offline": true,
     "playtime": 7,
+    "thumbnail_subjects": [
+      "동물",
+      "사람",
+      "괴물",
+      "판타지 생물",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -2668,6 +3060,9 @@
     "required_age": 0,
     "offline": true,
     "playtime": 6,
+    "thumbnail_subjects": [
+      "사람"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -2693,6 +3088,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 2,
+    "thumbnail_subjects": [
+      "사람",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": false,
@@ -2718,6 +3117,12 @@
     "required_age": 0,
     "offline": true,
     "playtime": 4,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "차량",
+      "풍경"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -2743,6 +3148,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 5,
+    "thumbnail_subjects": [
+      "사람",
+      "괴물",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": false,
@@ -2768,6 +3178,13 @@
     "required_age": 0,
     "offline": true,
     "playtime": 25,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "차량",
+      "풍경",
+      "바다"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": false,
@@ -2793,6 +3210,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 7,
+    "thumbnail_subjects": [
+      "사람",
+      "무기"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": false,
@@ -2818,6 +3239,15 @@
     "required_age": 0,
     "offline": true,
     "playtime": 27,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "차량",
+      "풍경",
+      "도시",
+      "건물",
+      "우주"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -2843,6 +3273,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 6,
+    "thumbnail_subjects": [
+      "사람",
+      "무기"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -2868,6 +3302,12 @@
     "required_age": 0,
     "offline": true,
     "playtime": 7,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "건물",
+      "식물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -2893,6 +3333,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 3,
+    "thumbnail_subjects": [
+      "캐릭터",
+      "식물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -2918,6 +3362,12 @@
     "required_age": 0,
     "offline": true,
     "playtime": 8,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "건물",
+      "풍경"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -2943,6 +3393,14 @@
     "required_age": 0,
     "offline": true,
     "playtime": 8,
+    "thumbnail_subjects": [
+      "사람",
+      "로봇",
+      "무기",
+      "차량",
+      "풍경",
+      "판타지 생물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -2968,6 +3426,12 @@
     "required_age": 0,
     "offline": false,
     "playtime": null,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "식물",
+      "풍경"
+    ],
     "is_singleplayer": null,
     "is_multiplayer": null,
     "is_coop": null,
@@ -2993,6 +3457,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 3,
+    "thumbnail_subjects": [
+      "사람",
+      "우주"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -3018,6 +3486,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 7,
+    "thumbnail_subjects": [
+      "사람",
+      "무기"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": false,
@@ -3043,6 +3515,13 @@
     "required_age": 0,
     "offline": true,
     "playtime": 22,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "판타지 생물",
+      "풍경",
+      "건물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -3068,6 +3547,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 11,
+    "thumbnail_subjects": [
+      "사람",
+      "로봇"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -3093,6 +3576,14 @@
     "required_age": 0,
     "offline": true,
     "playtime": 7,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "차량",
+      "풍경",
+      "바다",
+      "건물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -3118,6 +3609,12 @@
     "required_age": 0,
     "offline": true,
     "playtime": 7,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "건물",
+      "차량"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": false,
@@ -3143,6 +3640,12 @@
     "required_age": 0,
     "offline": true,
     "playtime": 6,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "건물",
+      "도시"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": false,
@@ -3168,6 +3671,13 @@
     "required_age": 0,
     "offline": true,
     "playtime": 6,
+    "thumbnail_subjects": [
+      "사람",
+      "로봇",
+      "무기",
+      "우주",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -3193,6 +3703,10 @@
     "required_age": 0,
     "offline": false,
     "playtime": 3,
+    "thumbnail_subjects": [
+      "사람",
+      "무기"
+    ],
     "is_singleplayer": false,
     "is_multiplayer": true,
     "is_coop": false,
@@ -3218,6 +3732,9 @@
     "required_age": 0,
     "offline": true,
     "playtime": 5,
+    "thumbnail_subjects": [
+      "사람"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -3243,6 +3760,13 @@
     "required_age": 0,
     "offline": true,
     "playtime": 4,
+    "thumbnail_subjects": [
+      "사람",
+      "로봇",
+      "무기",
+      "건물",
+      "바다"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": false,
@@ -3268,6 +3792,13 @@
     "required_age": 0,
     "offline": true,
     "playtime": 10,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "건물",
+      "판타지 생물",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -3293,6 +3824,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 3,
+    "thumbnail_subjects": [
+      "사람",
+      "차량",
+      "도시"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -3318,6 +3854,14 @@
     "required_age": 0,
     "offline": true,
     "playtime": 13,
+    "thumbnail_subjects": [
+      "사람",
+      "로봇",
+      "무기",
+      "건물",
+      "풍경",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -3343,6 +3887,12 @@
     "required_age": 0,
     "offline": true,
     "playtime": 5,
+    "thumbnail_subjects": [
+      "동물",
+      "사람",
+      "판타지 생물",
+      "식물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -3368,6 +3918,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 4,
+    "thumbnail_subjects": [
+      "사람",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -3393,6 +3947,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 6,
+    "thumbnail_subjects": [
+      "판타지 생물",
+      "풍경",
+      "식물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -3418,6 +3977,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 6,
+    "thumbnail_subjects": [
+      "판타지 생물",
+      "풍경",
+      "식물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -3443,6 +4007,13 @@
     "required_age": 0,
     "offline": true,
     "playtime": 17,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "도시",
+      "건물",
+      "차량"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -3468,6 +4039,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 2,
+    "thumbnail_subjects": [
+      "캐릭터",
+      "풍경",
+      "식물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -3493,6 +4069,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 4,
+    "thumbnail_subjects": [
+      "사람",
+      "음식",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": false,
@@ -3518,6 +4099,12 @@
     "required_age": 0,
     "offline": true,
     "playtime": 11,
+    "thumbnail_subjects": [
+      "동물",
+      "판타지 생물",
+      "풍경",
+      "식물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -3543,6 +4130,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 4,
+    "thumbnail_subjects": [
+      "사람",
+      "우주",
+      "풍경"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -3568,6 +4160,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 3,
+    "thumbnail_subjects": [
+      "사람",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -3593,6 +4189,9 @@
     "required_age": 0,
     "offline": true,
     "playtime": 5,
+    "thumbnail_subjects": [
+      "동물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -3618,6 +4217,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 5,
+    "thumbnail_subjects": [
+      "사람",
+      "로봇",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -3643,6 +4247,12 @@
     "required_age": 0,
     "offline": true,
     "playtime": 3,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "풍경",
+      "건물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": true,
@@ -3668,6 +4278,9 @@
     "required_age": 0,
     "offline": true,
     "playtime": 3,
+    "thumbnail_subjects": [
+      "사람"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -3693,6 +4306,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 4,
+    "thumbnail_subjects": [
+      "동물",
+      "무기",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -3718,6 +4336,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 3,
+    "thumbnail_subjects": [
+      "로봇",
+      "풍경",
+      "건물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -3743,6 +4366,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 1,
+    "thumbnail_subjects": [
+      "판타지 생물",
+      "풍경"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": false,
@@ -3768,6 +4395,13 @@
     "required_age": 0,
     "offline": true,
     "playtime": 5,
+    "thumbnail_subjects": [
+      "동물",
+      "판타지 생물",
+      "캐릭터",
+      "건물",
+      "풍경"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -3793,6 +4427,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 4,
+    "thumbnail_subjects": [
+      "동물",
+      "사람",
+      "풍경"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -3818,6 +4457,12 @@
     "required_age": 0,
     "offline": true,
     "playtime": 5,
+    "thumbnail_subjects": [
+      "괴물",
+      "식물",
+      "건물",
+      "풍경"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -3843,6 +4488,12 @@
     "required_age": 0,
     "offline": true,
     "playtime": null,
+    "thumbnail_subjects": [
+      "사람",
+      "캐릭터",
+      "도시",
+      "건물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": false,
@@ -3868,6 +4519,15 @@
     "required_age": 0,
     "offline": true,
     "playtime": 4,
+    "thumbnail_subjects": [
+      "동물",
+      "사람",
+      "판타지 생물",
+      "무기",
+      "차량",
+      "건물",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": false,
@@ -3893,6 +4553,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 3,
+    "thumbnail_subjects": [
+      "동물",
+      "풍경",
+      "식물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -3918,6 +4583,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 6,
+    "thumbnail_subjects": [
+      "동물",
+      "판타지 생물",
+      "풍경"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": false,
@@ -3943,6 +4613,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 2,
+    "thumbnail_subjects": [
+      "사람",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -3968,6 +4642,12 @@
     "required_age": 0,
     "offline": true,
     "playtime": 2,
+    "thumbnail_subjects": [
+      "캐릭터",
+      "풍경",
+      "식물",
+      "바다"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -3993,6 +4673,12 @@
     "required_age": 0,
     "offline": false,
     "playtime": 7,
+    "thumbnail_subjects": [
+      "사람",
+      "판타지 생물",
+      "건물",
+      "풍경"
+    ],
     "is_singleplayer": null,
     "is_multiplayer": null,
     "is_coop": null,
@@ -4018,6 +4704,13 @@
     "required_age": 0,
     "offline": true,
     "playtime": 6,
+    "thumbnail_subjects": [
+      "사람",
+      "동물",
+      "괴물",
+      "건물",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": true,
@@ -4043,6 +4736,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 3,
+    "thumbnail_subjects": [
+      "로봇",
+      "식물",
+      "풍경"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -4068,6 +4766,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 6,
+    "thumbnail_subjects": [
+      "사람",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -4093,6 +4795,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 2,
+    "thumbnail_subjects": [
+      "사람",
+      "괴물",
+      "건물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -4118,6 +4825,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 1,
+    "thumbnail_subjects": [
+      "캐릭터",
+      "건물",
+      "풍경"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": false,
@@ -4143,6 +4855,13 @@
     "required_age": 0,
     "offline": true,
     "playtime": 4,
+    "thumbnail_subjects": [
+      "사람",
+      "캐릭터",
+      "차량",
+      "풍경",
+      "식물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": false,
@@ -4168,6 +4887,13 @@
     "required_age": 0,
     "offline": true,
     "playtime": 4,
+    "thumbnail_subjects": [
+      "사람",
+      "로봇",
+      "건물",
+      "식물",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -4193,6 +4919,12 @@
     "required_age": 0,
     "offline": true,
     "playtime": 4,
+    "thumbnail_subjects": [
+      "사람",
+      "건물",
+      "캐릭터",
+      "식물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -4218,6 +4950,15 @@
     "required_age": 0,
     "offline": true,
     "playtime": 7,
+    "thumbnail_subjects": [
+      "사람",
+      "판타지 생물",
+      "도시",
+      "풍경",
+      "건물",
+      "식물",
+      "바다"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -4243,6 +4984,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 6,
+    "thumbnail_subjects": [
+      "동물",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -4268,6 +5013,14 @@
     "required_age": 0,
     "offline": true,
     "playtime": 4,
+    "thumbnail_subjects": [
+      "동물",
+      "사람",
+      "괴물",
+      "풍경",
+      "건물",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -4293,6 +5046,12 @@
     "required_age": 0,
     "offline": true,
     "playtime": 3,
+    "thumbnail_subjects": [
+      "사람",
+      "차량",
+      "도시",
+      "풍경"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -4318,6 +5077,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 3,
+    "thumbnail_subjects": [
+      "풍경",
+      "식물",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -4343,6 +5107,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 1,
+    "thumbnail_subjects": [
+      "사람",
+      "풍경",
+      "건물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -4368,6 +5137,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": null,
+    "thumbnail_subjects": [
+      "사람",
+      "무기"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -4393,6 +5166,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 3,
+    "thumbnail_subjects": [
+      "동물",
+      "풍경",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -4418,6 +5196,12 @@
     "required_age": 0,
     "offline": true,
     "playtime": 3,
+    "thumbnail_subjects": [
+      "사람",
+      "건물",
+      "풍경",
+      "식물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -4443,6 +5227,12 @@
     "required_age": 0,
     "offline": true,
     "playtime": 5,
+    "thumbnail_subjects": [
+      "동물",
+      "캐릭터",
+      "풍경",
+      "식물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -4468,6 +5258,12 @@
     "required_age": 0,
     "offline": true,
     "playtime": 4,
+    "thumbnail_subjects": [
+      "사람",
+      "풍경",
+      "건물",
+      "판타지 생물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -4493,6 +5289,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 3,
+    "thumbnail_subjects": [
+      "동물",
+      "음식"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": false,
@@ -4518,6 +5318,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 2,
+    "thumbnail_subjects": [
+      "사람",
+      "건물",
+      "식물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -4543,6 +5348,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 1,
+    "thumbnail_subjects": [
+      "동물",
+      "건물",
+      "식물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -4568,6 +5378,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": null,
+    "thumbnail_subjects": [
+      "로봇",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -4593,6 +5407,14 @@
     "required_age": 0,
     "offline": true,
     "playtime": 4,
+    "thumbnail_subjects": [
+      "동물",
+      "사람",
+      "풍경",
+      "건물",
+      "식물",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -4618,6 +5440,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 1,
+    "thumbnail_subjects": [
+      "동물",
+      "캐릭터",
+      "건물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -4643,6 +5470,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 4,
+    "thumbnail_subjects": [
+      "동물",
+      "도시"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -4668,6 +5499,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 2,
+    "thumbnail_subjects": [
+      "차량",
+      "풍경"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -4693,6 +5528,7 @@
     "required_age": 0,
     "offline": true,
     "playtime": 4,
+    "thumbnail_subjects": [],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -4718,6 +5554,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 4,
+    "thumbnail_subjects": [
+      "동물",
+      "풍경",
+      "건물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -4743,6 +5584,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 1,
+    "thumbnail_subjects": [
+      "음식",
+      "캐릭터"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -4768,6 +5613,13 @@
     "required_age": 0,
     "offline": true,
     "playtime": 4,
+    "thumbnail_subjects": [
+      "동물",
+      "사람",
+      "무기",
+      "바다",
+      "식물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -4793,6 +5645,12 @@
     "required_age": 0,
     "offline": true,
     "playtime": 4,
+    "thumbnail_subjects": [
+      "풍경",
+      "건물",
+      "바다",
+      "식물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -4818,6 +5676,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 12,
+    "thumbnail_subjects": [
+      "차량",
+      "풍경"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -4843,6 +5705,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 3,
+    "thumbnail_subjects": [
+      "동물",
+      "사람",
+      "바다"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -4868,6 +5735,7 @@
     "required_age": 0,
     "offline": true,
     "playtime": 7,
+    "thumbnail_subjects": [],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -4893,6 +5761,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 3,
+    "thumbnail_subjects": [
+      "건물",
+      "식물",
+      "풍경"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -4918,6 +5791,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 1,
+    "thumbnail_subjects": [
+      "사람",
+      "무기",
+      "풍경"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -4943,6 +5821,7 @@
     "required_age": 0,
     "offline": true,
     "playtime": 2,
+    "thumbnail_subjects": [],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -4968,6 +5847,13 @@
     "required_age": 0,
     "offline": true,
     "playtime": 4,
+    "thumbnail_subjects": [
+      "동물",
+      "사람",
+      "풍경",
+      "건물",
+      "바다"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -4993,6 +5879,9 @@
     "required_age": 0,
     "offline": true,
     "playtime": 3,
+    "thumbnail_subjects": [
+      "차량"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -5018,6 +5907,12 @@
     "required_age": 0,
     "offline": true,
     "playtime": 7,
+    "thumbnail_subjects": [
+      "사람",
+      "건물",
+      "풍경",
+      "식물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -5043,6 +5938,11 @@
     "required_age": 0,
     "offline": true,
     "playtime": 1,
+    "thumbnail_subjects": [
+      "사람",
+      "건물",
+      "풍경"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -5068,6 +5968,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 1,
+    "thumbnail_subjects": [
+      "풍경",
+      "식물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": true,
     "is_coop": true,
@@ -5093,6 +5997,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 1,
+    "thumbnail_subjects": [
+      "풍경",
+      "건물"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
@@ -5118,6 +6026,10 @@
     "required_age": 0,
     "offline": true,
     "playtime": 3,
+    "thumbnail_subjects": [
+      "도시",
+      "풍경"
+    ],
     "is_singleplayer": true,
     "is_multiplayer": false,
     "is_coop": false,
