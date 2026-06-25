@@ -28,6 +28,12 @@
     <div class="card-body">
       <h3 class="card-title">{{ game.title || '게임 제목' }}</h3>
 
+      <!-- 취향 관련도 (취향 분석 섹션에서만) -->
+      <div v-if="game.match != null" class="match-row">
+        <div class="match-bar"><div class="match-fill" :style="{ width: game.match + '%' }"></div></div>
+        <span class="match-label">취향 {{ game.match }}%</span>
+      </div>
+
       <div v-if="showPrice" class="price-row">
         <span v-if="discountRate" class="price-original">
           {{ formatPrice(game.initial_price) }}
@@ -230,5 +236,31 @@ function formatPrice(price) {
   background: #FFF0D6;
   border-radius: 999px;
   padding: 2px 8px;
+}
+
+/* 취향 관련도 지표 */
+.match-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0 8px;
+}
+.match-bar {
+  flex: 1;
+  height: 6px;
+  background: #ece6da;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.match-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f0a85a, #c96012);
+  border-radius: 999px;
+}
+.match-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #c96012;
+  flex-shrink: 0;
 }
 </style>

@@ -246,11 +246,17 @@ class RecommendedGamesView(APIView):
     def get(self, request):
         user = request.user
         if user.is_authenticated:
-            games = self._taste_based(user)
-            if games:
-                return Response(GameCardSerializer(
-                    games, many=True, context={'request': request}).data)
-        # 폴백: 무작위 (오늘의 추천)
+            scored = self._taste_based(user)
+            if scored:
+                games = [g for g, _ in scored]
+                data = GameCardSerializer(
+                    games, many=True, context={'request': request}).data
+                # 관련도(%) — 최고 점수를 100%로 한 상대 지표
+                top = scored[0][1] or 1
+                for item, (_, sc) in zip(data, scored):
+                    item['match'] = max(1, round(sc / top * 100))
+                return Response(data)
+        # 폴백: 무작위 (오늘의 추천) — 관련도 표시 없음
         games = Game.objects.order_by('?')[:self.N]
         return Response(GameCardSerializer(
             games, many=True, context={'request': request}).data)
@@ -302,7 +308,7 @@ class RecommendedGamesView(APIView):
             if score > 0:
                 scored.append((g, score))
         scored.sort(key=lambda x: x[1], reverse=True)
-        return [g for g, _ in scored[:self.N]]
+        return scored[:self.N]   # [(game, score), ...] 점수 내림차순
 
 
 class OnSaleGamesView(APIView):

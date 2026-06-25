@@ -53,7 +53,7 @@ const emit = defineEmits(['activate', 'submit'])
 const prompt = ref('')
 function handleSubmit() {
   if (!prompt.value.trim()) return
-  emit('submit', { prompt: prompt.value, filters: filters.value })
+  emit('submit', { prompt: prompt.value })
 }
 
 // 부모에서 prompt를 세팅할 수 있도록 expose

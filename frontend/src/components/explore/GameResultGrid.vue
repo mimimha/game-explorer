@@ -14,12 +14,6 @@
             <option value="rating">정렬: 평점순</option>
             <option value="price">정렬: 가격순</option>
           </select>
-          <button class="view-btn" :class="{ active: viewMode === 'grid' }" @click="viewMode = 'grid'">
-            <svg viewBox="0 0 16 16" fill="currentColor" width="14"><path d="M1 1h6v6H1zm8 0h6v6H9zM1 9h6v6H1zm8 0h6v6H9z"/></svg>
-          </button>
-          <button class="view-btn" :class="{ active: viewMode === 'list' }" @click="viewMode = 'list'">
-            <svg viewBox="0 0 16 16" fill="currentColor" width="14"><path d="M1 3h14v2H1zm0 4h14v2H1zm0 4h14v2H1z"/></svg>
-          </button>
         </template>
         <RouterLink v-else to="/explore" class="more-link">전체 보기 ›</RouterLink>
       </div>
@@ -75,7 +69,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import GameCard from '../home/GameCard.vue'
 import EmptyState from './EmptyState.vue'
@@ -94,7 +88,6 @@ const props = defineProps({
 })
 defineEmits(['reset', 'update:sort', 'page-change'])
 
-const viewMode = ref('grid')
 
 const sectionTitle = computed(() => props.type === 'ai' ? '추천 결과' : '검색 결과')
 const subtitle = computed(() => {
@@ -131,19 +124,6 @@ const subtitle = computed(() => {
   cursor: pointer;
   font-family: inherit;
 }
-.view-btn {
-  width: 32px; height: 32px;
-  background: #fff;
-  border: 1px solid #e8e4d9;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: #9e9585;
-  transition: all 0.15s;
-}
-.view-btn.active, .view-btn:hover { border-color: #1e3a5f; color: #1e3a5f; }
 
 /* ── 점 세 개 로딩 ── */
 .dots-state {
