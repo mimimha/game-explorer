@@ -37,6 +37,20 @@ class Post(models.Model):
         return self.title
 
 
+def _post_image_path(instance, filename):
+    return f'posts/{instance.post_id}/{filename}'
+
+
+class PostImage(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to=_post_image_path)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'post_image'
+        ordering = ['id']
+
+
 class PostComment(models.Model):
     """ERD Post_Comment(comment_id, post_id, user_id, content, ...)."""
     comment_id = models.AutoField(primary_key=True)

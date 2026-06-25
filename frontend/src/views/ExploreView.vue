@@ -21,6 +21,7 @@
       <RecentHistory
         :history="recentHistory"
         @restore="onRestoreHistory"
+        @delete="onDeleteHistory"
       />
 
       <GameResultGrid
@@ -48,7 +49,9 @@
 <script setup>
 import { ref, computed, nextTick, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { onBeforeRouteLeave } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useExploreStore } from '@/stores/explore'
 import { gameAPI, recommendAPI } from '@/api/services'
 import AiRecommendPanel from '@/components/explore/AiRecommendPanel.vue'
 import SearchPanel from '@/components/explore/SearchPanel.vue'
@@ -57,6 +60,7 @@ import GameResultGrid from '@/components/explore/GameResultGrid.vue'
 import ToastAlert from '@/components/common/ToastAlert.vue'
 
 const authStore = useAuthStore()
+const exploreStore = useExploreStore()
 const route = useRoute()
 const toastRef = ref(null)
 const searchPanelRef = ref(null)
@@ -101,6 +105,22 @@ const ORDERING = {
 }
 
 onMounted(async () => {
+  const saved = exploreStore.restore()
+  if (saved) {
+    resultMode.value = saved.resultMode
+    resultGames.value = saved.resultGames
+    searchKeyword.value = saved.searchKeyword
+    searchSort.value = saved.searchSort
+    searchFilters.value = saved.searchFilters
+    submitted.value = saved.submitted
+    if (saved.resultMode === 'ai') aiPage.value = saved.currentPage || 1
+    else searchPage.value = saved.currentPage || 1
+    activePanel.value = saved.activePanel
+    await nextTick()
+    if (saved.searchKeyword) searchPanelRef.value?.setKeyword(saved.searchKeyword)
+    return
+  }
+
   if (authStore.isLoggedIn) {
     try {
       const { data } = await recommendAPI.logs()
@@ -125,6 +145,36 @@ onMounted(async () => {
     activePanel.value = 'search'
     runSearch()
   }
+})
+
+onBeforeRouteLeave((to) => {
+  if (to.name === 'game-detail') {
+    exploreStore.save({
+      resultMode: resultMode.value,
+      resultGames: resultGames.value,
+      searchKeyword: searchKeyword.value,
+      searchSort: searchSort.value,
+      searchFilters: searchFilters.value,
+      submitted: submitted.value,
+      currentPage: currentPage.value,
+      activePanel: activePanel.value,
+    })
+  } else {
+    exploreStore.clear()
+  }
+})
+
+watch(() => exploreStore.resetSignal, () => {
+  submitted.value = false
+  resultGames.value = []
+  searchKeyword.value = ''
+  searchFilters.value = null
+  resultMode.value = 'ai'
+  aiPage.value = 1
+  searchPage.value = 1
+  activePanel.value = 'ai'
+  searchSort.value = 'recent'
+  searchPanelRef.value?.reset?.()
 })
 
 // 홈·Nav 검색 → ?q=keyword, 홈 카드 → ?filter=sale|new 로 진입 시 자동 검색
@@ -262,6 +312,15 @@ function onSearchReset() {
   aiPage.value = 1
 }
 
+async function onDeleteHistory(h) {
+  try {
+    await recommendAPI.logDelete(h.id)
+    recentHistory.value = recentHistory.value.filter(item => item.id !== h.id)
+  } catch {
+    toastRef.value?.show('삭제 중 오류가 발생했어요.', 'error')
+  }
+}
+
 async function onRestoreHistory(h) {
   resultMode.value = 'ai'
   submitted.value = true
@@ -282,7 +341,7 @@ async function onRestoreHistory(h) {
 
 <style scoped>
 .explore {
-  background: #fafaf8;
+  background: #faf5ec;
   min-height: 100vh;
   padding: 40px 0 80px;
 }

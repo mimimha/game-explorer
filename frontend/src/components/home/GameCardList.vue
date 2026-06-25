@@ -6,8 +6,6 @@
       :subtitle="subtitle"
       :more-to="moreTo"
       :show-arrows="showArrows"
-      @prev="onPrev"
-      @next="onNext"
     />
 
     <!-- 로딩 스켈레톤 -->
@@ -21,18 +19,20 @@
 
     <!-- 취향 분석 섹션 -->
     <div v-else-if="type === 'recommendation'" class="card-grid">
-      <div v-if="!authStore.isLoggedIn" class="login-nudge-card">
-        <p>로그인하고<br /><strong>나만의 취향</strong>을<br />분석받아보세요!</p>
-
-      </div>
-
       <div
         v-for="(game, index) in games.slice(0, authStore.isLoggedIn ? 5 : 4)"
         :key="game.id || index"
         class="today-wrap"
       >
-  
         <GameCard :game="game" :show-wishlist="true" />
+      </div>
+
+      <div v-if="!authStore.isLoggedIn" class="login-nudge-card">
+        <img :src="cardOneImg" alt="1번 카드" class="nudge-card-img" />
+        <div class="nudge-overlay">
+          <p class="nudge-sub">로그인 하고</p>
+          <p class="nudge-main">나만의 게임 취향을<br />분석 받아보세요.</p>
+        </div>
       </div>
     </div>
 
@@ -40,21 +40,26 @@
     <div v-else class="banner-grid">
       <!-- 왼쪽 배너 -->
       <div class="banner-left">
-        <div class="banner-image">
-          <span class="banner-placeholder">
-            {{ type === 'discount' ? '프로모션 배너 / 키아트' : '신작 스포트라이트 / 키아트' }}
-          </span>
+        <img v-if="type === 'discount'" :src="card2Img" alt="할인 배너" class="banner-img" />
+        <img v-else-if="type === 'new'" :src="card3Img" alt="신작 배너" class="banner-img" />
+        <div v-else class="banner-img-placeholder">
+          <span>이미지</span>
         </div>
-        <h3 class="banner-title">
-          {{ type === 'discount' ? '이번 주 할인 모음' : '이번 주 신작' }}
-        </h3>
-        
-        <RouterLink
-          :to="type === 'discount' ? '/explore?filter=sale' : '/explore?filter=new'"
-          class="banner-more-btn"
-        >
-          더 보기
-        </RouterLink>
+
+        <div class="banner-bottom">
+          <h3 class="banner-title">
+            {{ type === 'discount' ? '이번 주 할인 모음' : '이번 주 신작' }}
+          </h3>
+          <p class="banner-desc">
+            {{ type === 'discount' ? '다양한 게임을 특별한 가격에!' : '새롭게 출시된 게임을 만나보세요!' }}
+          </p>
+          <RouterLink
+            :to="type === 'discount' ? '/explore?filter=sale' : '/explore?filter=new'"
+            class="banner-more-btn"
+          >
+            {{ type === 'discount' ? '할인 게임 보러가기' : '신작 게임 보러가기' }} ›
+          </RouterLink>
+        </div>
       </div>
 
       <!-- 오른쪽 2열 3행 리스트 -->
@@ -78,6 +83,9 @@ import GameCardRow from './GameCardRow.vue'
 import SectionHeader from './SectionHeader.vue'
 import { useAuthStore } from '@/stores/auth'
 import { fetchGames } from '@/services/api'
+import cardOneImg from '@/assets/1번 카드.png'
+import card2Img from '@/assets/2번 카드.png'
+import card3Img from '@/assets/3번 카드.png'
 
 const props = defineProps({
   num: { type: Number, required: true },
@@ -102,8 +110,6 @@ onMounted(async () => {
   }
 })
 
-function onPrev() {}
-function onNext() {}
 </script>
 
 <style scoped>
@@ -122,52 +128,46 @@ function onNext() {}
   position: relative;
   min-width: 0;
 }
-.login-nudge-card {
-  min-width: 0;
-}
-.today-label {
-  position: absolute;
-  top: -10px;
-  left: 10px;
-  background: #1e3a5f;
-  color: white;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 999px;
-  z-index: 1;
-}
-
 /* 로그인 유도 카드 */
 .login-nudge-card {
-  background: #f0ece3;
-  border: 1.5px dashed #c8c2b4;
+  position: relative;
+  min-width: 0;
+  border: 1px solid #D8C4A3;
   border-radius: 12px;
+  overflow: hidden;
+}
+.nudge-card-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.nudge-overlay {
+  position: absolute;
+  inset: 0;
+  padding: 14px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 20px 12px;
-  gap: 10px;
+  justify-content: flex-start;
+  gap: 4px;
   text-align: center;
-  font-size: 13px;
-  color: #6b6256;
-  line-height: 1.5;
 }
-.login-nudge-card strong { color: #1a1510; }
-.nudge-btn {
-  display: block;
-  background: #1a1510;
-  color: white;
-  border-radius: 8px;
-  padding: 9px 14px;
-  font-size: 12px;
-  font-weight: 700;
-  text-decoration: none;
+.nudge-sub {
+  font-family: 'Jua', sans-serif;
+  font-size: 16px;
+  color: #7a4e25;
+  margin: 0;
 }
-.nudge-btn:hover { background: #1e3a5f; }
-.nudge-sub { font-size: 10px; color: #9e9585; }
-
+.nudge-main {
+  font-family: 'Jua', sans-serif;
+  font-size: 18px;
+  color: #7a491b;
+  margin: 0;
+  line-height: 1.4;
+}
 /* 배너 그리드 (할인/최신) */
 .banner-grid {
   display: grid;
@@ -176,51 +176,71 @@ function onNext() {}
 }
 
 .banner-left {
+  position: relative;
   height: 340px;
-  background: #f0ece3;
-  border: 1px solid #e8e4d9;
+  border: 1px solid #D8C4A3;
   border-radius: 12px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  box-sizing: border-box;
+  overflow: hidden;
 }
-.banner-image {
-  flex: 1;
-  min-height: 0;
-  background: #e0dbd0;
-  border-radius: 8px;
+.banner-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.banner-img-placeholder {
+  position: absolute;
+  inset: 0;
+  background: #FFF0D6;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-.banner-placeholder {
   font-size: 12px;
-  color: #9e9585;
+  color: #9e8c78;
+}
+.banner-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 14px 20px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: linear-gradient(to top, rgba(255,247,230,0.98) 80%, transparent 100%);
 }
 .banner-title {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
-  color: #1a1510;
+  color: #3A2410;
+  margin: 0;
+  font-family: 'Pretendard', sans-serif;
 }
-.banner-sub {
-  font-size: 13px;
-  color: #9e9585;
+.banner-desc {
+  font-size: 12px;
+  color: #6B5A45;
+  margin: 0;
+  font-family: 'Pretendard', sans-serif;
 }
 .banner-more-btn {
   display: block;
   text-align: center;
+  margin-top: 8px;
   padding: 10px;
-  border: 1px solid #c8c2b4;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #3d3529;
+  border-radius: 999px;
+  background: #D97706;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
   text-decoration: none;
   transition: background 0.15s;
+  font-family: 'Pretendard', sans-serif;
 }
-.banner-more-btn:hover { background: #e8e2d5; }
+.banner-more-btn:hover {
+  background: #B45309;
+}
 
 .banner-right {
   display: grid;
@@ -234,7 +254,7 @@ function onNext() {}
 .skeleton-card { border-radius: 12px; overflow: hidden; }
 .skeleton-thumb {
   aspect-ratio: 4/3;
-  background: linear-gradient(90deg, #f0ece3 25%, #e8e2d5 50%, #f0ece3 75%);
+  background: linear-gradient(90deg, #FFF0D6 25%, #F2D9A8 50%, #FFF0D6 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s infinite;
   border-radius: 12px;
@@ -242,7 +262,7 @@ function onNext() {}
 }
 .skeleton-line {
   height: 12px;
-  background: linear-gradient(90deg, #f0ece3 25%, #e8e2d5 50%, #f0ece3 75%);
+  background: linear-gradient(90deg, #FFF0D6 25%, #F2D9A8 50%, #FFF0D6 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s infinite;
   border-radius: 999px;

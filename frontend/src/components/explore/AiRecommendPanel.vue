@@ -42,8 +42,6 @@
 
 <script setup>
 import { ref } from 'vue'
-import { RouterLink } from 'vue-router'
-import FilterChipGroup from './FilterChipGroup.vue'
 
 defineProps({
   isActive: { type: Boolean, default: false },
@@ -53,15 +51,6 @@ defineProps({
 const emit = defineEmits(['activate', 'submit'])
 
 const prompt = ref('')
-const filters = ref({ mood: [], genre: [], platform: [], difficulty: [] })
-
-const filterDefs = [
-  { key: 'mood',       label: '분위기', options: ['잔잔한', '긴장감', '힐링', '공포', '유머러스'] },
-  { key: 'genre',      label: '장르',   options: ['RPG', '어드벤처', '퍼즐', '액션', '시뮬레이션', '로그라이크'] },
-  { key: 'platform',   label: '플랫폼', options: ['PC', 'Mac', '모바일', '콘솔'] },
-  { key: 'difficulty', label: '난이도', options: ['쉬움', '보통', '어려움', '매우 어려움'] },
-]
-
 function handleSubmit() {
   if (!prompt.value.trim()) return
   emit('submit', { prompt: prompt.value, filters: filters.value })
@@ -84,8 +73,8 @@ defineExpose({ setPrompt: (v) => { prompt.value = v } })
   gap: 16px;
 }
 .panel.active {
-  border-color: #1e3a5f;
-  box-shadow: 0 0 0 3px rgba(30,58,95,0.07);
+  border-color: #c96012;
+  box-shadow: 0 0 0 3px rgba(201,96,18,0.07);
   cursor: default;
 }
 
@@ -98,7 +87,7 @@ defineExpose({ setPrompt: (v) => { prompt.value = v } })
   gap: 6px;
   margin-bottom: 6px;
 }
-.icon { width: 16px; color: #1e3a5f; }
+.icon { width: 16px; color: #c96012; }
 .desc { font-size: 13px; color: #9e9585; }
 
 .textarea-wrap {
@@ -112,7 +101,7 @@ defineExpose({ setPrompt: (v) => { prompt.value = v } })
   transition: border-color 0.15s;
 }
 .textarea-wrap:focus-within {
-  border-color: #1e3a5f;
+  border-color: #c96012;
   background: #fff;
 }
 
@@ -171,7 +160,7 @@ defineExpose({ setPrompt: (v) => { prompt.value = v } })
   align-items: center;
   gap: 6px;
   padding: 10px 22px;
-  background: #1a1510;
+  background: #c96012;
   color: white;
   border: none;
   border-radius: 10px;
@@ -181,7 +170,7 @@ defineExpose({ setPrompt: (v) => { prompt.value = v } })
   white-space: nowrap;
   transition: background 0.15s;
 }
-.btn-recommend:hover:not(:disabled) { background: #1e3a5f; }
+.btn-recommend:hover:not(:disabled) { background: #a84e0e; }
 .btn-recommend:disabled { opacity: 0.6; cursor: default; }
 
 .spinner {

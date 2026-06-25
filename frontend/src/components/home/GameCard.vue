@@ -115,22 +115,23 @@ function formatPrice(price) {
   width: 100%;
   text-decoration: none;
   color: inherit;
-  background: #fff;
-  border: 1px solid #e8e4d9;
+  background: #FFFDF7;
+  border: 1px solid #D8C4A3;
   border-radius: 12px;
   overflow: hidden;
   transition: transform 0.15s, box-shadow 0.15s;
+  font-family: 'Pretendard', sans-serif;
 }
 .card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(30, 58, 95, 0.1);
+  box-shadow: 0 8px 24px rgba(58, 36, 16, 0.12);
 }
 
 .thumbnail {
   position: relative;
   aspect-ratio: 4/3;
   overflow: hidden;
-  background: #f0ece3;
+  background: #FFF0D6;
 }
 .thumbnail img {
   display: block;
@@ -154,12 +155,12 @@ function formatPrice(price) {
   position: absolute;
   top: 8px;
   left: 8px;
-  background: #1a1510;
+  background: #D97706;
   color: white;
   font-size: 11px;
   font-weight: 700;
   padding: 3px 8px;
-  border-radius: 6px;
+  border-radius: 999px;
 }
 
 .wishlist-btn {
@@ -168,7 +169,7 @@ function formatPrice(price) {
   right: 8px;
   background: rgba(255,255,255,0.9);
   border: none;
-  border-radius: 8px;
+  border-radius: 50%;
   padding: 6px;
   cursor: pointer;
   display: flex;
@@ -182,7 +183,7 @@ function formatPrice(price) {
 .wishlist-btn svg {
   width: 18px;
   height: 18px;
-  color: #6b6256;
+  color: #6B5A45;
 }
 
 .card-body {
@@ -192,11 +193,12 @@ function formatPrice(price) {
 .card-title {
   font-size: 14px;
   font-weight: 600;
-  color: #1a1510;
+  color: #2F2418;
   margin: 0 0 6px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-family: 'Pretendard', sans-serif;
 }
 
 .price-row {
@@ -207,13 +209,13 @@ function formatPrice(price) {
 }
 .price-original {
   font-size: 12px;
-  color: #9e9585;
+  color: #6B5A45;
   text-decoration: line-through;
 }
 .price-final {
   font-size: 14px;
   font-weight: 700;
-  color: #1e3a5f;
+  color: #3A2410;
 }
 
 .tags {
@@ -224,8 +226,8 @@ function formatPrice(price) {
 }
 .tag {
   font-size: 11px;
-  color: #6b6256;
-  background: #f0ece3;
+  color: #6B5A45;
+  background: #FFF0D6;
   border-radius: 999px;
   padding: 2px 8px;
 }

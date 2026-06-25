@@ -98,3 +98,34 @@ class UserMedal(models.Model):
 
     def __str__(self):
         return f'{self.user} - {self.medal}'
+
+
+class Notification(models.Model):
+    class Type(models.TextChoices):
+        FOLLOW = 'follow', '팔로우'
+        NEW_POST = 'new_post', '새 게시글'
+        NEW_WISHLIST = 'new_wishlist', '찜 추가'
+        MEDAL = 'medal', '메달 획득'
+
+    recipient = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+        related_name='notifications', db_column='recipient_id',
+    )
+    actor = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+        related_name='sent_notifications', db_column='actor_id',
+        null=True, blank=True,
+    )
+    notif_type = models.CharField(max_length=20, choices=Type.choices)
+    target_id = models.IntegerField(null=True, blank=True)
+    target_title = models.CharField(max_length=200, blank=True)
+    message = models.CharField(max_length=300)
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'notification'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'[{self.notif_type}] → {self.recipient}'

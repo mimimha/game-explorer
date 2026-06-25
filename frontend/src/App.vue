@@ -5,29 +5,35 @@
         <RouterLink :to="{ name: 'home' }" class="logo-wrap">
           <img src="@/assets/logo.png" alt="방구석 탐험대" class="logo" />
         </RouterLink>
-        <RouterLink :to="{ name: 'explore' }" class="nav-link">게임 라이브러리</RouterLink>
+        <a class="nav-link" :class="{ 'router-link-active': $route.name === 'explore' }" @click="handleExploreClick">게임 라이브러리</a>
         <RouterLink :to="{ name: 'community' }" class="nav-link">커뮤니티</RouterLink>
       </div>
 
       
 
       <div class="nav-right">
-        <form class="nav-search" @submit.prevent="onSearch">
-        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
-          viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-        </svg>
-        <input v-model="keyword" type="text" placeholder="게임 검색" />
-      </form>
-        <button v-if="authStore.isLoggedIn" class="icon-btn" @click="openNotifications">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-            stroke-width="1.5" stroke="currentColor">
+        <form ref="navSearchRef" class="nav-search" @submit.prevent="onSearch" role="search">
+          <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round"
-              d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+              d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
           </svg>
-          <span v-if="notifCount" class="notif-badge">{{ notifCount }}</span>
-        </button>
+          <input
+            v-model="keyword"
+            type="text"
+            placeholder="게임 검색"
+            autocomplete="off"
+            @input="suggestTrigger($event.target.value)"
+            @keydown="(e) => suggestKeydown(e, onSelectSuggestion, onSearch)"
+          />
+          <GameSuggestDropdown
+            :suggestions="suggestions"
+            :active-idx="activeIdx"
+            @select="onSelectSuggestion"
+            @hover="onNavSuggestHover"
+          />
+        </form>
+        <NotificationBubble v-if="authStore.isLoggedIn" />
 
         <template v-if="authStore.isLoggedIn">
           <RouterLink to="/profile" class="nav-link profile-link">
@@ -40,8 +46,8 @@
           <button class="btn btn-outline" @click="handleLogout">로그아웃</button>
         </template>
         <template v-else>
-          <RouterLink :to="{ name: 'Login' }" class="btn btn-outline">로그인</RouterLink>
-          <RouterLink :to="{ name: 'Register' }" class="btn btn-primary">회원가입</RouterLink>
+          <RouterLink :to="{ name: 'login' }" class="btn btn-outline">로그인</RouterLink>
+          <RouterLink :to="{ name: 'register' }" class="btn btn-primary">회원가입</RouterLink>
         </template>
       </div>
     </nav>
@@ -51,36 +57,62 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted, onUnmounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useExploreStore } from '@/stores/explore'
 import { accountAPI } from '@/api/services'
 import defaultAvatar from '@/assets/profile.png'
+import { useGameSuggest } from '@/composables/useGameSuggest'
+import GameSuggestDropdown from '@/components/common/GameSuggestDropdown.vue'
+import NotificationBubble from '@/components/common/NotificationBubble.vue'
 
 const router = useRouter()
+const route = useRoute()
 const authStore = useAuthStore()
+const exploreStore = useExploreStore()
 
+function handleExploreClick() {
+  exploreStore.requestReset()
+  if (route.name !== 'explore') {
+    router.push({ name: 'explore' })
+  }
+}
+
+const navSearchRef = ref(null)
 const keyword = ref('')
-const notifCount = ref('')
+const { suggestions, activeIdx, trigger: suggestTrigger, onKeydown: suggestKeydown, clear: suggestClear } = useGameSuggest()
+
+function onNavSuggestHover(i) { activeIdx.value = i }
+
+function onNavDocumentClick(e) {
+  if (navSearchRef.value && !navSearchRef.value.contains(e.target)) {
+    suggestClear()
+  }
+}
 
 function handleLogout() {
   authStore.logout()
   router.push({ name: 'home' })
 }
 
+function onSelectSuggestion(s) {
+  keyword.value = ''
+  suggestClear()
+  router.push({ name: 'explore', query: { q: s.title_ko || s.title } })
+}
+
 function onSearch() {
   const q = keyword.value.trim()
+  suggestClear()
   if (!q) return
   keyword.value = ''
   router.push({ name: 'explore', query: { q } })
 }
 
-function openNotifications() {
-  // TODO: 알림 패널 열기
-}
-
 // 새로고침 후 profile_img 복원
 onMounted(async () => {
+  document.addEventListener('mousedown', onNavDocumentClick)
   if (authStore.isLoggedIn && !authStore.user?.profile_img) {
     try {
       const { data } = await accountAPI.getMe()
@@ -90,31 +122,40 @@ onMounted(async () => {
     }
   }
 })
+
+onUnmounted(() => {
+  document.removeEventListener('mousedown', onNavDocumentClick)
+})
 </script>
 
 <style scoped>
 .app {
   min-height: 100vh;
-  background: #fafaf8;
+  background: #FFF7E6;
+  font-family: 'Pretendard', sans-serif;
 }
 
 .nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 40px;
-  height: 64px;
-  background: #ffffff;
-  border-bottom: 1px solid #e8e4d9;
+  padding: 0 32px;
+  height: 80px;
+  background: #FFF7E6;
+  border-bottom: 1px solid #D8C4A3;
   position: sticky;
   top: 0;
   z-index: 100;
+  gap: 16px;
+  min-width: 0;
+  font-family: 'Pretendard', sans-serif;
 }
 
 .nav-left {
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 40px;
+  flex-shrink: 0;
 }
 
 .logo-wrap {
@@ -123,62 +164,68 @@ onMounted(async () => {
 }
 
 .logo {
-  width: 110px;
-  height: 150px;
+  height: 65px;
+  width: auto;
   object-fit: contain;
-  border-radius: 50%;
 }
 
 .nav-link {
   text-decoration: none;
-  color: #3d3529;
-  font-size: 19px;
+  color: #3A2410;
+  font-size: 16px;
   font-weight: 700;
+  white-space: nowrap;
   transition: color 0.15s;
+  font-family: 'Pretendard', sans-serif;
 }
 .nav-link:hover,
 .nav-link.router-link-active {
-  color: #1e3a5f;
+  color: #D97706;
 }
 
 .nav-search {
   position: relative;
   display: flex;
   align-items: center;
-
+  flex: 1;
+  min-width: 0;
+  max-width: 300px;
 }
 
 .search-icon {
   position: absolute;
   left: 14px;
   width: 16px;
-  color: #9e9585;
+  color: #6B5A45;
   pointer-events: none;
 }
 
 .nav-search input {
-  width: 300px;
+  width: 100%;
+  min-width: 120px;
   padding: 9px 16px 9px 38px;
   border-radius: 999px;
-  border: 1px solid #ddd8cc;
-  background: #f7f5f0;
+  border: 1px solid #D8C4A3;
+  background: #FFFDF7;
   font-size: 14px;
-  color: #3d3529;
+  color: #2F2418;
   outline: none;
   transition: border-color 0.15s, background 0.15s;
+  font-family: 'Pretendard', sans-serif;
 }
 .nav-search input:focus {
-  border-color: #1e3a5f;
+  border-color: #D97706;
   background: #fff;
 }
 .nav-search input::placeholder {
-  color: #9e9585;
+  color: #6B5A45;
 }
 
 .nav-right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
+  flex-shrink: 0;
 }
 
 .icon-btn {
@@ -187,7 +234,7 @@ onMounted(async () => {
   border: none;
   cursor: pointer;
   padding: 4px;
-  color: #3d3529;
+  color: #3A2410;
   display: flex;
   align-items: center;
 }
@@ -222,11 +269,11 @@ onMounted(async () => {
   height: 42px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #e8e4d9;
+  border: 2px solid #D8C4A3;
   transition: border-color 0.15s;
 }
 .profile-link:hover .nav-avatar {
-  border-color: #1e3a5f;
+  border-color: #D97706;
 }
 
 .btn {
@@ -238,21 +285,22 @@ onMounted(async () => {
   cursor: pointer;
   border: none;
   transition: all 0.15s;
+  font-family: 'Pretendard', sans-serif;
 }
 .btn-outline {
-  border: 1px solid #c8c2b4;
-  color: #3d3529;
+  border: 1px solid #D8C4A3;
+  color: #3A2410;
   background: transparent;
 }
 .btn-outline:hover {
-  border-color: #1e3a5f;
-  color: #1e3a5f;
+  border-color: #D97706;
+  color: #D97706;
 }
 .btn-primary {
-  background: #1e3a5f;
-  color: white;
+  background: #D97706;
+  color: #fff;
 }
 .btn-primary:hover {
-  background: #162d4a;
+  background: #B45309;
 }
 </style>

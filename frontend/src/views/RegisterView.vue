@@ -21,7 +21,7 @@
             @blur="validateField('username')"
             @input="clearError('username')"
           />
-          <span class="field-msg" v-if="errors.nickname">{{ errors.username }}</span>
+          <span class="field-msg" v-if="errors.username">{{ errors.username }}</span>
         </div>
 
         <div class="form-group" :class="{ error: errors.nickname, success: touched.nickname && !errors.nickname }">
@@ -137,6 +137,7 @@ const router = useRouter()
 const authStore = useAuthStore()
 
 const form = reactive({
+  username: '',
   nickname: '',
   email: '',
   password: '',
@@ -186,11 +187,6 @@ const rules = {
     if (v !== form.password) return '비밀번호가 일치하지 않아요'
     return ''
   },
-  // birth_date: (v) => {
-  //   if (!v) return ''
-  //   if (new Date(v) > new Date(maxDate.value)) return '만 14세 이상만 가입 가능해요'
-  //   return ''
-  // },
   agreed: (v) => {
     if (!v) return '이용약관에 동의해주세요'
     return ''
@@ -210,7 +206,7 @@ const clearError = (field) => {
 }
 
 const validateAll = () => {
-  return ['nickname', 'email', 'password', 'passwordConfirm', 'birth_date', 'agreed']
+  return ['username', 'nickname', 'email', 'password', 'passwordConfirm', 'birth_date', 'agreed']
     .map(validateField)
     .every(Boolean)
 }
@@ -311,12 +307,6 @@ label {
   color: #333;
 }
 
-.optional {
-  font-weight: 400;
-  color: #aaa;
-  font-size: 12px;
-}
-
 input[type="text"],
 input[type="email"],
 input[type="password"],
@@ -372,39 +362,6 @@ input:focus {
 }
 
 .toggle-pw:hover { color: #111; }
-
-/* ── 비밀번호 강도 ── */
-.pw-strength {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 2px;
-}
-
-.pw-bar {
-  flex: 1;
-  height: 3px;
-  background: #eee;
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.pw-fill {
-  height: 100%;
-  border-radius: 2px;
-  transition: width 0.3s, background 0.3s;
-}
-
-.pw-label {
-  font-size: 11px;
-  font-weight: 600;
-  min-width: 24px;
-}
-
-.weak .pw-fill, .weak.pw-label { background: #e53e3e; color: #e53e3e; }
-.fair .pw-fill, .fair.pw-label { background: #dd6b20; color: #dd6b20; }
-.good .pw-fill, .good.pw-label { background: #d69e2e; color: #d69e2e; }
-.strong .pw-fill, .strong.pw-label { background: #38a169; color: #38a169; }
 
 /* ── 메시지 ── */
 .field-msg {

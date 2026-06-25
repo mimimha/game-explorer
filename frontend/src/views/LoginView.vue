@@ -162,10 +162,6 @@ const handleLogin = async () => {
   }
 }
 
-const loginWithSocial = (provider) => {
-  // TODO: 소셜 로그인 연동
-  console.log(`${provider} 로그인`)
-}
 </script>
 
 <style scoped>
@@ -239,17 +235,6 @@ label {
   font-size: 13px;
   font-weight: 600;
   color: #333;
-}
-
-.forgot-link {
-  font-size: 12px;
-  color: #888;
-  text-decoration: none;
-}
-
-.forgot-link:hover {
-  color: #111;
-  text-decoration: underline;
 }
 
 input[type="email"],
@@ -401,53 +386,6 @@ input:focus {
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
-
-/* ── 구분선 ── */
-.divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 24px 0 16px;
-  color: #ccc;
-  font-size: 12px;
-}
-
-.divider::before,
-.divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: #eee;
-}
-
-/* ── 소셜 버튼 ── */
-.social-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.btn-social {
-  width: 100%;
-  padding: 11px;
-  background: #fff;
-  border: 1.5px solid #e8e8e8;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #333;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  transition: border-color 0.15s, background 0.15s;
-}
-
-.btn-social:hover {
-  border-color: #ccc;
-  background: #fafafa;
-}
 
 /* ── 푸터 ── */
 .auth-footer {

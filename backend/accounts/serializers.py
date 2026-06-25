@@ -2,7 +2,7 @@
 from rest_framework import serializers
 from dj_rest_auth.registration.serializers import RegisterSerializer
 
-from .models import User, UserMedal
+from .models import User, UserMedal, Notification
 
 
 class MedalSerializer(serializers.ModelSerializer):
@@ -59,6 +59,27 @@ class PublicProfileSerializer(serializers.ModelSerializer):
         if not request or not request.user.is_authenticated:
             return False
         return obj.follower_relations.filter(follower=request.user).exists()
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    actor_id = serializers.IntegerField(source='actor.id', read_only=True, default=None)
+    actor_nickname = serializers.CharField(source='actor.nickname', read_only=True, default=None)
+    actor_profile_img = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Notification
+        fields = [
+            'id', 'notif_type', 'actor_id', 'actor_nickname', 'actor_profile_img',
+            'target_id', 'target_title', 'message', 'is_read', 'created_at',
+        ]
+
+    def get_actor_profile_img(self, obj):
+        if not obj.actor or not obj.actor.profile_img:
+            return None
+        request = self.context.get('request')
+        if request:
+            return request.build_absolute_uri(obj.actor.profile_img.url)
+        return obj.actor.profile_img.url
 
 
 class CustomRegisterSerializer(RegisterSerializer):

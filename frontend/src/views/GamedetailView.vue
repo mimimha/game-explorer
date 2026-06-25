@@ -44,7 +44,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
+import { onBeforeRouteLeave } from 'vue-router'
 import { gameAPI } from '@/api/services'
+import { useExploreStore } from '@/stores/explore'
 import GameMediaGallery from '@/components/game-detail/GameMediaGallery.vue'
 import GameInfoPanel from '@/components/game-detail/GameInfoPanel.vue'
 import GameDescription from '@/components/game-detail/GameDescription.vue'
@@ -52,8 +54,15 @@ import GameVideos from '@/components/game-detail/GameVideos.vue'
 import GameCommunityPosts from '@/components/game-detail/GameCommunityPosts.vue'
 
 const route = useRoute()
+const exploreStore = useExploreStore()
 const loading = ref(true)
 const game = ref({})
+
+onBeforeRouteLeave((to) => {
+  if (to.name !== 'explore' && to.name !== 'game-detail') {
+    exploreStore.clear()
+  }
+})
 
 // 백엔드 상세 응답 → 화면 컴포넌트가 기대하는 형태로 변환
 function mapGame(d) {
