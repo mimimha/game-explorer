@@ -15,7 +15,6 @@
             <option value="price">정렬: 가격순</option>
           </select>
         </template>
-        <RouterLink v-else to="/explore" class="more-link">전체 보기 ›</RouterLink>
       </div>
     </div>
 
@@ -102,7 +101,6 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { RouterLink } from 'vue-router'
 import GameCard from '../home/GameCard.vue'
 import EmptyState from './EmptyState.vue'
 
@@ -119,7 +117,6 @@ const props = defineProps({
 })
 defineEmits(['reset', 'update:sort', 'update:page'])
 
-const viewMode = ref('grid')
 const carouselEl = ref(null)
 
 const sectionTitle = computed(() => props.type === 'ai' ? '추천 결과' : '검색 결과')
@@ -163,7 +160,7 @@ function scroll(dir) {
 .title { font-size: 18px; font-weight: 800; color: #1a1510; }
 .sub { font-size: 13px; color: #9e9585; min-height: 18px; }
 .right { display: flex; align-items: center; gap: 8px; }
-.more-link { font-size: 13px; font-weight: 600; color: #1e3a5f; text-decoration: none; }
+.more-link { font-size: 13px; font-weight: 600; color: #c96012; text-decoration: none; }
 .more-link:hover { opacity: 0.7; }
 
 .sort-select {
@@ -189,7 +186,7 @@ function scroll(dir) {
   color: #9e9585;
   transition: all 0.15s;
 }
-.view-btn.active, .view-btn:hover { border-color: #1e3a5f; color: #1e3a5f; }
+.view-btn.active, .view-btn:hover { border-color: #c96012; color: #c96012; }
 
 /* ── 점 세 개 로딩 ── */
 .dots-state {
@@ -203,7 +200,7 @@ function scroll(dir) {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: #1e3a5f;
+  background: #c96012;
   opacity: 0;
   animation: dot-pop 1.2s ease-in-out infinite;
 }
@@ -231,7 +228,7 @@ function scroll(dir) {
   color: #3d3529;
   transition: all 0.15s;
 }
-.carousel-btn:hover { border-color: #1e3a5f; color: #1e3a5f; }
+.carousel-btn:hover { border-color: #c96012; color: #c96012; }
 
 /* 그리드 */
 .grid {
@@ -292,13 +289,13 @@ function scroll(dir) {
   transition: all 0.15s;
 }
 .pg-btn:hover:not(:disabled), .pg-num:hover:not(:disabled):not(.ellipsis) {
-  border-color: #1e3a5f;
-  color: #1e3a5f;
+  border-color: #c96012;
+  color: #c96012;
 }
 .pg-btn:disabled { opacity: 0.35; cursor: default; }
 .pg-num.active {
-  background: #1e3a5f;
-  border-color: #1e3a5f;
+  background: #c96012;
+  border-color: #c96012;
   color: #fff;
   font-weight: 700;
 }

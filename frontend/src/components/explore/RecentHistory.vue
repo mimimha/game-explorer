@@ -5,7 +5,6 @@
         <h3 class="title">AI 최근 추천 기록</h3>
         <span class="sub">이전에 추천받은 내용을 다시 확인해보세요.</span>
       </div>
-      <RouterLink to="/history" class="more">전체 보기 ›</RouterLink>
     </div>
 
     <!-- 캐러셀 래퍼 -->
@@ -24,23 +23,28 @@
 
       <!-- 아이템 트랙 -->
       <div class="track" ref="trackEl" @scroll="onScroll">
-        <button
-          v-for="h in history"
-          :key="h.id"
-          class="item"
-          @click="$emit('restore', h)"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="16" class="clock-icon">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-          </svg>
-          <div class="item-text">
-            <span class="query">"{{ h.query }}"</span>
-            <span class="meta">{{ h.date }} · 결과 {{ h.count }}개</span>
-          </div>
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="14" class="chevron">
-            <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/>
-          </svg>
-        </button>
+        <div v-for="h in history" :key="h.id" class="item-wrap">
+          <button
+            class="item"
+            @click="$emit('restore', h)"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="16" class="clock-icon">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+            </svg>
+            <div class="item-text">
+              <span class="query">"{{ h.query }}"</span>
+              <span class="meta">{{ h.date }} · 결과 {{ h.count }}개</span>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="14" class="chevron">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/>
+            </svg>
+          </button>
+          <button class="delete-btn" @click.stop="$emit('delete', h)" aria-label="삭제">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="10" height="10">
+              <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"/>
+            </svg>
+          </button>
+        </div>
       </div>
 
       <!-- 오른쪽 화살표 -->
@@ -65,7 +69,7 @@ import { RouterLink } from 'vue-router'
 const props = defineProps({
   history: { type: Array, default: () => [] },
 })
-defineEmits(['restore'])
+defineEmits(['restore', 'delete'])
 
 const trackEl = ref(null)
 const canScrollLeft = ref(false)
@@ -112,7 +116,7 @@ onBeforeUnmount(() => ro?.disconnect())
 .left { display: flex; align-items: baseline; gap: 10px; }
 .title { font-size: 18px; font-weight: 800; color: #1a1510; }
 .sub { font-size: 13px; color: #9e9585; }
-.more { font-size: 13px; font-weight: 600; color: #1e3a5f; text-decoration: none; }
+.more { font-size: 13px; font-weight: 600; color: #c96012; text-decoration: none; }
 .more:hover { opacity: 0.7; }
 
 /* 캐러셀 컨테이너 — 화살표를 track 위에 float */
@@ -126,7 +130,7 @@ onBeforeUnmount(() => ro?.disconnect())
   gap: 12px;
   overflow-x: auto;
   scroll-behavior: smooth;
-  padding: 4px 2px 8px;   /* 상하 여백으로 카드 shadow가 잘리지 않게 */
+  padding: 12px 12px 8px 2px;
 }
 .track::-webkit-scrollbar { display: none; }
 
@@ -150,8 +154,8 @@ onBeforeUnmount(() => ro?.disconnect())
   transition: opacity 0.2s, border-color 0.15s, color 0.15s, box-shadow 0.15s;
 }
 .arrow:hover {
-  border-color: #1e3a5f;
-  color: #1e3a5f;
+  border-color: #c96012;
+  color: #c96012;
   box-shadow: 0 4px 14px rgba(30,58,95,0.14);
 }
 .arrow.hidden {
@@ -161,6 +165,31 @@ onBeforeUnmount(() => ro?.disconnect())
 
 .arrow-left  { left: -16px; }
 .arrow-right { right: -16px; }
+
+.item-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.delete-btn {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #c96012;
+  border: 2px solid #fff;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.15s;
+  z-index: 1;
+}
+.delete-btn:hover { background: #a84e0e; }
 
 /* 카드 */
 .item {
@@ -173,13 +202,12 @@ onBeforeUnmount(() => ro?.disconnect())
   padding: 14px 16px;
   cursor: pointer;
   text-align: left;
-  flex-shrink: 0;
   width: 220px;
   transition: border-color 0.15s, box-shadow 0.15s;
   font-family: inherit;
 }
 .item:hover {
-  border-color: #1e3a5f;
+  border-color: #c96012;
   box-shadow: 0 4px 12px rgba(30,58,95,0.08);
 }
 .clock-icon { color: #9e9585; flex-shrink: 0; }

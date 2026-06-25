@@ -21,6 +21,7 @@
       <RecentHistory
         :history="recentHistory"
         @restore="onRestoreHistory"
+        @delete="onDeleteHistory"
       />
 
       <GameResultGrid
@@ -246,6 +247,15 @@ function onSearchReset() {
   searchFilters.value = null
 }
 
+async function onDeleteHistory(h) {
+  try {
+    await recommendAPI.logDelete(h.id)
+    recentHistory.value = recentHistory.value.filter(item => item.id !== h.id)
+  } catch {
+    toastRef.value?.show('삭제 중 오류가 발생했어요.', 'error')
+  }
+}
+
 async function onRestoreHistory(h) {
   resultMode.value = 'ai'
   submitted.value = true
@@ -265,7 +275,7 @@ async function onRestoreHistory(h) {
 
 <style scoped>
 .explore {
-  background: #fafaf8;
+  background: #faf5ec;
   min-height: 100vh;
   padding: 40px 0 80px;
 }

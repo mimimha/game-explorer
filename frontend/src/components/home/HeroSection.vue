@@ -13,7 +13,7 @@ import heroImg from '@/assets/hero.png'
         <span class="hero-highlight">방구석 탐험대와 함께</span>
       </h1>
       <p>
-        당신의 게임에 맞는 멋진 계획을 추천받고<br />
+        당신의 취향에 맞는 멋진 계획을 추천받고<br />
         다양한 커뮤니티를 만나보세요.
       </p>
       <div class="hero-buttons">

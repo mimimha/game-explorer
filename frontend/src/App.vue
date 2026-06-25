@@ -287,10 +287,10 @@ onUnmounted(() => {
   color: #D97706;
 }
 .btn-primary {
-  background: #3A2410;
-  color: #FFF7E6;
+  background: #D97706;
+  color: #fff;
 }
 .btn-primary:hover {
-  background: #5A3512;
+  background: #B45309;
 }
 </style>

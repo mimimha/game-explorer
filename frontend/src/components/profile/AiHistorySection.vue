@@ -140,7 +140,7 @@ function formatDate(dt) {
   gap: 12px;
   overflow-x: auto;
   scroll-behavior: smooth;
-  padding: 4px 2px 8px;
+  padding: 12px 12px 8px 2px;
 }
 .track::-webkit-scrollbar { display: none; }
 
@@ -163,8 +163,8 @@ function formatDate(dt) {
   transition: opacity 0.2s, border-color 0.15s, color 0.15s, box-shadow 0.15s;
 }
 .arrow:hover {
-  border-color: #1e3a5f;
-  color: #1e3a5f;
+  border-color: #c96012;
+  color: #c96012;
   box-shadow: 0 4px 14px rgba(30,58,95,0.14);
 }
 .arrow.hidden {
@@ -187,7 +187,7 @@ function formatDate(dt) {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: #e53e3e;
+  background: #c96012;
   border: 2px solid #fff;
   color: #fff;
   display: flex;
@@ -198,7 +198,7 @@ function formatDate(dt) {
   transition: background 0.15s;
   z-index: 1;
 }
-.delete-btn:hover { background: #c53030; }
+.delete-btn:hover { background: #a84e0e; }
 
 .item {
   display: flex;
@@ -216,7 +216,7 @@ function formatDate(dt) {
   color: inherit;
 }
 .item:hover {
-  border-color: #1e3a5f;
+  border-color: #c96012;
   box-shadow: 0 4px 12px rgba(30,58,95,0.08);
 }
 .clock-icon { color: #9e9585; flex-shrink: 0; }

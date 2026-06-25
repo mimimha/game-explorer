@@ -464,8 +464,8 @@ onUnmounted(() => {
   gap: 16px;
 }
 .panel.active {
-  border-color: #1e3a5f;
-  box-shadow: 0 0 0 3px rgba(30,58,95,0.07);
+  border-color: #c96012;
+  box-shadow: 0 0 0 3px rgba(201,96,18,0.07);
   cursor: default;
 }
 .panel-header h2 {
@@ -477,7 +477,7 @@ onUnmounted(() => {
   gap: 6px;
   margin-bottom: 6px;
 }
-.icon { width: 16px; color: #1e3a5f; }
+.icon { width: 16px; color: #c96012; }
 .desc { font-size: 13px; color: #9e9585; }
 
 .search-wrap { position: relative; display: flex; align-items: center; }
@@ -493,7 +493,7 @@ onUnmounted(() => {
   font-family: inherit;
   transition: border-color 0.15s;
 }
-.search-input:focus { border-color: #1e3a5f; background: #fff; }
+.search-input:focus { border-color: #c96012; background: #fff; }
 .search-input::placeholder { color: #c8c2b4; }
 .search-btn {
   position: absolute;
@@ -507,7 +507,7 @@ onUnmounted(() => {
   padding: 0;
   transition: color 0.15s;
 }
-.search-btn:hover { color: #1e3a5f; }
+.search-btn:hover { color: #c96012; }
 
 .filter-bar {
   display: flex;
@@ -528,7 +528,7 @@ onUnmounted(() => {
   cursor: pointer;
   font-family: inherit;
 }
-.reset-btn:hover { color: #1e3a5f; }
+.reset-btn:hover { color: #c96012; }
 
 .opt-loading { font-size: 13px; color: #9e9585; padding: 8px 0; }
 
@@ -536,10 +536,12 @@ onUnmounted(() => {
   display: flex;
   align-items: flex-start;
   gap: 12px;
+  
 }
 .flabel {
   flex-shrink: 0;
-  width: 40px;
+  width: 72px;
+  white-space: nowrap;
   font-size: 13px;
   font-weight: 600;
   color: #6b6256;
@@ -549,6 +551,7 @@ onUnmounted(() => {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  padding-left: 20px;
 }
 .chip {
   display: flex;
@@ -564,11 +567,11 @@ onUnmounted(() => {
   transition: all 0.15s;
   font-family: inherit;
 }
-.chip:hover { border-color: #1e3a5f; color: #1e3a5f; }
+.chip:hover { border-color: #c96012; color: #c96012; }
 .chip.on {
-  border-color: #1e3a5f;
+  border-color: #c96012;
   color: #fff;
-  background: #1e3a5f;
+  background: #c96012;
 }
 .filter-hint {
   background: #f7f5f0;
@@ -590,8 +593,8 @@ onUnmounted(() => {
 .hint-tag {
   font-size: 12px;
   font-weight: 600;
-  color: #1e3a5f;
-  background: #e8eef5;
+  color: #c96012;
+  background: #fef0d9;
   border-radius: 6px;
   padding: 3px 8px;
 }

@@ -14,14 +14,12 @@
         :num="2"
         title="할인 중인 게임"
         type="discount"
-        more-to="/explore?filter=sale"
       />
 
       <GameCardList
         :num="3"
         title="최근 출시 게임"
         type="new"
-        more-to="/explore?filter=new"
       />
     </div>
 
@@ -78,7 +76,8 @@ const recommendSubtitle = computed(() =>
 
 <style scoped>
 .home {
-  background: #fafaf8;
+  background: #FFF7E6;
+  font-family: 'Pretendard', sans-serif;
 }
 .content {
   max-width: 1200px;

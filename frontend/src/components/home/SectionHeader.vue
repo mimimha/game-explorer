@@ -33,6 +33,7 @@ defineProps({
   align-items: center;
   justify-content: space-between;
   margin-bottom: 20px;
+  font-family: 'Pretendard', sans-serif;
 }
 
 .header-left {
@@ -44,10 +45,10 @@ defineProps({
 .section-num {
   font-size: 13px;
   font-weight: 800;
-  color: #c8c2b4;
+  color: #6B5A45;
   letter-spacing: 0.05em;
-  background: #f0ece3;
-  border: 1.5px solid #ddd8cc;
+  background: #FFF0D6;
+  border: 1.5px solid #D8C4A3;
   border-radius: 8px;
   padding: 4px 10px;
   line-height: 1;
@@ -56,14 +57,15 @@ defineProps({
 .section-title {
   font-size: 20px;
   font-weight: 800;
-  color: #1a1510;
+  color: #3A2410;
   margin: 0;
   letter-spacing: -0.01em;
+  font-family: 'Pretendard', sans-serif;
 }
 
 .section-sub {
   font-size: 12px;
-  color: #9e9585;
+  color: #6B5A45;
   margin: 2px 0 0;
 }
 
@@ -73,11 +75,15 @@ defineProps({
   gap: 4px;
   font-size: 13px;
   font-weight: 600;
-  color: #1e3a5f;
+  color: #6B5A45;
   text-decoration: none;
-  transition: opacity 0.15s;
+  border: 1px solid #D8C4A3;
+  border-radius: 999px;
+  padding: 4px 12px;
+  transition: all 0.15s;
 }
 .more-link:hover {
-  opacity: 0.7;
+  border-color: #D97706;
+  color: #D97706;
 }
 </style>
