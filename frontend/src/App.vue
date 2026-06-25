@@ -118,7 +118,7 @@ function handleLogout() {
 function onSelectSuggestion(s) {
   keyword.value = ''
   suggestClear()
-  router.push({ name: 'explore', query: { q: s.title_ko || s.title } })
+  router.push({ name: 'game-detail', params: { id: s.game_id } })
 }
 
 function onSearch() {

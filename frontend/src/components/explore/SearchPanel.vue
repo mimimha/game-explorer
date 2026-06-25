@@ -257,7 +257,7 @@ function onSuggestHover(i) { activeIdx.value = i }
 
 function onSuggestSelect(s) {
   closeSuggestions()
-  router.push(`/games/${s.id}`)
+  router.push({ name: 'game-detail', params: { id: s.game_id } })
 }
 
 function onSuggestKeydown(e) {
