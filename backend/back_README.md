@@ -157,7 +157,7 @@ PYTHONUTF8=1 python manage.py dumpdata games \
 - `PYTHONUTF8=1` 필수 (Windows cp949 한글 깨짐 방지)
 - `--exclude games.SearchLog` 필수 (사용자 종속 FK라 loaddata 깨짐)
 
-> 자세한 운영 규칙·주의사항은 루트 [CLAUDE.md](../CLAUDE.md) 참고.
+
 
 ---
 
