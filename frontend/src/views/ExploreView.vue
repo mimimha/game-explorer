@@ -226,10 +226,10 @@ function buildParams() {
   const params = {}
   if (searchKeyword.value.trim()) params.q = searchKeyword.value.trim()
 
-  // 정렬 (할인순은 on_sale 필터 + 정가 내림차순)
+  // 정렬 (할인순은 on_sale 필터 + 할인율 내림차순)
   if (searchSort.value === 'discount') {
     params.on_sale = true
-    params.ordering = '-initial_price'
+    params.ordering = 'discount'
   } else {
     params.ordering = ORDERING[searchSort.value] ?? '-release_date'
   }

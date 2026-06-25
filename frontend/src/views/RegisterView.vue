@@ -1,63 +1,81 @@
 <template>
-  <div class="auth-wrapper">
-    <div class="auth-card">
+  <div class="register-page">
+    <img src="@/assets/회원가입배경.png" alt="" class="page-bg" />
 
-      <div class="auth-header">
-        <div class="logo">🎮 방구석 탐험대</div>
-        <h1>회원가입</h1>
-        <p>인디게임의 세계에 오신 걸 환영해요</p>
-      </div>
+    <div class="register-card">
 
-      <form @submit.prevent="handleRegister" class="auth-form" novalidate>
+      <h1 class="card-title">탐험대에 합류하세요!</h1>
+      <p class="card-sub">지금 가입하고 인디게임의 세계를 탐험해보세요.</p>
 
-        <div class="form-group" :class="{ error: errors.username, success: touched.username && !errors.username }">
-          <label for="username">이름</label>
-          <input
-            id="username"
-            v-model="form.username"
-            placeholder="성함"
-            type="text"
-            autocomplete="username"
-            @blur="validateField('username')"
-            @input="clearError('username')"
-          />
+      <form @submit.prevent="handleRegister" class="register-form" novalidate>
+
+        <!-- 이름 -->
+        <div class="field-wrap" :class="{ error: errors.username }">
+          <label class="field-label">이름 <span class="req">필수</span></label>
+          <div class="input-row">
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+            </svg>
+            <input
+              v-model="form.username"
+              type="text"
+              placeholder="성함"
+              autocomplete="username"
+              @blur="validateField('username')"
+              @input="clearError('username')"
+            />
+          </div>
           <span class="field-msg" v-if="errors.username">{{ errors.username }}</span>
         </div>
 
-        <div class="form-group" :class="{ error: errors.nickname, success: touched.nickname && !errors.nickname }">
-          <label for="nickname">닉네임</label>
-          <input
-            id="nickname"
-            v-model="form.nickname"
-            type="text"
-            placeholder="게임에서 사용할 닉네임"
-            autocomplete="nickname"
-            @blur="validateField('nickname')"
-            @input="clearError('nickname')"
-          />
+        <!-- 닉네임 -->
+        <div class="field-wrap" :class="{ error: errors.nickname }">
+          <label class="field-label">닉네임 <span class="req">필수</span></label>
+          <div class="input-row">
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6Z" />
+            </svg>
+            <input
+              v-model="form.nickname"
+              type="text"
+              placeholder="게임에서 사용할 닉네임"
+              autocomplete="nickname"
+              @blur="validateField('nickname')"
+              @input="clearError('nickname')"
+            />
+          </div>
           <span class="field-msg" v-if="errors.nickname">{{ errors.nickname }}</span>
           <span class="field-msg success" v-else-if="touched.nickname && form.nickname">사용 가능한 닉네임이에요</span>
         </div>
 
-        <div class="form-group" :class="{ error: errors.email, success: touched.email && !errors.email }">
-          <label for="email">이메일</label>
-          <input
-            id="email"
-            v-model="form.email"
-            type="email"
-            placeholder="your@email.com"
-            autocomplete="email"
-            @blur="validateField('email')"
-            @input="clearError('email')"
-          />
+        <!-- 이메일 -->
+        <div class="field-wrap" :class="{ error: errors.email }">
+          <label class="field-label">이메일 <span class="req">필수</span></label>
+          <div class="input-row">
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+            </svg>
+            <input
+              v-model="form.email"
+              type="email"
+              placeholder="your@email.com"
+              autocomplete="email"
+              @blur="validateField('email')"
+              @input="clearError('email')"
+            />
+          </div>
           <span class="field-msg" v-if="errors.email">{{ errors.email }}</span>
         </div>
 
-        <div class="form-group" :class="{ error: errors.password, success: touched.password && !errors.password }">
-          <label for="password">비밀번호</label>
-          <div class="input-with-toggle">
+        <!-- 비밀번호 -->
+        <div class="field-wrap" :class="{ error: errors.password }">
+          <label class="field-label">비밀번호 <span class="req">필수</span></label>
+          <div class="input-row">
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+            </svg>
             <input
-              id="password"
               v-model="form.password"
               :type="showPassword ? 'text' : 'password'"
               placeholder="8자 이상"
@@ -66,42 +84,70 @@
               @input="clearError('password')"
             />
             <button type="button" class="toggle-pw" @click="showPassword = !showPassword" tabindex="-1">
-              {{ showPassword ? '숨기기' : '보기' }}
+              <svg v-if="showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+              </svg>
+              <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+              </svg>
             </button>
           </div>
-      
           <span class="field-msg" v-if="errors.password">{{ errors.password }}</span>
         </div>
 
-        <div class="form-group" :class="{ error: errors.passwordConfirm, success: touched.passwordConfirm && !errors.passwordConfirm }">
-          <label for="passwordConfirm">비밀번호 확인</label>
-          <input
-            id="passwordConfirm"
-            v-model="form.passwordConfirm"
-            type="password"
-            placeholder="비밀번호 재입력"
-            autocomplete="new-password"
-            @blur="validateField('passwordConfirm')"
-            @input="clearError('passwordConfirm')"
-          />
+        <!-- 비밀번호 확인 -->
+        <div class="field-wrap" :class="{ error: errors.passwordConfirm }">
+          <label class="field-label">비밀번호 확인 <span class="req">필수</span></label>
+          <div class="input-row">
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+            </svg>
+            <input
+              v-model="form.passwordConfirm"
+              type="password"
+              placeholder="비밀번호 재입력"
+              autocomplete="new-password"
+              @blur="validateField('passwordConfirm')"
+              @input="clearError('passwordConfirm')"
+            />
+          </div>
           <span class="field-msg" v-if="errors.passwordConfirm">{{ errors.passwordConfirm }}</span>
           <span class="field-msg success" v-else-if="touched.passwordConfirm && form.passwordConfirm && form.password === form.passwordConfirm">비밀번호가 일치해요</span>
         </div>
 
-        <div class="form-group" :class="{ error: errors.birth_date }">
-          <label for="birth_date">생년월일</label>
-          <input
-            id="birth_date"
-            v-model="form.birth_date"
-            type="date"
-            :max="maxDate"
-            @blur="validateField('birth_date')"
-          />
+        <!-- 생년월일 -->
+        <div class="field-wrap" :class="{ error: errors.birth_date }">
+          <label class="field-label">생년월일 <span class="req">필수</span></label>
+          <div class="birth-row">
+            <div class="input-row birth-first">
+              <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+              </svg>
+              <select v-model="birthYear" @change="syncBirthDate" class="select-input">
+                <option value="">년</option>
+                <option v-for="y in yearOptions" :key="y" :value="y">{{ y }}년</option>
+              </select>
+            </div>
+            <div class="input-row">
+              <select v-model="birthMonth" @change="syncBirthDate" class="select-input">
+                <option value="">월</option>
+                <option v-for="m in 12" :key="m" :value="String(m).padStart(2,'0')">{{ m }}월</option>
+              </select>
+            </div>
+            <div class="input-row">
+              <select v-model="birthDay" @change="syncBirthDate" class="select-input">
+                <option value="">일</option>
+                <option v-for="d in dayOptions" :key="d" :value="String(d).padStart(2,'0')">{{ d }}일</option>
+              </select>
+            </div>
+          </div>
           <span class="field-msg" v-if="errors.birth_date">{{ errors.birth_date }}</span>
         </div>
 
-        <div class="form-group terms-group">
-          <label class="checkbox-label">
+        <!-- 이용약관 -->
+        <div class="field-wrap">
+          <label class="check-label">
             <input type="checkbox" v-model="form.agreed" />
             <span class="custom-check"></span>
             <span>이용약관 및 개인정보처리방침에 동의합니다</span>
@@ -109,19 +155,16 @@
           <span class="field-msg" v-if="errors.agreed">{{ errors.agreed }}</span>
         </div>
 
-        <div class="form-error-banner" v-if="apiError">{{ apiError }}</div>
+        <div class="error-banner" v-if="apiError">{{ apiError }}</div>
 
-        <button type="submit" class="btn-primary" :disabled="isLoading">
+        <button type="submit" class="btn-submit" :disabled="isLoading">
           <span v-if="isLoading" class="spinner"></span>
           <span v-else>가입하기</span>
         </button>
 
       </form>
 
-      <div class="auth-footer">
-        이미 계정이 있으신가요?
-        <router-link to="/login">로그인</router-link>
-      </div>
+      <router-link to="/login" class="btn-login-link">이미 계정이 있으신가요?</router-link>
 
     </div>
   </div>
@@ -152,13 +195,34 @@ const showPassword = ref(false)
 const isLoading = ref(false)
 const apiError = ref('')
 
-const maxDate = computed(() => {
-  const d = new Date()
-  d.setFullYear(d.getFullYear() - 14)
-  return d.toISOString().split('T')[0]
+const birthYear  = ref('')
+const birthMonth = ref('')
+const birthDay   = ref('')
+
+const currentYear = new Date().getFullYear()
+const minYear = currentYear - 100
+const maxYear = currentYear
+
+const yearOptions = computed(() => {
+  const arr = []
+  for (let y = maxYear; y >= minYear; y--) arr.push(y)
+  return arr
 })
 
+const dayOptions = computed(() => {
+  if (!birthYear.value || !birthMonth.value) return Array.from({ length: 31 }, (_, i) => i + 1)
+  const days = new Date(Number(birthYear.value), Number(birthMonth.value), 0).getDate()
+  return Array.from({ length: days }, (_, i) => i + 1)
+})
 
+function syncBirthDate() {
+  if (birthYear.value && birthMonth.value && birthDay.value) {
+    form.birth_date = `${birthYear.value}-${birthMonth.value}-${birthDay.value}`
+  } else {
+    form.birth_date = ''
+  }
+  validateField('birth_date')
+}
 
 const rules = {
   username: (v) => {
@@ -245,174 +309,203 @@ const handleRegister = async () => {
 </script>
 
 <style scoped>
-/* ── 레이아웃 ── */
-.auth-wrapper {
+/* ── 페이지 레이아웃 ── */
+.register-page {
   min-height: 100vh;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f7f7f5;
-  padding: 40px 16px;
+  align-items: flex-start;
+  justify-content: flex-end;
+  position: relative;
+  padding: 48px 0;
+  background: #FFF7E6;
 }
 
-.auth-card {
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 24px rgba(0,0,0,0.05);
-  padding: 48px 44px;
+.page-bg {
+  position: fixed;
+  inset: 0;
   width: 100%;
-  max-width: 440px;
+  height: 100%;
+  object-fit: cover;
+  object-position: left top;
+  pointer-events: none;
+  user-select: none;
 }
 
-/* ── 헤더 ── */
-.auth-header {
-  text-align: center;
-  margin-bottom: 36px;
+/* ── 카드 ── */
+.register-card {
+  position: relative;
+  z-index: 10;
+  background: rgba(255, 253, 247, 0.96);
+  border-radius: 24px;
+  padding: 44px 44px;
+  width: 460px;
+  margin-right: 80px;
+  box-shadow: 0 8px 48px rgba(58,36,16,0.18);
+  backdrop-filter: blur(2px);
 }
 
-.logo {
-  font-size: 22px;
-  font-weight: 700;
+/* ── 타이틀 ── */
+.card-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: #3A2410;
+  margin: 0 0 10px;
+  line-height: 1.35;
   letter-spacing: -0.5px;
-  color: #111;
-  margin-bottom: 20px;
 }
 
-.auth-header h1 {
-  font-size: 24px;
-  font-weight: 700;
-  color: #111;
-  margin: 0 0 8px;
-  letter-spacing: -0.5px;
-}
-
-.auth-header p {
+.card-sub {
   font-size: 14px;
-  color: #888;
-  margin: 0;
+  color: #6B5A45;
+  margin: 0 0 24px;
 }
 
 /* ── 폼 ── */
-.auth-form {
+.register-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
-.form-group {
+.field-wrap {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 
-label {
-  font-size: 13px;
+.field-label {
+  font-size: 12px;
   font-weight: 600;
-  color: #333;
+  color: #6B5A45;
 }
 
-input[type="text"],
-input[type="email"],
-input[type="password"],
-input[type="date"] {
-  width: 100%;
-  padding: 11px 14px;
-  border: 1.5px solid #e8e8e8;
-  border-radius: 10px;
-  font-size: 14px;
-  color: #111;
-  background: #fafafa;
-  outline: none;
-  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
-  box-sizing: border-box;
+.req {
+  font-size: 11px;
+  font-weight: 400;
+  color: #9e9585;
+  margin-left: 2px;
 }
 
-input:focus {
-  border-color: #111;
+/* ── 인풋 행 ── */
+.input-row {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid #D8C4A3;
+  border-radius: 12px;
   background: #fff;
-  box-shadow: 0 0 0 3px rgba(17,17,17,0.06);
+  transition: border-color 0.15s, box-shadow 0.15s;
+  overflow: hidden;
 }
 
-.form-group.error input {
+.input-row:focus-within {
+  border-color: #D97706;
+  box-shadow: 0 0 0 3px rgba(217,119,6,0.1);
+}
+
+.field-wrap.error .input-row {
   border-color: #e53e3e;
-  background: #fff8f8;
 }
 
-.form-group.success input {
-  border-color: #38a169;
+.field-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: #9e9585;
+  margin-left: 13px;
 }
+
+.input-row input {
+  flex: 1;
+  padding: 12px 12px;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  color: #3A2410;
+  outline: none;
+  font-family: inherit;
+}
+
+.input-row input::placeholder { color: #b0a090; }
 
 /* ── 비밀번호 토글 ── */
-.input-with-toggle {
-  position: relative;
-}
-
-.input-with-toggle input {
-  padding-right: 60px;
-}
-
 .toggle-pw {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
   background: none;
   border: none;
-  font-size: 12px;
-  color: #888;
+  padding: 0 13px;
   cursor: pointer;
-  padding: 4px;
-  font-weight: 500;
+  color: #9e9585;
+  display: flex;
+  align-items: center;
+}
+.toggle-pw:hover { color: #3A2410; }
+.toggle-pw svg { width: 17px; height: 17px; }
+
+/* ── 생년월일 ── */
+.birth-row {
+  display: flex;
+  gap: 8px;
 }
 
-.toggle-pw:hover { color: #111; }
+.birth-row .input-row { flex: 1; }
+.birth-first { flex: 1.4 !important; }
+
+.select-input {
+  flex: 1;
+  padding: 12px 8px 12px 4px;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  color: #3A2410;
+  outline: none;
+  font-family: inherit;
+  cursor: pointer;
+  appearance: none;
+  min-width: 0;
+}
+
+.select-input option { color: #3A2410; }
 
 /* ── 메시지 ── */
 .field-msg {
   font-size: 12px;
   color: #e53e3e;
+  padding-left: 4px;
 }
 
-.field-msg.success {
-  color: #38a169;
-}
+.field-msg.success { color: #38a169; }
 
 /* ── 체크박스 ── */
-.terms-group { gap: 8px; }
-
-.checkbox-label {
+.check-label {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   cursor: pointer;
   font-size: 13px;
-  color: #444;
-  font-weight: 400;
+  color: #6B5A45;
 }
 
-.checkbox-label input[type="checkbox"] {
-  display: none;
-}
+.check-label input[type="checkbox"] { display: none; }
 
 .custom-check {
   width: 18px;
   height: 18px;
   min-width: 18px;
-  border: 1.5px solid #ddd;
+  border: 1.5px solid #D8C4A3;
   border-radius: 5px;
-  background: #fafafa;
+  background: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: border-color 0.15s, background 0.15s;
 }
 
-.checkbox-label input:checked + .custom-check {
-  background: #111;
-  border-color: #111;
+.check-label input:checked + .custom-check {
+  background: #D97706;
+  border-color: #D97706;
 }
 
-.checkbox-label input:checked + .custom-check::after {
+.check-label input:checked + .custom-check::after {
   content: '';
   display: block;
   width: 5px;
@@ -424,25 +517,25 @@ input:focus {
 }
 
 /* ── 에러 배너 ── */
-.form-error-banner {
+.error-banner {
   background: #fff5f5;
   border: 1px solid #fed7d7;
   color: #c53030;
   font-size: 13px;
-  padding: 12px 14px;
-  border-radius: 8px;
+  padding: 10px 14px;
+  border-radius: 10px;
 }
 
 /* ── 버튼 ── */
-.btn-primary {
+.btn-submit {
   width: 100%;
-  padding: 13px;
-  background: #111;
+  padding: 14px;
+  background: #D97706;
   color: #fff;
   border: none;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: 600;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
   cursor: pointer;
   transition: background 0.15s, transform 0.1s;
   display: flex;
@@ -450,46 +543,63 @@ input:focus {
   justify-content: center;
   gap: 8px;
   margin-top: 4px;
+  font-family: inherit;
 }
+.btn-submit:hover:not(:disabled) { background: #B45309; }
+.btn-submit:active:not(:disabled) { transform: scale(0.99); }
+.btn-submit:disabled { background: #e8c07a; cursor: not-allowed; }
 
-.btn-primary:hover:not(:disabled) { background: #222; }
-.btn-primary:active:not(:disabled) { transform: scale(0.99); }
-.btn-primary:disabled { background: #ccc; cursor: not-allowed; }
+.btn-login-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 13px;
+  background: transparent;
+  color: #D97706;
+  border: 1.5px solid #D97706;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.15s;
+  margin-top: 10px;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+.btn-login-link:hover { background: #FFF0D6; }
 
 /* ── 스피너 ── */
 .spinner {
   width: 16px;
   height: 16px;
-  border: 2px solid rgba(255,255,255,0.3);
+  border: 2px solid rgba(255,255,255,0.4);
   border-top-color: #fff;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
-
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── 푸터 ── */
-.auth-footer {
-  margin-top: 28px;
-  text-align: center;
-  font-size: 13px;
-  color: #888;
-}
-
-.auth-footer a {
-  color: #111;
-  font-weight: 600;
-  text-decoration: none;
-  margin-left: 4px;
-}
-
-.auth-footer a:hover { text-decoration: underline; }
-
 /* ── 반응형 ── */
-@media (max-width: 480px) {
-  .auth-card {
-    padding: 36px 24px;
-    border-radius: 12px;
+@media (max-width: 900px) {
+  .register-card {
+    margin-right: 40px;
+    width: 420px;
+    padding: 40px 36px;
+  }
+}
+
+@media (max-width: 600px) {
+  .register-page {
+    justify-content: center;
+    padding: 40px 0;
+  }
+  .register-card {
+    margin: 0 16px;
+    width: 100%;
+    max-width: 460px;
+    border-radius: 20px;
+    padding: 36px 28px;
   }
 }
 </style>

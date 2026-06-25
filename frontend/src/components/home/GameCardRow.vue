@@ -65,7 +65,6 @@ function formatPrice(price) {
   height: 100%;
   box-sizing: border-box;
   font-family: 'Pretendard', sans-serif;
-  align-items: flex-start;
 }
 .row-card:hover {
   box-shadow: 0 4px 12px rgba(58, 36, 16, 0.1);
@@ -77,7 +76,6 @@ function formatPrice(price) {
   border-radius: 10px;
   overflow: hidden;
   background: #FFF0D6;
-  margin-top: 5px;
 }
 .row-thumb img {
   width: 100%; height: 100%; object-fit: cover;

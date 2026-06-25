@@ -69,6 +69,7 @@ const ENDPOINTS = {
     count: '/accounts/notifications/count/',                       // GET    🔒  읽지 않은 수
     readAll: '/accounts/notifications/read-all/',                  // POST   🔒  전체 읽음
     read: (id) => `/accounts/notifications/${id}/read/`,          // PATCH  🔒  단건 읽음
+    delete: (id) => `/accounts/notifications/${id}/`,             // DELETE 🔒  단건 삭제
   },
 }
 

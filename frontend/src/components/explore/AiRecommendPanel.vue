@@ -17,6 +17,7 @@
         placeholder="예) 스토리가 좋은 픽셀 그래픽 RPG 추천해줘"
         maxlength="300"
         @focus="$emit('activate')"
+        @keydown.enter.exact.prevent="handleSubmit"
       ></textarea>
       <div class="char-count">{{ prompt.length }} / 300</div>
     </div>

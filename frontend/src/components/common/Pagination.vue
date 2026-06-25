@@ -1,6 +1,6 @@
 <template>
   <nav v-if="totalPages > 1" class="pagination">
-    <button class="pg-btn" :disabled="currentPage === 1" @click="jump(-window)" aria-label="이전 묶음">«</button>
+    <button class="pg-btn" :disabled="currentPage === 1" @click="go(1)" aria-label="첫 페이지">«</button>
     <button class="pg-btn" :disabled="currentPage === 1" @click="go(currentPage - 1)" aria-label="이전">‹</button>
     <button
       v-for="p in pages"
@@ -10,7 +10,7 @@
       @click="go(p)"
     >{{ p }}</button>
     <button class="pg-btn" :disabled="currentPage === totalPages" @click="go(currentPage + 1)" aria-label="다음">›</button>
-    <button class="pg-btn" :disabled="currentPage === totalPages" @click="jump(window)" aria-label="다음 묶음">»</button>
+    <button class="pg-btn" :disabled="currentPage === totalPages" @click="go(totalPages)" aria-label="마지막 페이지">»</button>
   </nav>
 </template>
 

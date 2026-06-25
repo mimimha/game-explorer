@@ -185,12 +185,14 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { RouterLink, useRouter, useRoute } from 'vue-router'
 import { communityAPI } from '@/api/services'
 import { useAuthStore } from '@/stores/auth'
+import { useNotificationStore } from '@/stores/notifications'
 import defaultAvatar from '@/assets/profile.png'
 import PostBlockEditor from '@/components/community/PostBlockEditor.vue'
 
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
+const notificationStore = useNotificationStore()
 
 const TABS = [
   { label: '전체', value: '' },
@@ -317,6 +319,7 @@ async function submitPost() {
         content,
         category: postForm.value.category,
       })
+      notificationStore.refresh()
       closeModal()
       router.push({ name: 'post-detail', params: { postId: data.id } })
     } else {
@@ -334,6 +337,7 @@ async function submitPost() {
       const postId = data.id
       const finalContent = await uploadAndBuildContent(blocks, postId)
       await communityAPI.updatePost(postId, { content: finalContent })
+      notificationStore.refresh()
       closeModal()
       router.push({ name: 'post-detail', params: { postId } })
     }

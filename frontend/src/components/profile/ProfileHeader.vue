@@ -108,7 +108,7 @@ function onAvatarChange(e) {
   background: #fff;
   border: 1px solid #e8e4d9;
   border-radius: 16px;
-  padding: 28px 32px;
+  padding: 28px 165px 28px 32px; /* 오른쪽 여백: 절대위치 버튼(~120px) + 우측 기본(24px) + 여유 */
 }
 .profile-main {
   display: flex;
@@ -153,8 +153,17 @@ function onAvatarChange(e) {
   align-items: center;
   gap: 10px;
   margin-bottom: 6px;
+  overflow: hidden;
 }
-.nickname { font-size: 20px; font-weight: 700; color: #1a1510; margin: 0; margin-left: 8px;}
+.nickname {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1510;
+  margin: 0;
+  margin-left: 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
 
 .email {
   display: flex;
@@ -245,10 +254,40 @@ function onAvatarChange(e) {
   font-weight: 600;
   padding: 3px 10px;
   border-radius: 20px;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 .rank-beginner { background: #f5f0e8; color: #6b6256; }
 .rank-skilled  { background: #fef0d9; color: #c96012; }
 .rank-master   { background: #fff8e1; color: #b8860b; }
+
+/* 뱃지: 공간이 부족한 화면에서 완전히 숨김 */
+@media (max-width: 640px) {
+  .rank-badge {
+    display: none;
+  }
+}
+
+/* 좁은 화면: 버튼을 상단으로 올리고 패딩 조정 */
+@media (max-width: 500px) {
+  .profile-card {
+    padding: 60px 20px 20px;
+  }
+  .btn-edit, .btn-follow {
+    top: 14px;
+    right: 16px;
+  }
+  .profile-main {
+    gap: 14px;
+  }
+  .avatar {
+    width: 90px;
+    height: 90px;
+  }
+  .nickname { margin-left: 0; }
+  .email { margin-left: 0; }
+  .action-row { margin-top: 16px; margin-left: 0; }
+}
 
 /* Birthday card */
 .birthday-card {

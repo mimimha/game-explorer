@@ -216,12 +216,14 @@ import { ref, computed, onMounted, nextTick } from 'vue'
 import { RouterLink, useRouter, useRoute } from 'vue-router'
 import { communityAPI } from '@/api/services'
 import { useAuthStore } from '@/stores/auth'
+import { useNotificationStore } from '@/stores/notifications'
 import defaultAvatar from '@/assets/profile.png'
 import PostBlockEditor from '@/components/community/PostBlockEditor.vue'
 
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
+const notificationStore = useNotificationStore()
 const postId = computed(() => Number(route.params.postId))
 
 const post = ref(null)
@@ -393,6 +395,7 @@ async function submitComment() {
     const { data } = await communityAPI.createComment(postId.value, { content: newComment.value.trim() })
     comments.value.push(data)
     newComment.value = ''
+    notificationStore.refresh()
   } catch {
     alert('댓글 등록에 실패했어요.')
   } finally {

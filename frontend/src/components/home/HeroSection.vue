@@ -13,8 +13,8 @@ import heroImg from '@/assets/hero.png'
         <span class="hero-highlight">방구석 탐험대와 함께</span>
       </h1>
       <p>
-        당신의 취향에 맞는 멋진 계획을 추천받고<br />
-        다양한 커뮤니티를 만나보세요.
+        당신의 취향에 맞는 멋진 게임을 추천받고<br />
+        다양한 세상을 만나보세요.
       </p>
       <div class="hero-buttons">
         <RouterLink to="/explore" class="hero-btn-primary">탐험 시작하기 ›</RouterLink>

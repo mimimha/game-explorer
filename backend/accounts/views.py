@@ -198,6 +198,16 @@ class NotificationReadAllView(APIView):
         return Response({'ok': True})
 
 
+class NotificationDeleteView(APIView):
+    """DELETE /accounts/notifications/{notif_id}/  단건 삭제"""
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, notif_id):
+        notif = get_object_or_404(Notification, pk=notif_id, recipient=request.user)
+        notif.delete()
+        return Response({'ok': True}, status=204)
+
+
 class MyPageView(APIView):
     """GET /accounts/mypage/  마이페이지 집계"""
     permission_classes = [IsAuthenticated]

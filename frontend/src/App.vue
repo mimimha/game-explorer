@@ -4,7 +4,7 @@
       v-show="compassVisible"
       :src="compassImg"
       class="compass-follower"
-      :style="{ left: compassX + 'px', top: compassY + 'px' }"
+      ref="compassEl"
       alt=""
     />
     <nav class="nav">
@@ -40,7 +40,7 @@
             @hover="onNavSuggestHover"
           />
         </form>
-        <NotificationBubble v-if="authStore.isLoggedIn" />
+        <div class="notif-wrap"><NotificationBubble v-if="authStore.isLoggedIn" /></div>
 
         <template v-if="authStore.isLoggedIn">
           <RouterLink to="/profile" class="nav-link profile-link">
@@ -53,8 +53,8 @@
           <button class="btn btn-outline" @click="handleLogout">로그아웃</button>
         </template>
         <template v-else>
-          <RouterLink :to="{ name: 'login' }" class="btn btn-outline">로그인</RouterLink>
-          <RouterLink :to="{ name: 'register' }" class="btn btn-primary">회원가입</RouterLink>
+          <RouterLink :to="{ name: 'login' }" class="btn btn-outline" @click.prevent="goLogin">로그인</RouterLink>
+          <RouterLink :to="{ name: 'register' }" class="btn btn-primary" @click.prevent="goRegister">회원가입</RouterLink>
         </template>
       </div>
     </nav>
@@ -81,14 +81,15 @@ const route = useRoute()
 const authStore = useAuthStore()
 const exploreStore = useExploreStore()
 
-const compassX = ref(0)
-const compassY = ref(0)
+const compassEl = ref(null)
 const compassVisible = ref(false)
 
 function onMouseMove(e) {
-  compassX.value = e.clientX + 39
-  compassY.value = e.clientY + 28
-  compassVisible.value = true
+  if (!compassVisible.value) compassVisible.value = true
+  if (compassEl.value) {
+    compassEl.value.style.left = (e.clientX + 39) + 'px'
+    compassEl.value.style.top  = (e.clientY + 28) + 'px'
+  }
 }
 
 function handleExploreClick() {
@@ -119,6 +120,22 @@ function onSelectSuggestion(s) {
   keyword.value = ''
   suggestClear()
   router.push({ name: 'game-detail', params: { id: s.game_id } })
+}
+
+function goLogin() {
+  if (router.currentRoute.value.name === 'login') {
+    window.location.reload()
+  } else {
+    router.push({ name: 'login' })
+  }
+}
+
+function goRegister() {
+  if (router.currentRoute.value.name === 'register') {
+    window.location.reload()
+  } else {
+    router.push({ name: 'register' })
+  }
 }
 
 function onSearch() {
@@ -153,6 +170,11 @@ onUnmounted(() => {
   document.getElementById('custom-cursor-style')?.remove()
 })
 </script>
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { margin: 0; padding: 0; }
+</style>
 
 <style scoped>
 .app {
@@ -223,9 +245,9 @@ onUnmounted(() => {
   position: relative;
   display: flex;
   align-items: center;
-  flex: 1;
   min-width: 0;
-  max-width: 300px;
+  max-width: 260px;
+  width: 260px;
 }
 
 .search-icon {
@@ -238,7 +260,7 @@ onUnmounted(() => {
 
 .nav-search input {
   width: 100%;
-  min-width: 120px;
+  min-width: 80px;
   padding: 9px 16px 9px 38px;
   border-radius: 999px;
   border: 1px solid #D8C4A3;
@@ -261,7 +283,8 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 12px;
-  flex-shrink: 0;
+  flex-shrink: 1;
+  min-width: 0;
 }
 
 .icon-btn {
@@ -338,5 +361,27 @@ onUnmounted(() => {
 }
 .btn-primary:hover {
   background: #B45309;
+}
+
+@media (max-width: 1100px) {
+  .nav-search {
+    width: 180px;
+    max-width: 180px;
+  }
+}
+@media (max-width: 900px) {
+  .nav-search {
+    width: 130px;
+    max-width: 130px;
+  }
+  .notif-wrap {
+    display: none;
+  }
+}
+@media (max-width: 750px) {
+  .nav-search {
+    width: 90px;
+    max-width: 90px;
+  }
 }
 </style>
