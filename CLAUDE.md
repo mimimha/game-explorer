@@ -4,17 +4,22 @@
 
 ## 게임 데이터 파이프라인 (backend/games)
 
-게임 데이터는 외부 API에서 수집한다. **`db.sqlite3`를 git으로 직접 공유한다** — 로그인 정보·게임 데이터·한글 번역이 모두 DB에 들어있어 파일째 공유한다. (기존엔 `games.json` fixture로 공유했으나, 로그인 등 공유 필요로 DB 파일 자체를 추적 대상으로 전환함.)
+게임 데이터는 외부 API에서 수집한다. **`db.sqlite3`는 `.gitignore` 대상이라 git으로 공유되지 않으며**, 공유는 JSON fixture(`backend/games/fixtures/games.json`)로 한다. (한때 db.sqlite3를 직접 커밋했으나, 바이너리 병합 충돌·마이그레이션 꼬임 때문에 fixture 공유로 되돌렸다.)
 
 - **수집**: `python manage.py load_games` — RAWG(메타) + Steam(가격·인원) + YouTube(영상). 외부 API라 느리고 YouTube는 일일 쿼터(10,000 units = 100 검색)가 있다. 장르/태그 한정: `--genres indie`, `--tags horror,pixel-graphics`, `--no-youtube`(영상 생략·쿼터 절약).
 - **기존 데이터 보강**: `python manage.py backfill_meta` — playtime/플레이인원/무드만 채움(영상·스크린샷 미호출 → YouTube 쿼터 보호). `--moods-only`는 무드만 갱신.
-- **한글 번역**: `title_ko`/`description_ko`는 **Claude가 직접 번역**해 채운다(GMS 토큰 미사용). 결과는 db.sqlite3에 저장. `games.json` 백업이 필요하면 `PYTHONUTF8=1 python manage.py dumpdata games --indent 2 -o games/fixtures/games.json`(**`PYTHONUTF8=1` 필수** — 없으면 cp949로 한글 깨짐).
+- **한글 번역**: `title_ko`/`description_ko`는 **Claude가 직접 번역**해 채운다(GMS 토큰 미사용). 결과는 db에 저장 → fixture로 공유.
+- **표지 시각 소재**: `thumbnail_subjects`는 `backfill_thumbnails`(GMS 비전 `gpt-4.1-mini`)로 표지를 분석해 채운다.
+- **공유(내보내기)**: `PYTHONUTF8=1 python manage.py dumpdata games --exclude games.SearchLog --indent 2 -o games/fixtures/games.json` 로 내보내 커밋.
+  - **`PYTHONUTF8=1` 필수** — 없으면 Windows cp949로 한글이 깨진다.
+  - **`--exclude games.SearchLog` 필수** — SearchLog는 사용자 종속(검색 기록)이라, fixture에 섞이면 팀원 DB에 없는 user FK를 참조해 `loaddata`가 깨진다.
+- **받기**: `git pull` → `python manage.py migrate` → `python manage.py loaddata games`.
 
-### ⚠️ db.sqlite3 팀 공유 규칙 (중요)
+### ⚠️ DB·마이그레이션 주의
 
-- **DB 담당자 1명만** db.sqlite3를 갱신·커밋한다. SQLite는 바이너리라 git 병합이 안 돼서, 두 명이 각자 바꿔 커밋하면 한쪽이 통째로 덮어쓴다.
-- 팀원은 받은 db.sqlite3를 **그대로 사용**하고 `migrate`를 돌리지 않는다(이미 세팅됨). 이 저장소는 마이그레이션 드리프트가 있어, 빈 DB에서 새로 migrate하면 `mood`/`game_video.video_type` 등이 누락될 수 있다 → 그래서 DB 파일 공유로 우회한다.
-- `db.sqlite3-journal`은 계속 `.gitignore` 대상(임시 파일).
+- **팀원 pull 후 반드시 `python manage.py migrate`** — mood·searchlog·notification·thumbnail_subjects 등 테이블이 생성된다. 안 하면 `no such table … 500`.
+- db.sqlite3는 각자 로컬(유저·로그·찜은 개인별). 게임 데이터만 fixture로 공유.
+- `db.sqlite3`, `db.sqlite3-journal`은 `.gitignore` 대상.
 
 ### 필드별 소스 우선순위 (없으면 null/빈칸)
 
