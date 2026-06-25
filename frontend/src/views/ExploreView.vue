@@ -258,6 +258,7 @@ function buildParams() {
     if (f.playModes?.length) params.player_mode = f.playModes
     if (f.playtime && f.playtime !== 'all') params.playtime_bucket = f.playtime
     if (f.onSale) params.on_sale = true
+    if (f.isKorean) params.is_korean = true
     if (f.rating && f.rating !== 'all') params.metacritic_gte = f.rating
     if (f.price === 'free') params.free = true
     else if (f.price === '20000+') params.price_gte = 20000

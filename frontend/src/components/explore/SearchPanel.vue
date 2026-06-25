@@ -172,15 +172,15 @@
         </div>
       </div>
 
-      <!-- 할인 중 (토글) -->
-      <div v-if="onSaleCount > 0" class="frow">
+      <!-- 기타 (토글) -->
+      <div class="frow">
         <span class="flabel">기타</span>
         <div class="chips">
           <button
             class="chip"
-            :class="{ on: filters.onSale }"
-            @click.stop="filters.onSale = !filters.onSale"
-          >할인 중</button>
+            :class="{ on: filters.isKorean }"
+            @click.stop="filters.isKorean = !filters.isKorean"
+          >한국어 지원</button>
         </div>
       </div>
     </template>
@@ -295,6 +295,7 @@ const filters = ref({
   price: 'all',      // all | free | 5000 | 10000 | 20000 | 20000+
   rating: 'all',     // all | 90 | 80 | 70
   onSale: false,
+  isKorean: false,
 })
 
 const genreOptions = computed(() =>
@@ -413,6 +414,7 @@ function handleSubmit() {
       price: filters.value.price,
       rating: filters.value.rating,
       onSale: filters.value.onSale,
+      isKorean: filters.value.isKorean,
     },
   })
 }
@@ -421,7 +423,7 @@ function reset() {
   keyword.value = ''
   filters.value = {
     genres: [], platforms: [], moods: [], playModes: [], playtime: 'all',
-    price: 'all', rating: 'all', onSale: false,
+    price: 'all', rating: 'all', onSale: false, isKorean: false,
   }
   emit('reset')
 }

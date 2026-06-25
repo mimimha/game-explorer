@@ -56,7 +56,7 @@
 
     <!-- 태그 칩들 -->
     <div class="tag-chips">
-      <span v-if="game.supports_korean" class="chip">한국어 지원</span>
+      <span v-if="game.is_korean" class="chip">한국어 지원</span>
       <span v-if="game.required_age"    class="chip">{{ game.required_age }}세 이상</span>
       <span v-if="!game.is_online"      class="chip">오프라인</span>
       <!-- <span                              class="chip">{{ game.release_status }}</span> -->
