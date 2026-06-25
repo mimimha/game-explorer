@@ -7,9 +7,14 @@ import RegisterView from '@/views/RegisterView.vue'
 import ProfileView from '@/views/ProfileView.vue'
 import CommunityView from '@/views/CommunityView.vue'
 import PostDetailView from '@/views/PostDetailView.vue'
+import WishlistView from '@/views/WishlistView.vue'
+import ErrorView from '@/views/ErrorView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
+  scrollBehavior() {
+    return { top: 0 }
+  },
   routes: [
     {
       path: '/',
@@ -28,12 +33,12 @@ const router = createRouter({
   },
   {
     path: '/login',
-    name: 'Login',
+    name: 'login',
     component: LoginView,
   },
   {
     path: '/register',
-    name: 'Register',
+    name: 'register',
     component: RegisterView,
   },
   {
@@ -56,6 +61,17 @@ const router = createRouter({
     path: '/community/:postId',
     name: 'post-detail',
     component: PostDetailView,
+  },
+  {
+    path: '/wishlist',
+    name: 'wishlist',
+    component: WishlistView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'error',
+    component: ErrorView,
   },
   ],
 })

@@ -7,35 +7,70 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
         </svg>
       </h2>
-      <p class="desc">키워드와 필터로 원하는 게임을 찾아보세요. (실제 보유 데이터 기준)</p>
+      <p class="desc">키워드와 필터로 원하는 게임을 찾아보세요.</p>
     </div>
 
-    <div class="search-wrap">
+    <div ref="searchWrapRef" class="search-wrap">
       <input
         v-model="keyword"
         type="text"
-        placeholder="게임 제목을 검색하세요"
+        placeholder="게임을 검색하세요"
         class="search-input"
+        autocomplete="off"
         @focus="$emit('activate')"
-        @keydown.enter="handleSubmit"
+        @input="onSuggestInput"
+        @keydown="onSuggestKeydown"
       />
       <button class="search-btn" @click.stop="handleSubmit">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="16">
           <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
         </svg>
       </button>
+      <GameSuggestDropdown
+        :suggestions="suggestions"
+        :active-idx="activeIdx"
+        @select="onSuggestSelect"
+        @hover="onSuggestHover"
+      />
     </div>
 
-    <div class="filter-bar">
+    <div class="filter-bar" @click.stop="showFilters = !showFilters">
       <div class="filter-bar-left">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="14">
           <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
         </svg>
         필터
+        <svg
+          xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+          stroke-width="2" stroke="currentColor" width="13"
+          class="chevron" :class="{ open: showFilters }"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+        </svg>
       </div>
-      <button class="reset-btn" @click.stop="reset">초기화 ↺</button>
+      <button v-if="showFilters" class="reset-btn" @click.stop="reset">초기화 ↺</button>
     </div>
 
+    <div v-if="!showFilters" class="filter-hint">
+      <div class="filter-hint-tags">
+        <span class="hint-tag">장르</span>
+        <span class="hint-sep">·</span>
+        <span class="hint-tag">분위기</span>
+        <span class="hint-sep">·</span>
+        <span class="hint-tag">플레이타임</span>
+        <span class="hint-sep">·</span>
+        <span class="hint-tag">인원</span>
+        <span class="hint-sep">·</span>
+        <span class="hint-tag">플랫폼</span>
+        <span class="hint-sep">·</span>
+        <span class="hint-tag">가격</span>
+        <span class="hint-sep">·</span>
+        <span class="hint-tag">평점</span>
+      </div>
+      <p class="filter-hint-desc">위 항목으로 원하는 게임을 골라볼 수 있어요</p>
+    </div>
+
+    <template v-if="showFilters">
     <div v-if="loading" class="opt-loading">필터 불러오는 중…</div>
 
     <template v-else>
@@ -49,7 +84,49 @@
             class="chip"
             :class="{ on: filters.genres.includes(g.id) }"
             @click.stop="toggleGenre(g.id)"
-          >{{ g.label }} <span class="cnt">{{ g.count }}</span></button>
+          >{{ g.label }}</button>
+        </div>
+      </div>
+
+      <!-- 분위기/무드 (다중) -->
+      <div v-if="moodOptions.length" class="frow">
+        <span class="flabel">분위기</span>
+        <div class="chips">
+          <button
+            v-for="m in moodOptions"
+            :key="m.id"
+            class="chip"
+            :class="{ on: filters.moods.includes(m.id) }"
+            @click.stop="toggleMood(m.id)"
+          >{{ m.label }}</button>
+        </div>
+      </div>
+
+      <!-- 플레이타임 (단일) -->
+      <div v-if="playtimeOptions.length" class="frow">
+        <span class="flabel">플레이타임</span>
+        <div class="chips">
+          <button
+            v-for="o in playtimeOptions"
+            :key="o.value"
+            class="chip"
+            :class="{ on: filters.playtime === o.value }"
+            @click.stop="filters.playtime = filters.playtime === o.value ? 'all' : o.value"
+          >{{ o.label }}</button>
+        </div>
+      </div>
+
+      <!-- 플레이 인원 (다중) -->
+      <div v-if="playModeOptions.length" class="frow">
+        <span class="flabel">인원</span>
+        <div class="chips">
+          <button
+            v-for="o in playModeOptions"
+            :key="o.key"
+            class="chip"
+            :class="{ on: filters.playModes.includes(o.key) }"
+            @click.stop="togglePlayMode(o.key)"
+          >{{ o.label }}</button>
         </div>
       </div>
 
@@ -76,7 +153,7 @@
             :key="o.value"
             class="chip"
             :class="{ on: filters.price === o.value }"
-            @click.stop="filters.price = o.value"
+            @click.stop="filters.price = filters.price === o.value ? 'all' : o.value"
           >{{ o.label }}</button>
         </div>
       </div>
@@ -90,7 +167,7 @@
             :key="o.value"
             class="chip"
             :class="{ on: filters.rating === o.value }"
-            @click.stop="filters.rating = o.value"
+            @click.stop="filters.rating = filters.rating === o.value ? 'all' : o.value"
           >{{ o.label }}</button>
         </div>
       </div>
@@ -103,16 +180,21 @@
             class="chip"
             :class="{ on: filters.onSale }"
             @click.stop="filters.onSale = !filters.onSale"
-          >할인 중 <span class="cnt">{{ onSaleCount }}</span></button>
+          >할인 중</button>
         </div>
       </div>
+    </template>
     </template>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { gameAPI } from '@/api/services'
+import GameSuggestDropdown from '@/components/common/GameSuggestDropdown.vue'
+
+const router = useRouter()
 
 defineProps({
   isActive: { type: Boolean, default: false },
@@ -136,12 +218,80 @@ const PLATFORM_BUCKETS_DEF = [
 const NON_CONSOLE = new Set(['PC', 'macOS', 'Linux', 'Android', 'iOS', 'Web'])
 
 const keyword = ref('')
+
+// ── 자동완성 ──
+const searchWrapRef = ref(null)
+const suggestions = ref([])
+const activeIdx = ref(-1)
+let suggestTimer = null
+let latestSuggestVal = ''
+
+function onSuggestInput(e) {
+  const val = e.target.value
+  latestSuggestVal = val
+  clearTimeout(suggestTimer)
+  activeIdx.value = -1
+  if (!val.trim()) { suggestions.value = []; return }
+  suggestTimer = setTimeout(async () => {
+    const current = latestSuggestVal.trim()
+    if (!current) { suggestions.value = []; return }
+    try {
+      const { data } = await gameAPI.suggest(current)
+      suggestions.value = data
+    } catch { suggestions.value = [] }
+  }, 280)
+}
+
+function closeSuggestions() {
+  suggestions.value = []
+  activeIdx.value = -1
+}
+
+function onDocumentClick(e) {
+  if (searchWrapRef.value && !searchWrapRef.value.contains(e.target)) {
+    closeSuggestions()
+  }
+}
+
+function onSuggestHover(i) { activeIdx.value = i }
+
+function onSuggestSelect(s) {
+  closeSuggestions()
+  router.push({ name: 'game-detail', params: { id: s.game_id } })
+}
+
+function onSuggestKeydown(e) {
+  if (e.key === 'ArrowDown' && suggestions.value.length) {
+    e.preventDefault()
+    activeIdx.value = Math.min(activeIdx.value + 1, suggestions.value.length - 1)
+  } else if (e.key === 'ArrowUp' && suggestions.value.length) {
+    e.preventDefault()
+    activeIdx.value = Math.max(activeIdx.value - 1, -1)
+  } else if (e.key === 'Enter') {
+    if (activeIdx.value >= 0 && suggestions.value.length) {
+      e.preventDefault()
+      onSuggestSelect(suggestions.value[activeIdx.value])
+    } else {
+      handleSubmit()
+    }
+  } else if (e.key === 'Escape') {
+    closeSuggestions()
+  }
+}
+
 const loading = ref(true)
-const options = ref({ genres: [], platforms: [], price: {}, metacritic: {}, on_sale_count: 0 })
+const showFilters = ref(false)
+const options = ref({
+  genres: [], platforms: [], moods: [], price: {}, metacritic: {},
+  playtime: {}, player_mode: {}, on_sale_count: 0,
+})
 
 const filters = ref({
   genres: [],        // genre tag_id 배열
   platforms: [],     // 버킷 key 배열
+  moods: [],         // mood_id 배열
+  playModes: [],     // 'single' | 'multi' | 'coop' 배열
+  playtime: 'all',   // all | short | medium | long
   price: 'all',      // all | free | 5000 | 10000 | 20000 | 20000+
   rating: 'all',     // all | 90 | 80 | 70
   onSale: false,
@@ -169,10 +319,8 @@ const platformBuckets = computed(() => {
 const priceOptions = computed(() => {
   const p = options.value.price || {}
   if (p.max == null) return []
-  const free = p.free_count ? ` (${p.free_count})` : ''
   return [
-    { value: 'all', label: '전체' },
-    { value: 'free', label: `무료${free}` },
+    { value: 'free', label: '무료' },
     { value: '5000', label: '5천원 이하' },
     { value: '10000', label: '1만원 이하' },
     { value: '20000', label: '2만원 이하' },
@@ -183,7 +331,7 @@ const priceOptions = computed(() => {
 const ratingOptions = computed(() => {
   const m = options.value.metacritic || {}
   if (m.max == null) return []
-  const opts = [{ value: 'all', label: '전체' }]
+  const opts = []
   for (const t of [90, 80, 70]) {
     if (m.max >= t) opts.push({ value: String(t), label: `${t}점 이상` })
   }
@@ -191,6 +339,40 @@ const ratingOptions = computed(() => {
 })
 
 const onSaleCount = computed(() => options.value.on_sale_count || 0)
+
+// 무드 — 백엔드가 한국어 라벨로 내려줌
+const moodOptions = computed(() =>
+  (options.value.moods || []).map(m => ({ id: m.id, count: m.count, label: m.name })),
+)
+
+// 플레이타임 버킷 (개수 0인 구간은 숨김)
+const PLAYTIME_DEF = [
+  { key: 'short', label: '짧은 (~10시간)' },
+  { key: 'medium', label: '보통 (10~40시간)' },
+  { key: 'long', label: '긴 (40시간~)' },
+]
+const playtimeOptions = computed(() => {
+  const b = options.value.playtime?.buckets
+  if (!b) return []
+  const opts = []
+  for (const d of PLAYTIME_DEF) {
+    if ((b[d.key] || 0) > 0) opts.push({ value: d.key, label: d.label, count: b[d.key] })
+  }
+  return opts.length > 0 ? opts : []
+})
+
+// 플레이 인원 (개수 0인 모드는 숨김)
+const PLAYMODE_DEF = [
+  { key: 'single', label: '싱글' },
+  { key: 'multi', label: '멀티' },
+  { key: 'coop', label: '협동' },
+]
+const playModeOptions = computed(() => {
+  const pm = options.value.player_mode || {}
+  return PLAYMODE_DEF
+    .filter(d => (pm[d.key] || 0) > 0)
+    .map(d => ({ key: d.key, label: d.label, count: pm[d.key] }))
+})
 
 function toggleGenre(id) {
   const i = filters.value.genres.indexOf(id)
@@ -201,6 +383,16 @@ function togglePlatform(key) {
   const i = filters.value.platforms.indexOf(key)
   if (i === -1) filters.value.platforms.push(key)
   else filters.value.platforms.splice(i, 1)
+}
+function toggleMood(id) {
+  const i = filters.value.moods.indexOf(id)
+  if (i === -1) filters.value.moods.push(id)
+  else filters.value.moods.splice(i, 1)
+}
+function togglePlayMode(key) {
+  const i = filters.value.playModes.indexOf(key)
+  if (i === -1) filters.value.playModes.push(key)
+  else filters.value.playModes.splice(i, 1)
 }
 
 // 선택된 버킷 key → 실제 platform_name 배열로 변환
@@ -215,6 +407,9 @@ function handleSubmit() {
     filters: {
       genres: [...filters.value.genres],
       platforms: resolvePlatformNames(),
+      moods: [...filters.value.moods],
+      playModes: [...filters.value.playModes],
+      playtime: filters.value.playtime,
       price: filters.value.price,
       rating: filters.value.rating,
       onSale: filters.value.onSale,
@@ -224,7 +419,10 @@ function handleSubmit() {
 
 function reset() {
   keyword.value = ''
-  filters.value = { genres: [], platforms: [], price: 'all', rating: 'all', onSale: false }
+  filters.value = {
+    genres: [], platforms: [], moods: [], playModes: [], playtime: 'all',
+    price: 'all', rating: 'all', onSale: false,
+  }
   emit('reset')
 }
 
@@ -232,9 +430,14 @@ function setKeyword(kw) {
   keyword.value = kw
 }
 
+watch(filters, () => {
+  handleSubmit()
+}, { deep: true })
+
 defineExpose({ reset, setKeyword })
 
 onMounted(async () => {
+  document.addEventListener('mousedown', onDocumentClick)
   try {
     const { data } = await gameAPI.filterOptions()
     options.value = data
@@ -243,6 +446,10 @@ onMounted(async () => {
   } finally {
     loading.value = false
   }
+})
+
+onUnmounted(() => {
+  document.removeEventListener('mousedown', onDocumentClick)
 })
 </script>
 
@@ -259,8 +466,8 @@ onMounted(async () => {
   gap: 16px;
 }
 .panel.active {
-  border-color: #1e3a5f;
-  box-shadow: 0 0 0 3px rgba(30,58,95,0.07);
+  border-color: #c96012;
+  box-shadow: 0 0 0 3px rgba(201,96,18,0.07);
   cursor: default;
 }
 .panel-header h2 {
@@ -272,7 +479,7 @@ onMounted(async () => {
   gap: 6px;
   margin-bottom: 6px;
 }
-.icon { width: 16px; color: #1e3a5f; }
+.icon { width: 16px; color: #c96012; }
 .desc { font-size: 13px; color: #9e9585; }
 
 .search-wrap { position: relative; display: flex; align-items: center; }
@@ -288,7 +495,7 @@ onMounted(async () => {
   font-family: inherit;
   transition: border-color 0.15s;
 }
-.search-input:focus { border-color: #1e3a5f; background: #fff; }
+.search-input:focus { border-color: #c96012; background: #fff; }
 .search-input::placeholder { color: #c8c2b4; }
 .search-btn {
   position: absolute;
@@ -302,7 +509,7 @@ onMounted(async () => {
   padding: 0;
   transition: color 0.15s;
 }
-.search-btn:hover { color: #1e3a5f; }
+.search-btn:hover { color: #c96012; }
 
 .filter-bar {
   display: flex;
@@ -313,6 +520,8 @@ onMounted(async () => {
   color: #3d3529;
 }
 .filter-bar-left { display: flex; align-items: center; gap: 6px; }
+.chevron { transition: transform 0.2s; }
+.chevron.open { transform: rotate(180deg); }
 .reset-btn {
   background: none;
   border: none;
@@ -321,7 +530,7 @@ onMounted(async () => {
   cursor: pointer;
   font-family: inherit;
 }
-.reset-btn:hover { color: #1e3a5f; }
+.reset-btn:hover { color: #c96012; }
 
 .opt-loading { font-size: 13px; color: #9e9585; padding: 8px 0; }
 
@@ -329,19 +538,22 @@ onMounted(async () => {
   display: flex;
   align-items: flex-start;
   gap: 12px;
+  
 }
 .flabel {
   flex-shrink: 0;
-  width: 52px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #6b6256;
+  width: 72px;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 800;
+  color: #c96012;
   padding-top: 7px;
 }
 .chips {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  padding-left: 20px;
 }
 .chip {
   display: flex;
@@ -357,14 +569,44 @@ onMounted(async () => {
   transition: all 0.15s;
   font-family: inherit;
 }
-.chip:hover { border-color: #1e3a5f; color: #1e3a5f; }
+.chip:hover { border-color: #c96012; color: #c96012; }
 .chip.on {
-  border-color: #1e3a5f;
+  border-color: #c96012;
   color: #fff;
-  background: #1e3a5f;
+  background: #c96012;
 }
-.cnt {
+.filter-hint {
+  background: #f7f5f0;
+  border: 1px dashed #d8d2c6;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  cursor: pointer;
+  margin-top: 17px;
+}
+.filter-hint-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+.hint-tag {
+  font-size: 12px;
+  font-weight: 600;
+  color: #c96012;
+  background: #fef0d9;
+  border-radius: 6px;
+  padding: 3px 8px;
+}
+.hint-sep {
   font-size: 11px;
-  opacity: 0.7;
+  color: #c8c2b4;
+}
+.filter-hint-desc {
+  font-size: 12px;
+  color: #9e9585;
+  margin: 0;
 }
 </style>

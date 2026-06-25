@@ -1,11 +1,14 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework import status
+from django.shortcuts import get_object_or_404
 
-from .models import Post, PostComment
+from .models import Post, PostComment, PostImage
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (
     PostListSerializer, PostDetailSerializer, PostWriteSerializer,
-    CommentSerializer, CommentWriteSerializer,
+    CommentSerializer, CommentWriteSerializer, PostImageSerializer,
 )
 
 
@@ -24,7 +27,11 @@ class PostListCreateView(generics.ListCreateAPIView):
             qs = qs.filter(category=category)
         q = self.request.query_params.get('q')
         if q:
-            qs = qs.filter(title__icontains=q)
+            search_type = self.request.query_params.get('search_type', 'title')
+            if search_type == 'author':
+                qs = qs.filter(user__nickname__icontains=q)
+            else:
+                qs = qs.filter(title__icontains=q)
         return qs
 
     def get_serializer_class(self):
@@ -40,8 +47,9 @@ class PostListCreateView(generics.ListCreateAPIView):
         write = self.get_serializer(data=request.data)
         write.is_valid(raise_exception=True)
         post = write.save(user=request.user)
-        from rest_framework.response import Response
-        from rest_framework import status
+        if request.user.posts.count() == 1:
+            from accounts.medal_service import award_medal
+            award_medal(request.user, '첫 교신')
         detail = PostDetailSerializer(post, context={'request': request})
         return Response(detail.data, status=status.HTTP_201_CREATED)
 
@@ -67,7 +75,6 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
         # 수정 후 상세 형태로 응답
         super().update(request, *args, **kwargs)
         post = self.get_object()
-        from rest_framework.response import Response
         return Response(
             PostDetailSerializer(post, context={'request': request}).data
         )
@@ -96,6 +103,9 @@ class CommentListCreateView(generics.ListCreateAPIView):
         comment = write.save(
             user=request.user, post_id=self.kwargs['post_id']
         )
+        if request.user.comments.count() >= 20:
+            from accounts.medal_service import award_medal
+            award_medal(request.user, '댓글 요정')
         from rest_framework.response import Response
         from rest_framework import status
         out = CommentSerializer(comment, context={'request': request})
@@ -120,7 +130,35 @@ class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
     def update(self, request, *args, **kwargs):
         super().update(request, *args, **kwargs)
         comment = self.get_object()
-        from rest_framework.response import Response
         return Response(
             CommentSerializer(comment, context={'request': request}).data
         )
+
+
+class PostImageListCreateView(generics.GenericAPIView):
+    """
+    POST /posts/{post_id}/images/  이미지 업로드 (작성자만)
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, post_id):
+        post = get_object_or_404(Post, pk=post_id, user=request.user)
+        files = request.FILES.getlist('images')
+        if not files:
+            return Response({'detail': '이미지를 선택해주세요.'}, status=status.HTTP_400_BAD_REQUEST)
+        created = []
+        for f in files:
+            img = PostImage.objects.create(post=post, image=f)
+            created.append(PostImageSerializer(img, context={'request': request}).data)
+        return Response(created, status=status.HTTP_201_CREATED)
+
+
+class PostImageDeleteView(generics.DestroyAPIView):
+    """
+    DELETE /posts/{post_id}/images/{image_id}/  이미지 삭제 (작성자만)
+    """
+    permission_classes = [IsAuthenticated]
+    lookup_url_kwarg = 'image_id'
+
+    def get_object(self):
+        return get_object_or_404(PostImage, pk=self.kwargs['image_id'], post__user=self.request.user)

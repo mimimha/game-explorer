@@ -1,7 +1,7 @@
 <template>
   <section class="section-card">
     <div class="section-header">
-      <h3 class="section-title">찜한 게임 요약</h3>
+      <h3 class="section-title">찜한 게임</h3>
       <RouterLink to="/wishlist" class="view-all">전체 보기 &rsaquo;</RouterLink>
     </div>
 
@@ -10,7 +10,7 @@
     </div>
 
     <div v-else class="scroll-wrapper">
-      <div class="cards-track" ref="track">
+      <div class="cards-track" ref="track" @scroll="onScroll">
         <RouterLink
           v-for="game in games"
           :key="game.id"
@@ -34,7 +34,12 @@
         </RouterLink>
       </div>
 
-      <button v-if="games.length > 3" class="scroll-btn" @click="scrollRight">
+      <button v-if="games.length > 3 && scrollPos > 0" class="scroll-btn scroll-btn-left" @click="scrollLeft">
+        <svg viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd"/>
+        </svg>
+      </button>
+      <button v-if="games.length > 3 && !atEnd" class="scroll-btn scroll-btn-right" @click="scrollRight">
         <svg viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/>
         </svg>
@@ -52,9 +57,22 @@ defineProps({
 })
 
 const track = ref(null)
+const scrollPos = ref(0)
+const atEnd = ref(false)
+
+function onScroll() {
+  const el = track.value
+  if (!el) return
+  scrollPos.value = el.scrollLeft
+  atEnd.value = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4
+}
 
 function scrollRight() {
-  track.value?.scrollBy({ left: 200, behavior: 'smooth' })
+  track.value?.scrollBy({ left: 696, behavior: 'smooth' })
+}
+
+function scrollLeft() {
+  track.value?.scrollBy({ left: -696, behavior: 'smooth' })
 }
 
 function formatDate(dt) {
@@ -87,7 +105,7 @@ function formatDate(dt) {
   color: #6b6256;
   text-decoration: none;
 }
-.view-all:hover { color: #1e3a5f; }
+.view-all:hover { color: #c96012; }
 
 .empty {
   font-size: 14px;
@@ -122,7 +140,7 @@ function formatDate(dt) {
 }
 .game-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(30, 58, 95, 0.1);
+  box-shadow: 0 6px 18px rgba(201, 96, 18, 0.1);
 }
 
 .card-thumb {
@@ -167,7 +185,6 @@ function formatDate(dt) {
 
 .scroll-btn {
   position: absolute;
-  right: -14px;
   top: 50%;
   transform: translateY(-50%);
   width: 32px;
@@ -184,6 +201,8 @@ function formatDate(dt) {
   transition: background 0.15s;
   z-index: 1;
 }
+.scroll-btn-left { left: -14px; }
+.scroll-btn-right { right: -14px; }
 .scroll-btn:hover { background: #f0ece3; }
 .scroll-btn svg {
   width: 16px;

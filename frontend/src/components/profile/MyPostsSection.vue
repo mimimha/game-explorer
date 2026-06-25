@@ -1,8 +1,8 @@
 <template>
   <section class="section-card">
     <div class="section-header">
-      <h3 class="section-title">내가 쓴 글</h3>
-      <RouterLink to="/community?my=1" class="view-all">전체 보기 &rsaquo;</RouterLink>
+      <h3 class="section-title">작성한 글</h3>
+      <RouterLink to="/community?my=1" class="view-all">커뮤니티 가기 &rsaquo;</RouterLink>
     </div>
 
     <div v-if="posts.length === 0" class="empty">
@@ -11,7 +11,7 @@
 
     <ul v-else class="post-list">
       <li v-for="post in posts" :key="post.id" class="post-item">
-        <RouterLink :to="`/posts/${post.id}`" class="post-link">
+        <RouterLink :to="`/community/${post.id}`" class="post-link">
           <span class="category-badge" :class="categoryClass(post.category)">
             {{ post.category }}
           </span>
@@ -78,7 +78,7 @@ function formatDate(dt) {
   color: #6b6256;
   text-decoration: none;
 }
-.view-all:hover { color: #1e3a5f; }
+.view-all:hover { color: #c96012; }
 
 .empty {
   font-size: 14px;
@@ -107,7 +107,7 @@ function formatDate(dt) {
   transition: background 0.1s;
 }
 .post-link:hover .post-title {
-  color: #1e3a5f;
+  color: #c96012;
 }
 
 .category-badge {
@@ -118,7 +118,7 @@ function formatDate(dt) {
   white-space: nowrap;
   flex-shrink: 0;
 }
-.badge-guide  { background: #e8f0fe; color: #1e3a5f; }
+.badge-guide  { background: #fef0d9; color: #c96012; }
 .badge-free   { background: #f0ece3; color: #6b6256; }
 .badge-party  { background: #fef3e2; color: #92400e; }
 

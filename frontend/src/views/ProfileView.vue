@@ -26,6 +26,11 @@
 
     <!-- Content -->
     <template v-else>
+      <!-- Birthday Banner -->
+      <div v-if="isBirthday" class="birthday-banner">
+        🎂 오늘은 <strong>{{ user.nickname }}</strong>님의 생일이에요! 생일을 진심으로 축하합니다! 🎉
+      </div>
+
       <ProfileHeader
         :user="user"
         :counts="mypage.counts"
@@ -46,8 +51,40 @@
 
       <WishlistSection :games="mypage.recent_wishlist" />
 
-      <AiHistorySection :logs="recentLogs" />
+      <AiHistorySection :logs="recentLogs" @delete="deleteLog" />
     </template>
+
+    <!-- Confetti Canvas -->
+    <Teleport to="body">
+      <canvas v-if="showConfetti" ref="confettiCanvas" class="confetti-canvas" />
+    </Teleport>
+
+    <!-- Follow List Modal -->
+    <Teleport to="body">
+      <div v-if="followModalOpen" class="modal-overlay" @click.self="closeFollowModal">
+        <div class="modal">
+          <div class="modal-header">
+            <h2>{{ followModalTitle }}</h2>
+            <button class="modal-close" @click="closeFollowModal">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+          <div v-if="followListLoading" class="follow-loading">불러오는 중...</div>
+          <ul v-else-if="followList.length" class="follow-list">
+            <li v-for="u in followList" :key="u.id" class="follow-item" @click="goToProfile(u.id)">
+              <img :src="u.profile_img || defaultFollowAvatar" class="follow-avatar" alt="" />
+              <span class="follow-nickname">{{ u.nickname }}</span>
+              <svg class="follow-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+              </svg>
+            </li>
+          </ul>
+          <p v-else class="follow-empty">아직 {{ followModalTitle }}가 없어요.</p>
+        </div>
+      </div>
+    </Teleport>
 
     <!-- Edit Profile Modal (본인만) -->
     <Teleport to="body">
@@ -68,7 +105,7 @@
             </div>
             <div class="form-field">
               <label>생년월일</label>
-              <input v-model="editForm.birth_date" type="date" />
+              <input v-model="editForm.birth_date" type="date" :max="new Date().toISOString().slice(0, 10)" />
             </div>
             <div class="modal-actions">
               <button type="button" class="btn-cancel" @click="closeEditModal">취소</button>
@@ -84,10 +121,11 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, watch } from 'vue'
+import { ref, reactive, computed, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
 import { RouterLink, useRouter, useRoute } from 'vue-router'
 import { accountAPI, recommendAPI } from '@/api/services'
 import { useAuthStore } from '@/stores/auth'
+import defaultFollowAvatar from '@/assets/profile.png'
 
 import ProfileHeader from '@/components/profile/ProfileHeader.vue'
 import ProfileStats from '@/components/profile/ProfileStats.vue'
@@ -100,14 +138,22 @@ const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
 
-// /profile = 본인, /users/:userId = 타인
-const isOwner = computed(() => !route.params.userId)
+// /profile = 본인, /users/:userId 이지만 자기 자신 ID인 경우도 본인으로 처리
+const isOwner = computed(() => {
+  if (!route.params.userId) return true
+  return String(route.params.userId) === String(authStore.user?.id)
+})
 
 const loading = ref(true)
 const error = ref(null)
 const saving = ref(false)
 const editModalOpen = ref(false)
 const isFollowing = ref(false)
+
+const followModalOpen = ref(false)
+const followModalTitle = ref('')
+const followList = ref([])
+const followListLoading = ref(false)
 
 const user = ref({})
 const mypage = reactive({
@@ -119,6 +165,95 @@ const mypage = reactive({
 const recentLogs = ref([])
 
 const editForm = reactive({ nickname: '', birth_date: '' })
+
+// ── Birthday & Confetti ──────────────────────────────────────────────────────
+const CONFETTI_COLORS = [
+  '#ff6b6b', '#ffa94d', '#ffd43b', '#69db7c',
+  '#74c0fc', '#9775fa', '#f783ac', '#a9e34b',
+]
+
+const confettiCanvas = ref(null)
+const showConfetti = ref(false)
+let animFrame = null
+
+const isBirthday = computed(() => {
+  const bd = user.value?.birth_date
+  if (!bd) return false
+  const [, m, d] = bd.split('-').map(Number)
+  const now = new Date()
+  return now.getMonth() + 1 === m && now.getDate() === d
+})
+
+function makeParticle(w, h) {
+  return {
+    x: Math.random() * w,
+    y: -(Math.random() * h * 0.6),
+    size: Math.random() * 10 + 5,
+    vx: (Math.random() - 0.5) * 3,
+    vy: Math.random() * 2.5 + 1.5,
+    rot: Math.random() * 360,
+    rotV: (Math.random() - 0.5) * 8,
+    color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+    circle: Math.random() < 0.35,
+  }
+}
+
+function startConfetti() {
+  if (showConfetti.value) return
+  showConfetti.value = true
+  nextTick(() => {
+    const canvas = confettiCanvas.value
+    if (!canvas) return
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
+    const ctx = canvas.getContext('2d')
+    const particles = Array.from({ length: 160 }, () => makeParticle(canvas.width, canvas.height))
+    const start = Date.now()
+    const TOTAL = 7000
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      const elapsed = Date.now() - start
+      if (elapsed >= TOTAL) { showConfetti.value = false; return }
+      const alpha = elapsed > TOTAL * 0.65
+        ? 1 - (elapsed - TOTAL * 0.65) / (TOTAL * 0.35)
+        : 1
+
+      for (const p of particles) {
+        p.x += p.vx
+        p.y += p.vy
+        p.rot += p.rotV
+        if (p.y > canvas.height && elapsed < TOTAL * 0.55) {
+          p.y = -p.size
+          p.x = Math.random() * canvas.width
+        }
+        ctx.save()
+        ctx.globalAlpha = alpha
+        ctx.translate(p.x, p.y)
+        ctx.rotate(p.rot * Math.PI / 180)
+        ctx.fillStyle = p.color
+        if (p.circle) {
+          ctx.beginPath()
+          ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2)
+          ctx.fill()
+        } else {
+          ctx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2)
+        }
+        ctx.restore()
+      }
+      animFrame = requestAnimationFrame(draw)
+    }
+    draw()
+  })
+}
+
+onBeforeUnmount(() => {
+  if (animFrame) cancelAnimationFrame(animFrame)
+})
+
+watch(loading, (v) => {
+  if (!v && isBirthday.value) nextTick(startConfetti)
+})
 
 async function fetchAll() {
   loading.value = true
@@ -134,7 +269,7 @@ async function fetchAll() {
       ])
       user.value = meRes.data
       Object.assign(mypage, mypageRes.data)
-      recentLogs.value = (logsRes.data?.results ?? logsRes.data ?? []).slice(0, 3)
+      recentLogs.value = logsRes.data?.results ?? logsRes.data ?? []
     } else {
       // 타인 공개 프로필 — 백엔드가 counts·posts·wishlist·logs 모두 반환
       const res = await accountAPI.getUserProfile(route.params.userId)
@@ -143,6 +278,7 @@ async function fetchAll() {
         id: d.id,
         nickname: d.nickname,
         profile_img: d.profile_img,
+        birth_date: d.birth_date ?? null,
         follower_count: d.follower_count,
         following_count: d.following_count,
       }
@@ -202,6 +338,8 @@ async function submitEdit() {
     })
     user.value = res.data
     authStore.setProfile(res.data)
+    const medalsRes = await accountAPI.getMyMedals()
+    mypage.medals = medalsRes.data?.results ?? medalsRes.data ?? []
     closeEditModal()
   } catch {
     alert('프로필 수정에 실패했어요.')
@@ -222,8 +360,40 @@ async function handleAvatarChange(file) {
   }
 }
 
-function showFollowers() {}
-function showFollowing() {}
+async function openFollowModal(type) {
+  const targetId = isOwner.value ? authStore.user?.id : route.params.userId
+  followModalTitle.value = type === 'followers' ? '팔로워' : '팔로잉'
+  followModalOpen.value = true
+  followListLoading.value = true
+  followList.value = []
+  try {
+    const res = type === 'followers'
+      ? await accountAPI.getFollowers(targetId)
+      : await accountAPI.getFollowing(targetId)
+    followList.value = res.data
+  } catch {
+    followList.value = []
+  } finally {
+    followListLoading.value = false
+  }
+}
+function closeFollowModal() { followModalOpen.value = false }
+function goToProfile(userId) {
+  closeFollowModal()
+  router.push(`/users/${userId}`)
+}
+
+function showFollowers() { openFollowModal('followers') }
+function showFollowing() { openFollowModal('following') }
+
+async function deleteLog(logId) {
+  try {
+    await recommendAPI.logDelete(logId)
+    recentLogs.value = recentLogs.value.filter(l => l.log_id !== logId)
+  } catch {
+    // 삭제 실패 시 무시
+  }
+}
 
 onMounted(fetchAll)
 </script>
@@ -246,7 +416,7 @@ onMounted(fetchAll)
   color: #9e9585;
 }
 .breadcrumb a { color: #9e9585; text-decoration: none; }
-.breadcrumb a:hover { color: #1e3a5f; }
+.breadcrumb a:hover { color: #c96012; }
 .sep { font-size: 12px; }
 
 .page-header { margin-bottom: 4px; }
@@ -273,14 +443,14 @@ onMounted(fetchAll)
   width: 32px;
   height: 32px;
   border: 3px solid #e8e4d9;
-  border-top-color: #1e3a5f;
+  border-top-color: #c96012;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 .error-state button {
   padding: 8px 20px;
-  background: #1e3a5f;
+  background: #c96012;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -326,7 +496,7 @@ onMounted(fetchAll)
   outline: none;
   transition: border-color 0.15s;
 }
-.form-field input:focus { border-color: #1e3a5f; }
+.form-field input:focus { border-color: #c96012; }
 .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 8px; }
 .btn-cancel {
   padding: 9px 20px;
@@ -341,11 +511,75 @@ onMounted(fetchAll)
   padding: 9px 20px;
   border: none;
   border-radius: 8px;
-  background: #1e3a5f;
+  background: #c96012;
   color: #fff;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
 }
 .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.follow-loading {
+  text-align: center;
+  padding: 32px 0;
+  color: #9e9585;
+  font-size: 14px;
+}
+.follow-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 360px;
+  overflow-y: auto;
+}
+.follow-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 4px;
+  border-bottom: 1px solid #f0ece3;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.12s;
+}
+.follow-item:last-child { border-bottom: none; }
+.follow-item:hover { background: #f5f3ef; }
+.follow-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #e8e4d9;
+  flex-shrink: 0;
+}
+.follow-nickname { flex: 1; font-size: 14px; font-weight: 600; color: #1a1510; }
+.follow-arrow { width: 16px; height: 16px; color: #c8c2b4; flex-shrink: 0; }
+.follow-empty {
+  text-align: center;
+  padding: 32px 0;
+  color: #9e9585;
+  font-size: 14px;
+}
+
+.birthday-banner {
+  background: linear-gradient(135deg, #fff9db, #fff0f6);
+  border: 1.5px solid #fcc2d7;
+  border-radius: 12px;
+  padding: 14px 20px;
+  text-align: center;
+  font-size: 15px;
+  color: #c92a2a;
+  animation: birthday-pulse 2s ease-in-out infinite;
+}
+@keyframes birthday-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(252, 194, 215, 0.5); }
+  50%       { box-shadow: 0 0 0 8px rgba(252, 194, 215, 0); }
+}
+
+.confetti-canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+}
 </style>

@@ -14,7 +14,7 @@
     </div>
 
     <!-- 썸네일 트랙 -->
-    <div class="thumb-row">
+    <div v-if="screenshots.length" class="thumb-row">
       <button class="arrow" @click="scrollTrack(-1)" :class="{ hidden: !canLeft }">
         <svg fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" width="13">
           <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/>
@@ -47,6 +47,7 @@
         </svg>
       </button>
     </div>
+    <p v-else class="coming-soon">추후 업데이트 예정</p>
   </div>
 </template>
 
@@ -183,4 +184,11 @@ onBeforeUnmount(() => ro?.disconnect())
   white-space: nowrap;
 }
 .thumb.active .thumb-label { color: #1e3a5f; font-weight: 600; }
+
+.coming-soon {
+  font-size: 13px;
+  color: #9e9585;
+  font-style: italic;
+  margin: 4px 0 0;
+}
 </style>

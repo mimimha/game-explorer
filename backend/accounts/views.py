@@ -5,10 +5,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
-from .models import User, Follow, UserMedal
+from .models import User, Follow, UserMedal, Notification
 from .serializers import (
     UserSerializer, UserUpdateSerializer,
-    PublicProfileSerializer, MedalSerializer,
+    PublicProfileSerializer, MedalSerializer, NotificationSerializer,
 )
 
 
@@ -27,6 +27,8 @@ class MeView(generics.RetrieveUpdateDestroyAPIView):
 
     def patch(self, request, *args, **kwargs):
         super().patch(request, *args, **kwargs)
+        from .medal_service import award_medal
+        award_medal(request.user, '탐험대의 일원')
         return Response(UserSerializer(request.user, context={'request': request}).data)
 
 
@@ -49,7 +51,7 @@ class UserProfileView(APIView):
                                    .prefetch_related('comments')[:5]
         recent_wishlist = Wishlist.objects.filter(user=target) \
                                           .select_related('game') \
-                                          .prefetch_related('game__genres')[:5]
+                                          .prefetch_related('game__genres')
         recent_logs = RecommendationLog.objects.filter(user=target) \
                                                .prefetch_related('results')[:3]
 
@@ -62,6 +64,7 @@ class UserProfileView(APIView):
             'nickname': target.nickname,
             'profile_img': request.build_absolute_uri(target.profile_img.url)
                            if target.profile_img else None,
+            'birth_date': target.birth_date.isoformat() if target.birth_date else None,
             'follower_count': target.follower_count,
             'following_count': target.following_count,
             'is_following': is_following,
@@ -113,6 +116,29 @@ class FollowToggleView(APIView):
         })
 
 
+class FollowListView(APIView):
+    """GET /accounts/users/{user_id}/followers/  또는  /following/"""
+    permission_classes = [AllowAny]
+
+    def get(self, request, user_id, list_type):
+        target = get_object_or_404(User, pk=user_id)
+        if list_type == 'followers':
+            users = User.objects.filter(following_relations__following=target)
+        else:
+            users = User.objects.filter(follower_relations__follower=target)
+
+        data = [
+            {
+                'id': u.id,
+                'nickname': u.nickname,
+                'profile_img': request.build_absolute_uri(u.profile_img.url)
+                               if u.profile_img else None,
+            }
+            for u in users
+        ]
+        return Response(data)
+
+
 class MyMedalsView(generics.ListAPIView):
     """GET /accounts/me/medals/  내 획득 메달"""
     permission_classes = [IsAuthenticated]
@@ -121,6 +147,55 @@ class MyMedalsView(generics.ListAPIView):
     def get_queryset(self):
         return UserMedal.objects.filter(user=self.request.user)\
                                 .select_related('medal')
+
+
+class NotificationListView(generics.ListAPIView):
+    """GET /accounts/notifications/  내 알림 목록 (최신순, 최대 100개)"""
+    permission_classes = [IsAuthenticated]
+    serializer_class = NotificationSerializer
+
+    def get_queryset(self):
+        return Notification.objects.filter(
+            recipient=self.request.user
+        ).select_related('actor')[:100]
+
+    def get_serializer_context(self):
+        ctx = super().get_serializer_context()
+        ctx['request'] = self.request
+        return ctx
+
+
+class NotificationCountView(APIView):
+    """GET /accounts/notifications/count/  읽지 않은 알림 수"""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        count = Notification.objects.filter(
+            recipient=request.user, is_read=False
+        ).count()
+        return Response({'count': count})
+
+
+class NotificationReadView(APIView):
+    """PATCH /accounts/notifications/{notif_id}/read/  단건 읽음 처리"""
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, notif_id):
+        notif = get_object_or_404(Notification, pk=notif_id, recipient=request.user)
+        notif.is_read = True
+        notif.save(update_fields=['is_read'])
+        return Response({'ok': True})
+
+
+class NotificationReadAllView(APIView):
+    """POST /accounts/notifications/read-all/  전체 읽음 처리"""
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        Notification.objects.filter(
+            recipient=request.user, is_read=False
+        ).update(is_read=True)
+        return Response({'ok': True})
 
 
 class MyPageView(APIView):
@@ -140,7 +215,7 @@ class MyPageView(APIView):
         from wishlists.serializers import WishlistItemSerializer
         recent_wishlist = Wishlist.objects.filter(user=user)\
                                           .select_related('game')\
-                                          .prefetch_related('game__genres')[:5]
+                                          .prefetch_related('game__genres')
 
         data = {
             'nickname': user.nickname,

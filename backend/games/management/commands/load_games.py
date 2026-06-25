@@ -12,6 +12,7 @@ from django.db import transaction
 
 from games.models import (
     Game, Genre, GameTag, Platform, GamePlatform, Screenshot, GameVideo,
+    Mood, GameMood,
 )
 from games.services import rawg, steam_price, youtube
 
@@ -26,6 +27,10 @@ class Command(BaseCommand):
         parser.add_argument('--ordering', type=str, default='-added')
         parser.add_argument('--dates', type=str, default=None,
                             help="출시일 범위 예: 2023-01-01,2023-12-31")
+        parser.add_argument('--genres', type=str, default=None,
+                            help="RAWG 장르 슬러그(콤마). 예: indie")
+        parser.add_argument('--tags', type=str, default=None,
+                            help="RAWG 태그 슬러그(콤마). 예: cute,cozy — 특정 스타일만")
         parser.add_argument('--no-steam', action='store_true',
                             help='Steam 가격 수집 생략')
         parser.add_argument('--no-youtube', action='store_true',
@@ -41,6 +46,7 @@ class Command(BaseCommand):
                 games = rawg.fetch_game_list(
                     page=page, page_size=opts['page_size'],
                     ordering=opts['ordering'], dates=opts['dates'],
+                    genres=opts['genres'], tags=opts['tags'],
                 )
             except Exception as e:
                 self.stderr.write(self.style.ERROR(f'목록 호출 실패: {e}'))
@@ -64,13 +70,27 @@ class Command(BaseCommand):
         detail = rawg.fetch_game_detail(rawg_id)
         fields = rawg.parse_game_fields(detail)
 
-        # 2) Steam appid → 가격
+        # 2) 플레이 인원/모드 — RAWG tags 우선
+        modes = rawg.extract_player_modes(detail)
+
+        # 2-2) Steam appid → 가격(+ 인원 폴백)
         if not opts['no_steam']:
             appid = rawg.fetch_steam_appid(rawg_id)
             if appid:
                 fields['steam_id'] = appid
-                price = steam_price.fetch_price(appid)
-                fields.update(price)  # initial_price/final_price/is_korean/offline
+                steam = steam_price.fetch_app_details(appid)
+                for k in ('initial_price', 'final_price', 'is_korean'):
+                    if k in steam:
+                        fields[k] = steam[k]
+                if modes is None:                 # RAWG 근거 없을 때만 Steam 폴백
+                    modes = steam.get('modes')
+
+        # 2-3) 인원 모드 확정 (둘 다 없으면 null 유지)
+        if modes is not None:
+            fields['is_singleplayer'] = modes['single']
+            fields['is_multiplayer'] = modes['multi']
+            fields['is_coop'] = modes['coop']
+            fields['offline'] = modes['single']   # offline == 싱글플레이 가능
 
         # 3) upsert (rawg_id 기준)
         game, created = Game.objects.update_or_create(
@@ -90,6 +110,11 @@ class Command(BaseCommand):
             platform, _ = Platform.objects.get_or_create(platform_name=name)
             GamePlatform.objects.get_or_create(game=game, platform=platform)
 
+        # 4-3) 무드 (RAWG 태그 화이트리스트 → Mood upsert → GameMood 연결)
+        for name in rawg.extract_mood_names(detail):
+            mood, _ = Mood.objects.get_or_create(mood_name=name)
+            GameMood.objects.get_or_create(game=game, mood=mood)
+
         # 5) 스크린샷 (기존 것 비우고 새로)
         shots = rawg.fetch_screenshots(rawg_id)
         if shots:
@@ -98,21 +123,35 @@ class Command(BaseCommand):
                 Screenshot(game=game, image_url=url) for url in shots
             ])
 
-        # 6) 영상 — YouTube 검색 (없으면 RAWG 트레일러 폴백)
-        if not opts['no_youtube']:
-            vids = youtube.search_videos(game.title)
-            if not vids:
-                vids = [
+        # 6) 영상 — 트레일러 1개 + 공략(스트리밍) 3개(한국 제작 조회수순 우선)
+        #    이미 영상이 있으면 건너뛴다(쿼터 보호). 새 걸로 교체는 admin 리뉴얼 버튼.
+        if not opts['no_youtube'] and not game.videos.exists():
+            rows = []  # (video_dict, video_type)
+
+            # 6-1) 트레일러 1개 (없으면 RAWG 트레일러 폴백)
+            trailers = youtube.search_videos(
+                game.title, query_terms='gameplay trailer', max_results=1,
+            )
+            if not trailers:
+                trailers = [
                     {'title': m['name'], 'video_url': m['url'], 'thumbnail': ''}
-                    for m in rawg.fetch_movies(rawg_id)
+                    for m in rawg.fetch_movies(rawg_id)[:1]
                 ]
-            if vids:
+            rows += [(v, GameVideo.TRAILER) for v in trailers[:1]]
+
+            # 6-2) 공략 3개 — 한국 제작(조회수순) 우선, 부족 시 해외 영상
+            walkthroughs = youtube.search_walkthroughs(
+                game.title, game.title_ko, n=3,
+            )
+            rows += [(v, GameVideo.WALKTHROUGH) for v in walkthroughs[:3]]
+
+            if rows:
                 game.videos.all().delete()
                 GameVideo.objects.bulk_create([
                     GameVideo(
-                        game=game, title=v['title'],
+                        game=game, video_type=vtype, title=v['title'],
                         video_url=v['video_url'], thumbnail=v['thumbnail'],
                         channel=v.get('channel', ''),
                         published_at=v.get('published_at', ''),
-                    ) for v in vids
+                    ) for v, vtype in rows
                 ])

@@ -76,3 +76,12 @@ class RecommendLogDetailView(generics.RetrieveAPIView):
         # 본인 로그만 조회 가능 → 남의 것 접근 시 404
         return RecommendationLog.objects.filter(user=self.request.user)\
             .prefetch_related('results__game__genres')
+
+
+class RecommendLogDestroyView(generics.DestroyAPIView):
+    """DELETE /recommend/logs/{log_id}/delete/  추천 기록 삭제 (본인 것만)"""
+    permission_classes = [IsAuthenticated]
+    lookup_url_kwarg = 'log_id'
+
+    def get_queryset(self):
+        return RecommendationLog.objects.filter(user=self.request.user)

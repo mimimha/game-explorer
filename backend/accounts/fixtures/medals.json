@@ -1,0 +1,65 @@
+[
+{
+  "model": "accounts.medal",
+  "pk": 1,
+  "fields": {
+    "medal_name": "발자국 시작",
+    "description": "서비스에 회원가입 완료",
+    "icon_url": ""
+  }
+},
+{
+  "model": "accounts.medal",
+  "pk": 2,
+  "fields": {
+    "medal_name": "첫 번째 발걸음",
+    "description": "첫 번째 게임 찜하기",
+    "icon_url": ""
+  }
+},
+{
+  "model": "accounts.medal",
+  "pk": 3,
+  "fields": {
+    "medal_name": "탐험대의 일원",
+    "description": "프로필 정보 수정 처음 완료",
+    "icon_url": ""
+  }
+},
+{
+  "model": "accounts.medal",
+  "pk": 4,
+  "fields": {
+    "medal_name": "첫 교신",
+    "description": "커뮤니티 게시글 첫 작성",
+    "icon_url": ""
+  }
+},
+{
+  "model": "accounts.medal",
+  "pk": 5,
+  "fields": {
+    "medal_name": "수집광",
+    "description": "찜한 게임 10개 달성",
+    "icon_url": ""
+  }
+},
+{
+  "model": "accounts.medal",
+  "pk": 6,
+  "fields": {
+    "medal_name": "댓글 요정",
+    "description": "댓글 20개 작성",
+    "icon_url": ""
+  }
+},
+{
+  "model": "accounts.medal",
+  "pk": 7,
+  "fields": {
+    "medal_name": "전설의 탐험가",
+    "description": "모든 업적 달성",
+    "icon_url": ""
+  }
+}
+]

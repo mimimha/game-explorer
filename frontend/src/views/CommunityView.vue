@@ -11,7 +11,7 @@
     <header class="page-header">
       <div>
         <h1 class="page-title">커뮤니티</h1>
-        <p class="page-sub">인디게임에 대한 자유로운 이야기, 공략, 후기를 나눠보세요!</p>
+        <p class="page-sub">인디게임에 대한 자유로운 이야기, 공략, 파티원 모집에 대한 이야기를 나눠보세요!</p>
       </div>
     </header>
 
@@ -30,12 +30,6 @@
       </div>
 
       <div class="controls-right">
-        <form class="search-form" @submit.prevent="doSearch">
-          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/>
-          </svg>
-          <input v-model="searchKeyword" type="text" placeholder="제목 검색" />
-        </form>
         <button v-if="authStore.isLoggedIn" class="btn-write" @click="openWriteModal">
           <svg viewBox="0 0 20 20" fill="currentColor" class="btn-write-icon">
             <path d="M2.695 14.763l-1.262 3.154a.5.5 0 0 0 .65.65l3.155-1.262a4 4 0 0 0 1.343-.885L17.5 5.5a2.121 2.121 0 0 0-3-3L3.58 13.42a4 4 0 0 0-.885 1.343Z"/>
@@ -87,8 +81,8 @@
                   </span>
                 </div>
               </td>
-              <td class="col-author">
-                <div class="author-cell">
+              <td class="col-author" @click.stop="goToProfile(post.author.id)">
+                <div class="author-cell author-link">
                   <img :src="post.author.profile_img || defaultAvatar" class="author-avatar" alt="" />
                   <span>{{ post.author.nickname }}</span>
                 </div>
@@ -96,7 +90,7 @@
               <td class="col-date">{{ formatDate(post.created_at) }}</td>
               <td class="col-count">
                 <span v-if="post.comment_count > 0" class="comment-count">{{ post.comment_count }}</span>
-                <span v-else class="comment-none">-</span>
+                <span v-else class="comment-none">0</span>
               </td>
             </tr>
           </tbody>
@@ -121,6 +115,22 @@
       </template>
     </div>
 
+    <!-- Search Bar -->
+    <div class="search-center">
+      <form class="search-form" @submit.prevent="doSearch">
+        <select v-model="searchType" class="search-type-select">
+          <option value="title">제목</option>
+          <option value="author">작성자</option>
+        </select>
+        <input v-model="searchKeyword" type="text" :placeholder="searchType === 'author' ? '닉네임 검색' : '제목 검색'" class="search-input" />
+        <button type="submit" class="search-btn" aria-label="검색">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/>
+          </svg>
+        </button>
+      </form>
+    </div>
+
     <!-- Write/Edit Modal -->
     <Teleport to="body">
       <div v-if="modalOpen" class="modal-overlay" @click.self="closeModal">
@@ -141,7 +151,7 @@
                 <select v-model="postForm.category">
                   <option value="자유">자유</option>
                   <option value="공략">공략</option>
-                  <option value="파티원모집">파티원모집</option>
+                  <option value="파티원모집">파티원 모집</option>
                 </select>
               </div>
               <div class="form-field form-field--title">
@@ -152,8 +162,7 @@
 
             <div class="form-field">
               <label>내용</label>
-              <textarea v-model="postForm.content" placeholder="내용을 입력하세요" rows="10" required></textarea>
-            </div>
+              <PostBlockEditor ref="editorRef" /></div>
 
             <div v-if="submitError" class="form-error">{{ submitError }}</div>
 
@@ -177,6 +186,7 @@ import { RouterLink, useRouter, useRoute } from 'vue-router'
 import { communityAPI } from '@/api/services'
 import { useAuthStore } from '@/stores/auth'
 import defaultAvatar from '@/assets/profile.png'
+import PostBlockEditor from '@/components/community/PostBlockEditor.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -186,7 +196,7 @@ const TABS = [
   { label: '전체', value: '' },
   { label: '자유', value: '자유' },
   { label: '공략', value: '공략' },
-  { label: '파티원모집', value: '파티원모집' },
+  { label: '파티원 모집', value: '파티원모집' },
 ]
 
 const PAGE_SIZE = 20
@@ -198,6 +208,8 @@ const currentPage = ref(1)
 const activeCategory = ref('')
 const searchKeyword = ref('')
 const appliedKeyword = ref('')
+const searchType = ref('title')
+const appliedSearchType = ref('title')
 
 const totalPages = computed(() => Math.ceil(totalCount.value / PAGE_SIZE))
 
@@ -217,7 +229,10 @@ async function fetchPosts() {
   try {
     const params = { page: currentPage.value }
     if (activeCategory.value) params.category = activeCategory.value
-    if (appliedKeyword.value) params.q = appliedKeyword.value
+    if (appliedKeyword.value) {
+      params.q = appliedKeyword.value
+      params.search_type = appliedSearchType.value
+    }
     const { data } = await communityAPI.getPosts(params)
     posts.value = data.results ?? data
     totalCount.value = data.count ?? posts.value.length
@@ -235,6 +250,7 @@ function selectCategory(val) {
 
 function doSearch() {
   appliedKeyword.value = searchKeyword.value.trim()
+  appliedSearchType.value = searchType.value
   currentPage.value = 1
 }
 
@@ -247,6 +263,10 @@ function goToPost(postId) {
   router.push({ name: 'post-detail', params: { postId } })
 }
 
+function goToProfile(userId) {
+  router.push({ name: 'user-profile', params: { userId } })
+}
+
 function formatDate(iso) {
   const d = new Date(iso)
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`
@@ -254,55 +274,100 @@ function formatDate(iso) {
 
 // Write modal
 const modalOpen = ref(false)
-const editPostId = ref(null)
 const submitting = ref(false)
 const submitError = ref('')
-const postForm = ref({ title: '', content: '', category: '자유' })
+const postForm = ref({ title: '', category: '자유' })
+const editorRef = ref(null)
 
 function openWriteModal() {
-  editPostId.value = null
-  postForm.value = { title: '', content: '', category: '자유' }
+  postForm.value = { title: '', category: activeCategory.value || '자유' }
   submitError.value = ''
   modalOpen.value = true
 }
 
 function closeModal() {
+  editorRef.value?.reset()
   modalOpen.value = false
 }
 
 async function submitPost() {
   submitError.value = ''
-  if (!postForm.value.title.trim() || !postForm.value.content.trim()) {
-    submitError.value = '제목과 내용을 모두 입력해주세요.'
+  if (!postForm.value.title.trim()) {
+    submitError.value = '제목을 입력해주세요.'
+    return
+  }
+  const blocks = editorRef.value?.getBlocks() ?? []
+  const hasContent = blocks.some(b => b.type === 'text' && b.value.trim()) || blocks.some(b => b.type === 'image')
+  if (!hasContent) {
+    submitError.value = '내용을 입력해주세요.'
     return
   }
   submitting.value = true
   try {
-    const payload = {
-      title: postForm.value.title.trim(),
-      content: postForm.value.content.trim(),
-      category: postForm.value.category,
-    }
-    if (editPostId.value) {
-      await communityAPI.updatePost(editPostId.value, payload)
-    } else {
-      const { data } = await communityAPI.createPost(payload)
+    const hasNewImages = blocks.some(b => b.type === 'image' && b.file)
+
+    if (!hasNewImages) {
+      // 이미지 없음: 완성된 내용으로 바로 POST
+      const content = blocks
+        .filter(b => b.type === 'text' && b.value.trim())
+        .map(b => b.value)
+        .join('\n')
+      const { data } = await communityAPI.createPost({
+        title: postForm.value.title.trim(),
+        content,
+        category: postForm.value.category,
+      })
       closeModal()
       router.push({ name: 'post-detail', params: { postId: data.id } })
-      return
+    } else {
+      // 이미지 있음: 텍스트 먼저 POST → 이미지 업로드 → 최종 내용 PATCH
+      // (content='' 는 blank=False 모델이 거부하므로 텍스트 부분을 먼저 보냄)
+      const textOnlyContent = blocks
+        .filter(b => b.type === 'text' && b.value.trim())
+        .map(b => b.value)
+        .join('\n') || ' '
+      const { data } = await communityAPI.createPost({
+        title: postForm.value.title.trim(),
+        content: textOnlyContent,
+        category: postForm.value.category,
+      })
+      const postId = data.id
+      const finalContent = await uploadAndBuildContent(blocks, postId)
+      await communityAPI.updatePost(postId, { content: finalContent })
+      closeModal()
+      router.push({ name: 'post-detail', params: { postId } })
     }
-    closeModal()
-    fetchPosts()
   } catch (e) {
-    const data = e?.response?.data
-    const first = data && Object.values(data)[0]
+    const d = e?.response?.data
+    const first = d && Object.values(d)[0]
     submitError.value = Array.isArray(first) ? first[0] : '저장에 실패했어요.'
   } finally {
     submitting.value = false
   }
 }
 
-watch([activeCategory, currentPage, appliedKeyword], fetchPosts)
+// 이미지 블록 업로드 후 [IMAGE:id] 마커 포함 content 문자열 반환
+async function uploadAndBuildContent(blocks, postId) {
+  const parts = []
+  for (const block of blocks) {
+    if (block.type === 'text') {
+      if (block.value.trim()) parts.push(block.value) // 빈 텍스트 블록 스킵
+    } else {
+      let imgId = block.existingId ?? null
+      if (block.file) {
+        const { data } = await communityAPI.uploadImages(postId, [block.file])
+        imgId = data[0].id
+      }
+      if (imgId) {
+        const wp = block.widthPct ?? 100
+        parts.push(wp < 100 ? `[IMAGE:${imgId}:${wp}]` : `[IMAGE:${imgId}]`)
+      }
+    }
+  }
+  return parts.join('\n')
+}
+
+watch([activeCategory, currentPage, appliedKeyword, appliedSearchType], fetchPosts)
 
 onMounted(fetchPosts)
 </script>
@@ -322,15 +387,15 @@ onMounted(fetchPosts)
   align-items: center;
   gap: 6px;
   font-size: 13px;
-  color: #9e9585;
+  color: #6B5A45;
 }
-.breadcrumb a { color: #9e9585; text-decoration: none; }
-.breadcrumb a:hover { color: #1e3a5f; }
+.breadcrumb a { color: #6B5A45; text-decoration: none; }
+.breadcrumb a:hover { color: #D97706; }
 .sep { font-size: 12px; }
 
 .page-header { margin-bottom: 4px; }
-.page-title { font-size: 26px; font-weight: 800; color: #1a1510; margin: 0 0 6px; }
-.page-sub { font-size: 14px; color: #9e9585; margin: 0; }
+.page-title { font-size: 26px; font-weight: 800; color: #3A2410; margin: 0 0 6px; }
+.page-sub { font-size: 14px; color: #6B5A45; margin: 0; }
 
 /* Controls */
 .controls {
@@ -348,51 +413,87 @@ onMounted(fetchPosts)
   border-radius: 8px;
   font-size: 14px;
   font-weight: 500;
-  color: #6b6256;
+  color: #6B5A45;
   background: none;
   cursor: pointer;
   transition: all 0.15s;
 }
-.tab:hover { background: #f0ece3; color: #1a1510; }
+.tab:hover { background: #FFF0D6; color: #3A2410; }
 .tab.active {
-  background: #1e3a5f;
+  background: #D97706;
   color: #fff;
-  border-color: #1e3a5f;
+  border-color: #D97706;
 }
 
 .controls-right { display: flex; align-items: center; gap: 10px; }
 
+.search-center {
+  display: flex;
+  justify-content: center;
+}
+
 .search-form {
-  position: relative;
   display: flex;
   align-items: center;
-}
-.search-icon {
-  position: absolute;
-  left: 10px;
-  width: 15px;
-  color: #9e9585;
-  pointer-events: none;
-}
-.search-form input {
-  width: 200px;
-  padding: 8px 12px 8px 32px;
-  border: 1px solid #ddd8cc;
+  height: 36px;
+  border: 1px solid #D8C4A3;
   border-radius: 8px;
-  font-size: 13px;
-  color: #1a1510;
-  background: #f7f5f0;
-  outline: none;
-  transition: border-color 0.15s, background 0.15s;
+  overflow: hidden;
+  transition: border-color 0.15s;
+  background: #FFFDF7;
 }
-.search-form input:focus { border-color: #1e3a5f; background: #fff; }
+.search-form:focus-within { border-color: #D97706; }
+
+.search-type-select {
+  height: 100%;
+  padding: 0 15px 0 10px;
+  border: none;
+  border-right: 1px solid #D8C4A3;
+  border-radius: 0;
+  font-size: 13px;
+  color: #3A2410;
+  background: #FFFDF7;
+  outline: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.search-input {
+  width: 260px;
+  height: 100%;
+  padding: 0 10px;
+  border: none;
+  background: #FFFDF7;
+  font-size: 13px;
+  color: #3A2410;
+  outline: none;
+  transition: background 0.15s;
+}
+.search-form:focus-within .search-input { background: #fff; }
+
+.search-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 12px;
+  border: none;
+  border-left: 1px solid #D8C4A3;
+  background: #D97706;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+.search-btn:hover { background: #B45309; }
+.search-btn svg { width: 15px; height: 15px; }
 
 .btn-write {
   display: flex;
   align-items: center;
   gap: 6px;
   padding: 8px 18px;
-  background: #1e3a5f;
+  background: #D97706;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -403,13 +504,13 @@ onMounted(fetchPosts)
   transition: background 0.15s;
   white-space: nowrap;
 }
-.btn-write:hover { background: #162d4a; }
+.btn-write:hover { background: #B45309; }
 .btn-write-icon { width: 14px; height: 14px; }
 
 /* Table */
 .table-wrap {
-  background: #fff;
-  border: 1px solid #e8e4d9;
+  background: #FFFDF7;
+  border: 1px solid #D8C4A3;
   border-radius: 12px;
   overflow: hidden;
 }
@@ -421,15 +522,15 @@ onMounted(fetchPosts)
   justify-content: center;
   padding: 64px 0;
   gap: 12px;
-  color: #9e9585;
+  color: #6B5A45;
   font-size: 14px;
 }
 .empty-icon { font-size: 36px; margin: 0; }
 .spinner {
   width: 28px;
   height: 28px;
-  border: 3px solid #e8e4d9;
-  border-top-color: #1e3a5f;
+  border: 3px solid #D8C4A3;
+  border-top-color: #D97706;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -441,14 +542,14 @@ onMounted(fetchPosts)
 }
 
 .post-table thead tr {
-  background: #fafaf8;
-  border-bottom: 1px solid #e8e4d9;
+  background: #FFF7E6;
+  border-bottom: 1px solid #D8C4A3;
 }
 .post-table th {
   padding: 13px 16px;
   font-size: 12px;
   font-weight: 600;
-  color: #9e9585;
+  color: #6B5A45;
   text-align: left;
   letter-spacing: 0.03em;
   text-transform: uppercase;
@@ -461,26 +562,26 @@ onMounted(fetchPosts)
 .col-count { width: 80px; text-align: center; }
 
 .post-row {
-  border-bottom: 1px solid #f0ece3;
+  border-bottom: 1px solid #FFF0D6;
   cursor: pointer;
   transition: background 0.12s;
 }
 .post-row:last-child { border-bottom: none; }
-.post-row:hover { background: #f9f7f3; }
+.post-row:hover { background: #FFF7E6; }
 
 .post-table td {
   padding: 14px 16px;
   font-size: 14px;
-  color: #3d3529;
+  color: #3A2410;
 }
 .post-table td.col-num {
   text-align: center;
   font-size: 13px;
-  color: #9e9585;
+  color: #6B5A45;
 }
 .post-table td.col-date {
   font-size: 13px;
-  color: #9e9585;
+  color: #6B5A45;
   white-space: nowrap;
 }
 
@@ -492,12 +593,12 @@ onMounted(fetchPosts)
 }
 .post-title {
   font-weight: 500;
-  color: #1a1510;
+  color: #3A2410;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.post-title:hover { color: #1e3a5f; }
+.post-title:hover { color: #D97706; }
 
 .cat-badge {
   flex-shrink: 0;
@@ -506,9 +607,9 @@ onMounted(fetchPosts)
   padding: 2px 8px;
   border-radius: 999px;
 }
-.cat-자유 { background: #e8f0fb; color: #1e3a5f; }
-.cat-공략 { background: #fef3c7; color: #92400e; }
-.cat-파티원모집 { background: #ede9fe; color: #6d28d9; }
+.cat-자유 { background: #FFF0D6; color: #D97706; }
+.cat-공략 { background: #e6f0d8; color: #3d6018; }
+.cat-파티원모집 { background: #fce8e4; color: #9b3030; }
 
 .game-tag {
   display: flex;
@@ -516,8 +617,8 @@ onMounted(fetchPosts)
   gap: 3px;
   flex-shrink: 0;
   font-size: 11px;
-  color: #6b6256;
-  background: #f0ece3;
+  color: #6B5A45;
+  background: #FFF0D6;
   border-radius: 6px;
   padding: 2px 7px;
 }
@@ -528,19 +629,25 @@ onMounted(fetchPosts)
   align-items: center;
   gap: 8px;
 }
+.author-link {
+  cursor: pointer;
+  border-radius: 6px;
+  transition: color 0.12s;
+}
+.author-link:hover { color: #D97706; }
 .author-avatar {
   width: 24px;
   height: 24px;
   border-radius: 50%;
   object-fit: cover;
-  border: 1px solid #e8e4d9;
+  border: 1px solid #D8C4A3;
   flex-shrink: 0;
 }
 
 .comment-count {
   font-size: 13px;
   font-weight: 600;
-  color: #1e3a5f;
+  color: #D97706;
 }
 .comment-none { color: #c8c2b4; font-size: 13px; }
 
@@ -551,29 +658,29 @@ onMounted(fetchPosts)
   justify-content: center;
   gap: 4px;
   padding: 20px;
-  border-top: 1px solid #e8e4d9;
+  border-top: 1px solid #D8C4A3;
 }
 .page-btn {
   min-width: 34px;
   height: 34px;
   padding: 0 6px;
-  border: 1px solid #e8e4d9;
+  border: 1px solid #D8C4A3;
   border-radius: 8px;
-  background: #fff;
-  color: #3d3529;
+  background: #FFFDF7;
+  color: #3A2410;
   font-size: 13px;
   cursor: pointer;
   transition: all 0.12s;
 }
-.page-btn:hover:not(:disabled) { border-color: #1e3a5f; color: #1e3a5f; }
-.page-btn.active { background: #1e3a5f; border-color: #1e3a5f; color: #fff; font-weight: 700; }
-.page-btn:disabled { color: #c8c2b4; cursor: default; border-color: #e8e4d9; }
+.page-btn:hover:not(:disabled) { border-color: #D97706; color: #D97706; }
+.page-btn.active { background: #D97706; border-color: #D97706; color: #fff; font-weight: 700; }
+.page-btn:disabled { color: #c8c2b4; cursor: default; border-color: #D8C4A3; }
 
 /* Modal */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(26,21,16,0.45);
+  background: rgba(58,36,16,0.45);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -581,12 +688,12 @@ onMounted(fetchPosts)
   padding: 24px;
 }
 .modal {
-  background: #fff;
+  background: #FFFDF7;
   border-radius: 16px;
   padding: 28px 32px;
   width: 100%;
   max-width: 640px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  box-shadow: 0 20px 60px rgba(58,36,16,0.2);
   max-height: 90vh;
   overflow-y: auto;
 }
@@ -596,8 +703,8 @@ onMounted(fetchPosts)
   justify-content: space-between;
   margin-bottom: 24px;
 }
-.modal-header h2 { font-size: 18px; font-weight: 700; color: #1a1510; margin: 0; }
-.modal-close { background: none; border: none; cursor: pointer; color: #9e9585; padding: 4px; }
+.modal-header h2 { font-size: 18px; font-weight: 700; color: #3A2410; margin: 0; }
+.modal-close { background: none; border: none; cursor: pointer; color: #6B5A45; padding: 4px; }
 .modal-close svg { width: 20px; height: 20px; }
 
 .modal-form { display: flex; flex-direction: column; gap: 16px; }
@@ -605,16 +712,16 @@ onMounted(fetchPosts)
 .form-field { display: flex; flex-direction: column; gap: 6px; }
 .form-field--category { width: 140px; flex-shrink: 0; }
 .form-field--title { flex: 1; }
-.form-field label { font-size: 13px; font-weight: 600; color: #6b6256; }
+.form-field label { font-size: 13px; font-weight: 600; color: #6B5A45; }
 
 .form-field input,
 .form-field select,
 .form-field textarea {
-  border: 1px solid #e8e4d9;
+  border: 1px solid #D8C4A3;
   border-radius: 8px;
   padding: 10px 12px;
   font-size: 14px;
-  color: #1a1510;
+  color: #3A2410;
   outline: none;
   background: #fff;
   font-family: inherit;
@@ -622,7 +729,7 @@ onMounted(fetchPosts)
 }
 .form-field input:focus,
 .form-field select:focus,
-.form-field textarea:focus { border-color: #1e3a5f; }
+.form-field textarea:focus { border-color: #D97706; }
 .form-field textarea { resize: vertical; line-height: 1.6; min-height: 200px; }
 
 .form-error {
@@ -637,10 +744,10 @@ onMounted(fetchPosts)
 .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 8px; }
 .btn-cancel {
   padding: 9px 20px;
-  border: 1px solid #e8e4d9;
+  border: 1px solid #D8C4A3;
   border-radius: 8px;
-  background: #fff;
-  color: #6b6256;
+  background: #FFFDF7;
+  color: #6B5A45;
   font-size: 14px;
   cursor: pointer;
 }
@@ -648,13 +755,14 @@ onMounted(fetchPosts)
   padding: 9px 24px;
   border: none;
   border-radius: 8px;
-  background: #1e3a5f;
+  background: #D97706;
   color: #fff;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.15s;
 }
-.btn-save:hover:not(:disabled) { background: #162d4a; }
+.btn-save:hover:not(:disabled) { background: #B45309; }
 .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+
 </style>

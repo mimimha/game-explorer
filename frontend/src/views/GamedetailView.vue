@@ -27,14 +27,14 @@
           <GameInfoPanel :game="game" />
         </div>
 
-        <!-- ── 게임 소개 ── -->
-        <GameDescription :description="game.description" />
+        <!-- ── 게임 소개 (한글 번역 우선) ── -->
+        <GameDescription :description-ko="game.description_ko" :description="game.description" />
 
         <!-- ── 공략·스트리밍 영상 ── -->
         <GameVideos :game-id="game.id" :videos="game.videos" />
 
         <!-- ── 관련 커뮤니티 글 ── -->
-        <GameCommunityPosts :game-id="game.id" :posts="game.posts" />
+        <!-- <GameCommunityPosts :game-id="game.id" :posts="game.posts" /> -->
       </template>
 
     </div>
@@ -43,8 +43,10 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRoute, RouterLink } from 'vue-router'
+import { useRoute, useRouter, RouterLink } from 'vue-router'
+import { onBeforeRouteLeave } from 'vue-router'
 import { gameAPI } from '@/api/services'
+import { useExploreStore } from '@/stores/explore'
 import GameMediaGallery from '@/components/game-detail/GameMediaGallery.vue'
 import GameInfoPanel from '@/components/game-detail/GameInfoPanel.vue'
 import GameDescription from '@/components/game-detail/GameDescription.vue'
@@ -52,8 +54,16 @@ import GameVideos from '@/components/game-detail/GameVideos.vue'
 import GameCommunityPosts from '@/components/game-detail/GameCommunityPosts.vue'
 
 const route = useRoute()
+const router = useRouter()
+const exploreStore = useExploreStore()
 const loading = ref(true)
 const game = ref({})
+
+onBeforeRouteLeave((to) => {
+  if (to.name !== 'explore' && to.name !== 'game-detail') {
+    exploreStore.clear()
+  }
+})
 
 // 백엔드 상세 응답 → 화면 컴포넌트가 기대하는 형태로 변환
 function mapGame(d) {
@@ -70,7 +80,8 @@ function mapGame(d) {
     supports_korean: d.is_korean,
     is_online: !d.offline,
     release_status: d.release_date ? '출시됨' : '미정',
-    description: d.description || '',          // 백엔드 미제공 시 빈 값
+    description: d.description || '',          // 원문(EN) — 폴백용
+    description_ko: d.description_ko || '',    // 한글 번역(우선 표시)
     // 갤러리용: image_url → url, 라벨 부여
     screenshots: (d.screenshots || []).map((s, i) => ({
       id: s.id,
@@ -93,7 +104,7 @@ onMounted(async () => {
     const { data } = await gameAPI.detail(gameId)
     game.value = mapGame(data)
   } catch (e) {
-    console.error('게임 상세 로드 실패:', e)
+    router.replace({ name: 'error' })
   } finally {
     loading.value = false
   }

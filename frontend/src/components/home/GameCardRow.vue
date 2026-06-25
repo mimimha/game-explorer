@@ -54,25 +54,30 @@ function formatPrice(price) {
 .row-card {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px;
-  border: 1px solid #e8e4d9;
-  border-radius: 10px;
-  background: #fff;
+  gap: 14px;
+  padding: 12px;
+  border: 1px solid #D8C4A3;
+  border-radius: 12px;
+  background: #FFFDF7;
   text-decoration: none;
   color: inherit;
   transition: box-shadow 0.15s;
+  height: 100%;
+  box-sizing: border-box;
+  font-family: 'Pretendard', sans-serif;
+  align-items: flex-start;
 }
 .row-card:hover {
-  box-shadow: 0 4px 12px rgba(30,58,95,0.08);
+  box-shadow: 0 4px 12px rgba(58, 36, 16, 0.1);
 }
 .row-thumb {
-  width: 56px;
-  height: 56px;
+  width: 72px;
+  height: 72px;
   flex-shrink: 0;
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
-  background: #f0ece3;
+  background: #FFF0D6;
+  margin-top: 5px;
 }
 .row-thumb img {
   width: 100%; height: 100%; object-fit: cover;
@@ -85,46 +90,49 @@ function formatPrice(price) {
   min-width: 0;
 }
 .row-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: #1a1510;
-  margin-bottom: 5px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #2F2418;
+  margin-bottom: 8px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-family: 'Pretendard', sans-serif;
 }
 .row-price {
   display: flex;
   align-items: center;
   gap: 6px;
+  flex-wrap: wrap;
 }
 .row-badge {
-  background: #1a1510;
+  background: #D97706;
   color: white;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 4px;
+  padding: 3px 9px;
+  border-radius: 999px;
 }
 .row-original {
-  font-size: 11px;
-  color: #9e9585;
+  font-size: 13px;
+  color: #6B5A45;
   text-decoration: line-through;
 }
 .row-final {
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 700;
-  color: #1e3a5f;
+  color: #3A2410;
 }
 .row-tags {
   display: flex;
   gap: 4px;
+  flex-wrap: wrap;
 }
 .tag {
-  font-size: 11px;
-  color: #6b6256;
-  background: #f0ece3;
+  font-size: 13px;
+  color: #6B5A45;
+  background: #FFF0D6;
   border-radius: 999px;
-  padding: 2px 8px;
+  padding: 3px 10px;
 }
 </style>

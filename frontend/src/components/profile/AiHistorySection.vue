@@ -2,39 +2,103 @@
   <section class="section-card">
     <div class="section-header">
       <h3 class="section-title">AI 추천 기록</h3>
-      <RouterLink to="/explore?tab=ai" class="view-all">전체 보기 &rsaquo;</RouterLink>
     </div>
 
-    <div v-if="logs.length === 0" class="empty">
+    <div v-if="!logs.length" class="empty">
       아직 AI 추천 기록이 없어요.
     </div>
 
-    <ul v-else class="log-list">
-      <li v-for="log in logs" :key="log.log_id" class="log-item">
-        <RouterLink :to="`/explore?log=${log.log_id}`" class="log-link">
-          <div class="log-icon">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" stroke="#6b6256" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <div v-else class="carousel">
+      <button
+        class="arrow arrow-left"
+        :class="{ hidden: !canScrollLeft }"
+        @click="scroll(-1)"
+        aria-label="이전"
+      >
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" width="14">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/>
+        </svg>
+      </button>
+
+      <div class="track" ref="trackEl" @scroll="onScroll">
+        <div v-for="log in logs" :key="log.log_id" class="item-wrap">
+          <RouterLink :to="`/explore?log=${log.log_id}`" class="item">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="16" class="clock-icon">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
             </svg>
-          </div>
-          <span class="log-prompt">{{ log.prompt_input }}</span>
-          <span class="log-date">{{ formatDate(log.created_at) }}</span>
-        </RouterLink>
-      </li>
-    </ul>
+            <div class="item-text">
+              <span class="query">"{{ log.prompt_input }}"</span>
+              <span class="meta">{{ formatDate(log.created_at) }} · 결과 {{ log.result_count ?? 0 }}개</span>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="14" class="chevron">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/>
+            </svg>
+          </RouterLink>
+          <button class="delete-btn" @click="$emit('delete', log.log_id)" aria-label="삭제">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="10" height="10">
+              <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <button
+        class="arrow arrow-right"
+        :class="{ hidden: !canScrollRight }"
+        @click="scroll(1)"
+        aria-label="다음"
+      >
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" width="14">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/>
+        </svg>
+      </button>
+    </div>
   </section>
 </template>
 
 <script setup>
+import { ref, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 
-defineProps({
+const props = defineProps({
   logs: { type: Array, default: () => [] },
 })
 
+const emit = defineEmits(['delete'])
+
+const trackEl = ref(null)
+const canScrollLeft = ref(false)
+const canScrollRight = ref(false)
+const SCROLL_AMOUNT = 248
+
+function scroll(dir) {
+  trackEl.value?.scrollBy({ left: dir * SCROLL_AMOUNT, behavior: 'smooth' })
+}
+
+function onScroll() {
+  const el = trackEl.value
+  if (!el) return
+  canScrollLeft.value = el.scrollLeft > 4
+  canScrollRight.value = el.scrollLeft + el.clientWidth < el.scrollWidth - 4
+}
+
+function checkScroll() {
+  nextTick(() => onScroll())
+}
+
+watch(() => props.logs.length, checkScroll)
+onMounted(checkScroll)
+
+const ro = typeof ResizeObserver !== 'undefined'
+  ? new ResizeObserver(checkScroll)
+  : null
+
+onMounted(() => { if (ro && trackEl.value) ro.observe(trackEl.value) })
+onBeforeUnmount(() => ro?.disconnect())
+
 function formatDate(dt) {
   if (!dt) return ''
-  return new Date(dt).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\. /g, '.').replace(/\.$/, '')
+  return new Date(dt).toLocaleDateString('ko-KR').replace(/\. /g, '.').slice(0, -1)
 }
 </script>
 
@@ -45,24 +109,20 @@ function formatDate(dt) {
   border-radius: 16px;
   padding: 24px 28px;
 }
+
 .section-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 16px;
 }
+
 .section-title {
   font-size: 16px;
   font-weight: 700;
   color: #1a1510;
   margin: 0;
 }
-.view-all {
-  font-size: 13px;
-  color: #6b6256;
-  text-decoration: none;
-}
-.view-all:hover { color: #1e3a5f; }
 
 .empty {
   font-size: 14px;
@@ -71,55 +131,104 @@ function formatDate(dt) {
   padding: 24px 0;
 }
 
-.log-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-}
-.log-item + .log-item {
-  border-top: 1px solid #f0ece3;
-}
-.log-link {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 0;
-  text-decoration: none;
-  color: inherit;
-}
-.log-link:hover .log-prompt {
-  color: #1e3a5f;
+.carousel {
+  position: relative;
 }
 
-.log-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  background: #f0ece3;
+.track {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 12px 12px 8px 2px;
+}
+.track::-webkit-scrollbar { display: none; }
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-60%);
+  z-index: 10;
+  width: 34px;
+  height: 34px;
+  background: #fff;
+  border: 1.5px solid #ddd8cc;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  cursor: pointer;
+  color: #3d3529;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  transition: opacity 0.2s, border-color 0.15s, color 0.15s, box-shadow 0.15s;
 }
-.log-icon svg {
-  width: 18px;
-  height: 18px;
+.arrow:hover {
+  border-color: #c96012;
+  color: #c96012;
+  box-shadow: 0 4px 14px rgba(30,58,95,0.14);
+}
+.arrow.hidden {
+  opacity: 0;
+  pointer-events: none;
 }
 
-.log-prompt {
-  flex: 1;
-  font-size: 14px;
+.arrow-left  { left: -16px; }
+.arrow-right { right: -16px; }
+
+.item-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.delete-btn {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #c96012;
+  border: 2px solid #fff;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.15s;
+  z-index: 1;
+}
+.delete-btn:hover { background: #a84e0e; }
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid #e8e4d9;
+  border-radius: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  text-align: left;
+  width: 220px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  text-decoration: none;
+  color: inherit;
+}
+.item:hover {
+  border-color: #c96012;
+  box-shadow: 0 4px 12px rgba(30,58,95,0.08);
+}
+.clock-icon { color: #9e9585; flex-shrink: 0; }
+.item-text { flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.query {
+  font-size: 13px;
+  font-weight: 600;
   color: #1a1510;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  min-width: 0;
 }
-.log-date {
-  font-size: 12px;
-  color: #9e9585;
-  flex-shrink: 0;
-}
+.meta { font-size: 11px; color: #9e9585; white-space: nowrap; }
+.chevron { color: #c8c2b4; flex-shrink: 0; }
 </style>

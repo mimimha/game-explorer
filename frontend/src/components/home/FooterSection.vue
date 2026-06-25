@@ -10,8 +10,9 @@
     <div class="footer-center">
       <h4>탐험대 바로가기</h4>
       <ul>
-        <li><a href="#">게임 라이브러리</a></li>
-        <li><a href="#">커뮤니티</a></li>
+        <li><RouterLink to="/explore">게임 라이브러리</RouterLink></li>
+        <li><RouterLink to="/community">커뮤니티</RouterLink></li>
+        <li><RouterLink to="/profile">마이페이지</RouterLink></li>
       </ul>
     </div>
 
@@ -21,7 +22,7 @@
       <div class="social-links">
         <a href="https://lab.ssafy.com/als2612/13-pjt" target="_blank">GitHub Repository</a>
       </div>
-      <p class="api-credit">Data powered by RAWG API, STEAM API</p>
+      <p class="api-credit">Data powered by RAWG API, STEAM API, Youtube API</p>
     </div>
     </div>
     </footer>
@@ -31,10 +32,11 @@
 <style scoped>
 .footer {
   margin-top: 120px;
-  background-color: #f8f9fb;
-  border-top: 1px solid #e5e7eb;
+  background-color: #FFFDF7;
+  border-top: 1px solid #D8C4A3;
   font-size: 14px;
-  color: #444;
+  color: #6B5A45;
+  font-family: 'Pretendard', sans-serif;
 }
 
 .footer-container {
@@ -52,17 +54,19 @@
   font-size: 18px;
   font-weight: 700;
   margin-bottom: 12px;
+  color: #3A2410;
+  font-family: 'Pretendard', sans-serif;
 }
 
 .footer-left p {
   line-height: 1.6;
-  color: #666;
+  color: #6B5A45;
 }
 
 .footer-left p:last-child {
   margin-top: 12px;
   font-size: 13px;
-  color: #888;
+  color: #9e8c78;
 }
 
 /* 가운데 / 오른쪽 공통 */
@@ -71,6 +75,8 @@
   font-size: 15px;
   font-weight: 600;
   margin-bottom: 12px;
+  color: #3A2410;
+  font-family: 'Pretendard', sans-serif;
 }
 
 /* 링크 목록 */
@@ -85,26 +91,26 @@
 }
 
 .footer-center a {
-  color: #555;
+  color: #6B5A45;
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 .footer-center a:hover {
-  color: #111;
+  color: #D97706;
 }
 
 /* 오른쪽 */
 .footer-right p {
   margin-bottom: 8px;
-  color: #666;
+  color: #6B5A45;
 }
 
 .social-links a {
   display: inline-block;
   margin-top: 8px;
   font-weight: 600;
-  color: #2563eb;
+  color: #D97706;
   text-decoration: none;
 }
 
@@ -115,7 +121,7 @@
 .api-credit {
   margin-top: 16px;
   font-size: 12px;
-  color: #999;
+  color: #9e8c78;
 }
 
 /* 반응형 */

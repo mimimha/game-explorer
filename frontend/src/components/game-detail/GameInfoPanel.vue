@@ -7,31 +7,39 @@
     </div>
 
     <!-- 제목 -->
-    <h1 class="title">{{ game.title }}</h1>
+    <h1 class="title">
+      {{ game.title }}
+      <br>
+      <span v-if="game.title_ko" class="title-ko">({{ game.title_ko }})</span>
+    </h1>
 
     <!-- 가격 -->
     <div class="price-row">
-      <template v-if="game.discount_rate">
-        <span class="price-original">₩{{ formatPrice(game.initial_price) }}</span>
-        <span class="arrow-icon">→</span>
-        <span class="price-final">₩{{ formatPrice(game.final_price) }}</span>
-        <span class="discount-badge">-{{ game.discount_rate }}% 할인</span>
+      <template v-if="game.final_price != null">
+        <template v-if="game.discount_rate">
+          <span class="price-original">₩{{ formatPrice(game.initial_price) }}</span>
+          <span class="arrow-icon">→</span>
+          <span class="price-final">₩{{ formatPrice(game.final_price) }}</span>
+          <span class="discount-badge">-{{ game.discount_rate }}% 할인</span>
+        </template>
+        <span v-else class="price-final">₩{{ formatPrice(game.final_price) }}</span>
       </template>
-      <span v-else class="price-final">₩{{ formatPrice(game.final_price) }}</span>
+      <span v-else class="coming-soon">추후 업데이트 예정</span>
     </div>
 
     <!-- 메타크리틱 점수 + 별점 -->
     <div class="score-row">
-      <div class="stars">
-        <svg v-for="i in 5" :key="i"
-          viewBox="0 0 16 16" width="16" height="16"
-          :fill="i <= Math.round((game.metacritic_score || 0) / 20) ? '#f59e0b' : '#e8e4d9'">
-          <path d="M8 1l1.8 3.6L14 5.4l-3 2.9.7 4.1L8 10.4l-3.7 2 .7-4.1-3-2.9 4.2-.8z"/>
-        </svg>
-      </div>
-      <span v-if="game.metacritic_score" class="meta-score">
-        Metacritic {{ game.metacritic_score }}
-      </span>
+      <template v-if="game.metacritic_score">
+        <div class="stars">
+          <svg v-for="i in 5" :key="i"
+            viewBox="0 0 16 16" width="16" height="16"
+            :fill="i <= Math.round(game.metacritic_score / 20) ? '#f59e0b' : '#e8e4d9'">
+            <path d="M8 1l1.8 3.6L14 5.4l-3 2.9.7 4.1L8 10.4l-3.7 2 .7-4.1-3-2.9 4.2-.8z"/>
+          </svg>
+        </div>
+        <span class="meta-score">평점 {{ game.metacritic_score }}점</span>
+      </template>
+      <span v-else class="coming-soon">추후 업데이트 예정</span>
     </div>
 
     <!-- 태그 칩들 -->
@@ -39,7 +47,7 @@
       <span v-if="game.supports_korean" class="chip">한국어 지원</span>
       <span v-if="game.required_age"    class="chip">{{ game.required_age }}세 이상</span>
       <span v-if="!game.is_online"      class="chip">오프라인</span>
-      <span                              class="chip">{{ game.release_status }}</span>
+      <!-- <span                              class="chip">{{ game.release_status }}</span> -->
     </div>
 
     <!-- 찜하기 버튼 -->
@@ -73,10 +81,16 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { wishlistAPI } from '@/api/services'
+import { useAuthStore } from '@/stores/auth'
 
 const props = defineProps({
   game: { type: Object, required: true },
 })
+
+const router = useRouter()
+const authStore = useAuthStore()
 
 const MAX_VISIBLE = 5
 const showAll = ref(false)
@@ -91,9 +105,22 @@ function formatPrice(p) {
   return Number(p || 0).toLocaleString('ko-KR')
 }
 
-function toggleWish() {
-  wished.value = !wished.value
-  // TODO: POST /api/wishlist/{game.id}/toggle/
+async function toggleWish() {
+  if (!authStore.isLoggedIn) {
+    router.push('/login')
+    return
+  }
+  const prev = wished.value
+  wished.value = !prev
+  try {
+    if (!prev) {
+      await wishlistAPI.add(props.game.id)
+    } else {
+      await wishlistAPI.remove(props.game.id)
+    }
+  } catch {
+    wished.value = prev
+  }
 }
 </script>
 
@@ -133,6 +160,12 @@ function toggleWish() {
   line-height: 1.3;
   letter-spacing: -0.02em;
   margin: 0;
+}
+.title-ko {
+  font-size: 16px;
+  font-weight: 600;
+  color: #6b6256;
+  letter-spacing: 0;
 }
 
 /* 가격 */
@@ -245,4 +278,11 @@ function toggleWish() {
   transition: all 0.15s;
 }
 .genre-more:hover { border-color: #1e3a5f; color: #1e3a5f; }
+
+/* 추후 업데이트 예정 */
+.coming-soon {
+  font-size: 13px;
+  color: #9e9585;
+  font-style: italic;
+}
 </style>

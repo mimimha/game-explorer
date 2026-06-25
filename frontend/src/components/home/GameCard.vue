@@ -28,6 +28,12 @@
     <div class="card-body">
       <h3 class="card-title">{{ game.title || '게임 제목' }}</h3>
 
+      <!-- 취향 관련도 (취향 분석 섹션에서만) -->
+      <div v-if="game.match != null" class="match-row">
+        <div class="match-bar"><div class="match-fill" :style="{ width: game.match + '%' }"></div></div>
+        <span class="match-label">관련도 {{ game.match }}%</span>
+      </div>
+
       <div v-if="showPrice" class="price-row">
         <span v-if="discountRate" class="price-original">
           {{ formatPrice(game.initial_price) }}
@@ -38,7 +44,7 @@
       </div>
 
       <div class="tags">
-        <span v-for="name in genreNames.slice(0, 2)" :key="name" class="tag">
+        <span v-for="name in genreNames.slice(0, 3)" :key="name" class="tag">
           {{ name }}
         </span>
         <span v-if="genreNames.length === 0">
@@ -51,7 +57,9 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
+import { wishlistAPI } from '@/api/services'
+import { useAuthStore } from '@/stores/auth'
 
 const props = defineProps({
   game: {
@@ -68,6 +76,8 @@ const props = defineProps({
   }
 })
 
+const router = useRouter()
+const authStore = useAuthStore()
 const isWishlisted = ref(props.game.is_wishlisted || false)
 
 const discountRate = computed(() => {
@@ -81,8 +91,22 @@ const discountRate = computed(() => {
 
 const genreNames = computed(() => (props.game.genres || []).map(g => g.name))
 
-function toggleWishlist() {
-  isWishlisted.value = !isWishlisted.value
+async function toggleWishlist() {
+  if (!authStore.isLoggedIn) {
+    router.push('/login')
+    return
+  }
+  const prev = isWishlisted.value
+  isWishlisted.value = !prev
+  try {
+    if (!prev) {
+      await wishlistAPI.add(props.game.id)
+    } else {
+      await wishlistAPI.remove(props.game.id)
+    }
+  } catch {
+    isWishlisted.value = prev
+  }
 }
 
 function formatPrice(price) {
@@ -94,26 +118,29 @@ function formatPrice(price) {
 <style scoped>
 .card {
   display: block;
+  width: 100%;
   text-decoration: none;
   color: inherit;
-  background: #fff;
-  border: 1px solid #e8e4d9;
+  background: #FFFDF7;
+  border: 1px solid #D8C4A3;
   border-radius: 12px;
   overflow: hidden;
   transition: transform 0.15s, box-shadow 0.15s;
+  font-family: 'Pretendard', sans-serif;
 }
 .card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(30, 58, 95, 0.1);
+  box-shadow: 0 8px 24px rgba(58, 36, 16, 0.12);
 }
 
 .thumbnail {
   position: relative;
   aspect-ratio: 4/3;
   overflow: hidden;
-  background: #f0ece3;
+  background: #FFF0D6;
 }
 .thumbnail img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -134,12 +161,12 @@ function formatPrice(price) {
   position: absolute;
   top: 8px;
   left: 8px;
-  background: #1a1510;
+  background: #D97706;
   color: white;
   font-size: 11px;
   font-weight: 700;
   padding: 3px 8px;
-  border-radius: 6px;
+  border-radius: 999px;
 }
 
 .wishlist-btn {
@@ -148,7 +175,7 @@ function formatPrice(price) {
   right: 8px;
   background: rgba(255,255,255,0.9);
   border: none;
-  border-radius: 8px;
+  border-radius: 50%;
   padding: 6px;
   cursor: pointer;
   display: flex;
@@ -162,7 +189,7 @@ function formatPrice(price) {
 .wishlist-btn svg {
   width: 18px;
   height: 18px;
-  color: #6b6256;
+  color: #6B5A45;
 }
 
 .card-body {
@@ -172,11 +199,12 @@ function formatPrice(price) {
 .card-title {
   font-size: 14px;
   font-weight: 600;
-  color: #1a1510;
+  color: #2F2418;
   margin: 0 0 6px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-family: 'Pretendard', sans-serif;
 }
 
 .price-row {
@@ -187,13 +215,13 @@ function formatPrice(price) {
 }
 .price-original {
   font-size: 12px;
-  color: #9e9585;
+  color: #6B5A45;
   text-decoration: line-through;
 }
 .price-final {
   font-size: 14px;
   font-weight: 700;
-  color: #1e3a5f;
+  color: #3A2410;
 }
 
 .tags {
@@ -204,9 +232,35 @@ function formatPrice(price) {
 }
 .tag {
   font-size: 11px;
-  color: #6b6256;
-  background: #f0ece3;
+  color: #6B5A45;
+  background: #FFF0D6;
   border-radius: 999px;
   padding: 2px 8px;
+}
+
+/* 취향 관련도 지표 */
+.match-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0 8px;
+}
+.match-bar {
+  flex: 1;
+  height: 6px;
+  background: #ece6da;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.match-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f0a85a, #c96012);
+  border-radius: 999px;
+}
+.match-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #c96012;
+  flex-shrink: 0;
 }
 </style>
