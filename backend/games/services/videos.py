@@ -8,7 +8,7 @@ eager(미리 전부 적재)와 달리, 사용자가 실제로 연 게임만 — 
 import logging
 
 from games.models import GameVideo
-from games.services import rawg, youtube
+from games.services import youtube
 
 logger = logging.getLogger(__name__)
 
@@ -22,14 +22,11 @@ def fetch_videos_for(game, *, include_trailer=True, include_walkthrough=True):
     rows = []  # (video_dict, video_type)
 
     if include_trailer:
+        # 트레일러는 YouTube 만 사용. 없으면 표시 안 함(RAWG/Steam 폴백 미사용)
+        # → 영상이 하나도 없으면 화면엔 "추후 업데이트 예정"이 뜬다.
         trailers = youtube.search_videos(
             game.title, query_terms='gameplay trailer', max_results=1,
         )
-        if not trailers and game.rawg_id:        # YouTube 실패 시 RAWG 트레일러 폴백
-            trailers = [
-                {'title': m['name'], 'video_url': m['url'], 'thumbnail': ''}
-                for m in rawg.fetch_movies(game.rawg_id)[:1]
-            ]
         rows += [(v, GameVideo.TRAILER) for v in trailers[:1]]
 
     if include_walkthrough:

@@ -58,16 +58,20 @@
       </button>
     </div>
 
-    <p v-if="!videos.length" class="coming-soon">추후 업데이트 예정</p>
+    <p v-if="loading && !videos.length" class="coming-soon">
+      <span class="spinner" /> 영상 불러오는 중…
+    </p>
+    <p v-else-if="!videos.length" class="coming-soon">추후 업데이트 예정</p>
   </section>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { ref, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 
-defineProps({
+const props = defineProps({
   gameId: { type: [String, Number], default: null },
   videos: { type: Array, default: () => [] },
+  loading: { type: Boolean, default: false },   // 영상 비동기 로딩 중 여부
 })
 
 // 채널 · 조회수 · 날짜 중 있는 것만 표시 (YouTube 검색엔 조회수 없음)
@@ -88,7 +92,16 @@ function onScroll() {
 }
 
 const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => nextTick(onScroll)) : null
-onMounted(() => { nextTick(onScroll); if (ro && trackEl.value) ro.observe(trackEl.value) })
+
+function setupArrows() {
+  nextTick(() => {
+    onScroll()
+    if (ro && trackEl.value) ro.observe(trackEl.value)
+  })
+}
+onMounted(setupArrows)
+// 영상이 비동기(lazy)로 늦게 도착해도 화살표가 다시 계산되도록
+watch(() => props.videos.length, setupArrows)
 onBeforeUnmount(() => ro?.disconnect())
 </script>
 
@@ -264,4 +277,14 @@ onBeforeUnmount(() => ro?.disconnect())
   font-style: italic;
   margin: 18px 0 0;
 }
+.coming-soon .spinner {
+  display: inline-block;
+  width: 12px; height: 12px;
+  border: 2px solid #d8d2c4;
+  border-top-color: #1e3a5f;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  vertical-align: -1px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
 </style>

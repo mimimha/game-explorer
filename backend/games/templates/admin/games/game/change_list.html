@@ -2,8 +2,9 @@
 
 {% block object-tools-items %}
   <li>
-    <a href="{% url 'admin:games_game_fetch_new' %}" class="addlink">
-      RAWG 신작 가져오기
+    <a href="{% url 'admin:games_game_add_more' %}" class="addlink"
+       onclick="return confirm('RAWG에서 게임 100개를 추가하고 설명(무료)·제목(GMS 크레딧 소량)을 자동 번역합니다. 2~3분 걸리고 그동안 페이지가 로딩 상태가 됩니다. 진행할까요?');">
+      게임 100개 더 받기
     </a>
   </li>
   <li>

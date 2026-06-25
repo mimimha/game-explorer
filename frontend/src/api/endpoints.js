@@ -30,6 +30,7 @@ const ENDPOINTS = {
   games: {
     list: '/games/',                       // GET            목록(필터·정렬·검색)
     detail: (gameId) => `/games/${gameId}/`,       // GET            상세
+    videos: (gameId) => `/games/${gameId}/videos/`, // GET           영상(상세와 분리·lazy)
     posts: (gameId) => `/games/${gameId}/posts/`,  // GET            게임 관련 글
     recommended: '/games/recommended/',    // GET            오늘의 추천(홈01)
     onSale: '/games/on-sale/',             // GET            할인 중(홈02)

@@ -23,6 +23,8 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('--pages', type=int, default=1,
                             help='가져올 RAWG 페이지 수')
+        parser.add_argument('--start-page', type=int, default=1,
+                            help='시작 페이지(이어받기용). 예: 9 → 9페이지부터 pages만큼')
         parser.add_argument('--page-size', type=int, default=20)
         parser.add_argument('--ordering', type=str, default='-added')
         parser.add_argument('--dates', type=str, default=None,
@@ -35,22 +37,32 @@ class Command(BaseCommand):
                             help='Steam 가격 수집 생략')
         parser.add_argument('--no-youtube', action='store_true',
                             help='YouTube 영상 수집 생략')
+        parser.add_argument('--translate', action='store_true',
+                            help='적재 후 미번역 설명을 무료 자동 번역(Google)')
         parser.add_argument('--sleep', type=float, default=0.3,
                             help='API 호출 간 대기(초) — rate limit 보호')
 
     def handle(self, *args, **opts):
         total = 0
-        for page in range(1, opts['pages'] + 1):
+        start = opts['start_page']
+        for page in range(start, start + opts['pages']):
             self.stdout.write(f'\n=== RAWG page {page} ===')
-            try:
-                games = rawg.fetch_game_list(
-                    page=page, page_size=opts['page_size'],
-                    ordering=opts['ordering'], dates=opts['dates'],
-                    genres=opts['genres'], tags=opts['tags'],
-                )
-            except Exception as e:
-                self.stderr.write(self.style.ERROR(f'목록 호출 실패: {e}'))
-                break
+            games = None
+            for attempt in range(3):       # 일시적 502 등은 재시도
+                try:
+                    games = rawg.fetch_game_list(
+                        page=page, page_size=opts['page_size'],
+                        ordering=opts['ordering'], dates=opts['dates'],
+                        genres=opts['genres'], tags=opts['tags'],
+                    )
+                    break
+                except Exception as e:
+                    self.stderr.write(self.style.WARNING(
+                        f'목록 호출 실패(page {page}, 시도 {attempt + 1}/3): {e}'))
+                    time.sleep(2 * (attempt + 1))
+            if games is None:              # 3번 다 실패 → 이 페이지만 건너뛰고 계속(중단 X)
+                self.stderr.write(self.style.ERROR(f'page {page} 건너뜀'))
+                continue
 
             for stub in games:
                 try:
@@ -63,6 +75,11 @@ class Command(BaseCommand):
                 time.sleep(opts['sleep'])
 
         self.stdout.write(self.style.SUCCESS(f'\n완료: {total}개 게임 적재/갱신'))
+
+        if opts.get('translate'):     # 적재 후 미번역 설명 자동 번역(무료 Google)
+            from django.core.management import call_command
+            self.stdout.write('\n설명 자동 번역(Google, 무료) 시작...')
+            call_command('translate_games', stdout=self.stdout)
 
     @transaction.atomic
     def _load_one(self, rawg_id, opts):
