@@ -1,6 +1,9 @@
 # accounts/serializers.py
+from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import serializers
 from dj_rest_auth.registration.serializers import RegisterSerializer
+from allauth.account.adapter import get_adapter
+from allauth.account.utils import setup_user_email
 
 from .models import User, UserMedal, Notification
 
@@ -84,19 +87,30 @@ class NotificationSerializer(serializers.ModelSerializer):
 
 class CustomRegisterSerializer(RegisterSerializer):
     nickname = serializers.CharField(max_length=50)
-    birth_date = serializers.DateField(required=False, allow_null=True)
+    birth_date = serializers.DateField(required=True)
 
     def get_cleaned_data(self):
         data = super().get_cleaned_data()
         data['nickname'] = self.validated_data.get('nickname', '')
-        data['birth_date'] = self.validated_data.get('birth_date', None)
+        data['birth_date'] = self.validated_data.get('birth_date')
         return data
 
     def save(self, request):
-        user = super().save(request)
-        user.nickname = self.cleaned_data.get('nickname')
+        adapter = get_adapter()
+        user = adapter.new_user(request)
+        self.cleaned_data = self.get_cleaned_data()
+        user = adapter.save_user(request, user, self, commit=False)
+        if 'password1' in self.cleaned_data:
+            try:
+                adapter.clean_password(self.cleaned_data['password1'], user=user)
+            except DjangoValidationError as exc:
+                raise serializers.ValidationError(str(exc))
+        # nickname, birth_date를 user.save() 전에 세팅 (NOT NULL 제약 준수)
+        user.nickname = self.cleaned_data.get('nickname', '')
         user.birth_date = self.cleaned_data.get('birth_date')
         user.save()
+        self.custom_signup(request, user)
+        setup_user_email(request, user, [])
         from .medal_service import award_medal
         award_medal(user, '발자국 시작')
         return user

@@ -187,6 +187,10 @@ const rules = {
     if (v !== form.password) return '비밀번호가 일치하지 않아요'
     return ''
   },
+  birth_date: (v) => {
+    if (!v) return '생년월일을 입력해주세요'
+    return ''
+  },
   agreed: (v) => {
     if (!v) return '이용약관에 동의해주세요'
     return ''
