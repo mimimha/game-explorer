@@ -7,6 +7,42 @@
 | 🖥️ **프론트엔드** | [front_README](frontend/front_README.md) | Vue 3 · Pinia · Vue Router · Axios |
 | ⚙️ **백엔드** | [back_README](backend/back_README.md) | Django · DRF · GMS(AI) · SQLite |
 
+## 빠른 실행
+
+### 사전 요구사항
+
+- Python 3.10 이상
+- Node.js 22.18 이상 또는 24.12 이상
+
+### 백엔드
+
+```powershell
+cd backend
+Copy-Item .env.example .env
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py loaddata games
+python manage.py loaddata medals
+python manage.py runserver
+```
+
+### 프론트엔드
+
+새 PowerShell 창에서 실행한다.
+
+```powershell
+cd frontend
+Copy-Item .env.example .env
+npm install
+npm run dev
+```
+
+- 서비스: `http://127.0.0.1:5173`
+- API 문서(Swagger): `http://127.0.0.1:8000/api/v1/docs/`
+- 기본 화면·게임 목록·일반 검색은 외부 API 키 없이 fixture 데이터로 확인할 수 있다. AI 추천의 GMS 호출과 외부 데이터 수집은 해당 API 키를 설정한 경우에만 사용한다.
+
 
 ## 1. 프로젝트 개요
 * **서비스명**: 방구석 탐험대
@@ -36,6 +72,14 @@
         │                                  │
    Pinia 상태관리                     SQLite + JSON fixture
 ```
+
+### 핵심 설계
+
+- **검색 상태 복원**: Pinia에 검색어·필터·정렬·페이지를 임시 저장해 게임 상세 화면에서 돌아올 때 이전 탐색 맥락을 복원한다.
+- **서버 페이지네이션**: 게임 목록을 서버에서 20개 단위로 반환해 데이터가 많아져도 초기 응답 부담을 제어한다.
+- **영상 Lazy Loading**: 게임 상세 정보와 YouTube 영상을 분리 요청해 상세 화면을 먼저 표시하고, 필요한 경우에만 영상을 수집·저장한다.
+- **안정적인 AI 추천**: LLM은 사용자 의도 추출과 추천 이유 생성에 사용하고, 후보 선정은 서비스 DB의 필터·점수화 로직으로 처리한다.
+- **키 없는 기본 시연**: 게임 fixture와 추천 폴백 로직을 제공해 외부 API 키가 없어도 주요 화면과 흐름을 확인할 수 있다.
 
 각 영역의 상세 구조·컴포넌트·엔드포인트는 [프론트 README](frontend/front_README.md) / [백엔드 README](backend/back_README.md) 참고.
 
@@ -111,7 +155,8 @@
 ```bash
 cd backend
 python -m venv venv
-source venv/scripts/activate
+# Windows PowerShell: .\venv\Scripts\Activate.ps1
+# macOS/Linux: source venv/bin/activate
 pip install -r requirements.txt
 python manage.py migrate
 python manage.py loaddata games   # 게임 데이터(fixture) 적재

@@ -172,13 +172,23 @@ python manage.py loaddata medals   # 메달 데이터(fixture) 적재
 python manage.py runserver
 ```
 
-### 환경 변수 (.env)
+### 선택 환경 변수 (.env)
+
+기본 화면, 게임 목록, 일반 검색은 환경 변수 없이 실행할 수 있다. AI 추천과 외부 API 기반 데이터 수집 기능을 사용하려면 `backend/.env.example`을 `backend/.env`로 복사한 뒤 필요한 키를 설정한다.
+
+```powershell
+# backend 디렉터리에서 실행
+Copy-Item .env.example .env
+```
+
+`RECOMMEND_USE_LLM=False`인 기본 설정에서는 GMS를 호출하지 않으며, AI 추천은 키 없이 대체 추천 로직으로 동작한다.
+
 | 변수 | 설명 |
 |---|---|
-| `SSAFY_GMS_KEY` (또는 `GMS_API_KEY`) | GMS 인증 키 |
+| `SSAFY_GMS_KEY` (또는 `GMS_API_KEY`) | GMS 인증 키 (LLM 추천 사용 시 필요) |
 | `GMS_BASE_URL` | GMS 엔드포인트 (예: `https://.../v1`) |
 | `GMS_MODEL` / `GMS_VISION_MODEL` | 텍스트·비전 모델 (기본 `gpt-4o-mini`) |
-| `RECOMMEND_USE_LLM` | `True`일 때만 AI 추천에 GMS 호출 |
+| `RECOMMEND_USE_LLM` | `True`일 때만 GMS 기반 AI 추천 호출. 기본값은 `False` |
 | `RAWG_API_KEY` | RAWG 메타 수집 |
 | `YOUTUBE_DATA_API_KEYS` | YouTube 영상 수집 (쉼표로 다중 키, 쿼터 소진 시 자동 전환) |
 

@@ -11,6 +11,26 @@ Vue 3 기반 SPA(Single Page Application)
 
 ---
 
+## 실행
+
+백엔드 서버를 먼저 `http://127.0.0.1:8000`에서 실행한 뒤, 아래 명령을 실행한다.
+
+```powershell
+Copy-Item .env.example .env
+npm install
+npm run dev
+```
+
+`frontend/.env`에는 백엔드 API 주소를 설정한다.
+
+```env
+VITE_API_BASE_URL=http://127.0.0.1:8000/api/v1
+```
+
+개발 서버는 기본적으로 `http://127.0.0.1:5173`에서 열린다.
+
+---
+
 ## 프로젝트 구조
 
 ```
