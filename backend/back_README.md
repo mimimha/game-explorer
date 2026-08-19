@@ -123,7 +123,7 @@ GMS는 OpenAI 호환 게이트웨이로, `RECOMMEND_USE_LLM=True` + 키 설정 �
 ### 3. 표지 시각 소재 분석 — [games/services/vision.py](games/services/vision.py)
 GMS 비전 모델로 게임 표지를 분석해 `thumbnail_subjects`(예: `['동물','풍경']`)를 채운다. → AI 추천의 소재 매칭에 사용.
 
-> ⚠️ 한글 번역(`title_ko`/`description_ko`)은 GMS를 쓰지 않고 LLM이 직접 채운다.
+> 한글 설명(`description_ko`)은 `deep-translator`의 Google 번역으로 생성하고, 제목 음차(`title_ko`)는 `translate_games --titles` 실행 시 GMS를 사용한다. 생성된 번역 결과는 fixture에 포함해 기본 실행 시 별도 번역 호출이 필요 없다.
 
 ---
 
@@ -185,12 +185,18 @@ Copy-Item .env.example .env
 
 | 변수 | 설명 |
 |---|---|
+| `DJANGO_SECRET_KEY` | Django 서명 키. 공개 배포에서는 반드시 임의의 안전한 값으로 변경 |
+| `DJANGO_DEBUG` | 로컬 기본값 `True`. 공개 배포에서는 `False` |
+| `DJANGO_ALLOWED_HOSTS` | 허용 호스트 목록(쉼표 구분) |
+| `CORS_ALLOWED_ORIGINS` | 프론트엔드 출처 목록(쉼표 구분) |
 | `SSAFY_GMS_KEY` (또는 `GMS_API_KEY`) | GMS 인증 키 (LLM 추천 사용 시 필요) |
 | `GMS_BASE_URL` | GMS 엔드포인트 (예: `https://.../v1`) |
 | `GMS_MODEL` / `GMS_VISION_MODEL` | 텍스트·비전 모델 (기본 `gpt-4o-mini`) |
 | `RECOMMEND_USE_LLM` | `True`일 때만 GMS 기반 AI 추천 호출. 기본값은 `False` |
 | `RAWG_API_KEY` | RAWG 메타 수집 |
-| `YOUTUBE_DATA_API_KEYS` | YouTube 영상 수집 (쉼표로 다중 키, 쿼터 소진 시 자동 전환) |
+| `RAWG_API_URL` / `STEAM_APP_DETAIL_URL` | 외부 게임 데이터 API 주소 |
+| `YOUTUBE_DATA_API_KEY` | YouTube 영상 수집용 단일 키 |
+| `YOUTUBE_DATA_API_KEYS` | 쉼표로 여러 YouTube 키 지정, 쿼터 소진 시 자동 전환 |
 
 ---
 

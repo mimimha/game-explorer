@@ -1,0 +1,23 @@
+# Local environment files
+.env
+.env.*
+!.env.example
+
+# User-generated uploads
+backend/media/
+
+# Local document review artifacts
+.codex-doc-review/
+tmp/
+output/
+
+# Operating system and editor files
+.DS_Store
+Thumbs.db
+.idea/
+
+# Local AI instructions and one-off data tuning scripts
+CLAUDE.md
+backend/analyze_tags.py
+backend/try_walkthrough.py
+backend/verify_one_game.py
